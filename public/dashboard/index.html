@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Grocery and Inventory Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="./styles/dashboard.css" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+</head>
+
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <h2>Grocery Guardian</h2>
+            <nav>
+                <a href="#groceries" onclick="event.preventDefault(); window.location.hash='groceries';"><i
+                        class="fas fa-shopping-basket"></i> Groceries</a>
+                <a href="#inventory" onclick="event.preventDefault(); window.location.hash='inventory';"><i
+                        class="fas fa-boxes-stacked"></i> Inventory</a>
+                <a href="#settings" onclick="event.preventDefault(); window.location.hash='settings';"><i
+                        class="fas fa-user"></i> Account</a>
+                <a href="#group" onclick="event.preventDefault(); window.location.hash='group';"><i
+                        class="fas fa-people-roof"></i> Group</a>
+                <a href="#invite" onclick="event.preventDefault(); window.location.hash='invite';"><i
+                        class="fas fa-people-roof"></i> Invite</a>
+                <a href="#addGrocery" onclick="event.preventDefault(); window.location.hash='addGrocery';"><i
+                        class="fas fa-people-roof"></i> Add Grocery</a>
+            </nav>
+            <button id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </aside>
+
+        <!-- App Container -->
+        <main class="main-content">
+
+            <header class="topbar">
+                <h1 id="pageTitle">Dashboard</h1>
+            </header>
+
+            <section id="app" class="view-container">
+                <!-- Views will be dynamically injected here -->
+
+            </section>
+        </main>
+    </div>
+
+    <!-- Javascript App Entry-->
+    <script type="module" src="./app.js"></script>
+</body>
+
+</html>

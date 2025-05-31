@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="./css/login.css">
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+     <meta name="theme-color" content="#ffffff" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="left">
+
+            <!-- Mobile menu icon (Shown only on small screens)-->
+            <div class="mobile-menu-icon">
+                <span>&#9776</span>
+            </div>
+            <!-- 📱 Mobile drawer (slides in from left) -->
+            <div class="mobile-drawer">
+                <button class="auth-btn drawer-login active">Login</button>
+                <button class="auth-btn drawer-signup">Signup</button>
+            </div>
+            <!-- 💻 Regular toggle buttons (visible on larger screens) -->
+            <div class="toggle-buttons">
+                <button id="loginBtn" class="auth-btn active">Login</button>
+                <button id="signupBtn" class="auth-btn">Signup</button>
+            </div>
+            
+        </div>
+        <div class="right">
+
+            <img src="./assets/logo.png" alt="Logo" class="logo">
+
+
+           <div class="forms-wrapper">
+            <form id="login-form" class="form active">
+                <h2>Welcome back again!</h2>
+
+                <input type="email" name="loginemail" id="loginemail" required placeholder="Email">
+                <input type="password" name="loginpassword" id="loginpassword" required placeholder="Password">
+                <div class="link-button">
+                    <a href="#">Forgot Password?</a>
+                    <button type="submit">LOGIN</button>
+
+                </div>
+            </form>
+            <form id="signup-form" class="form">
+                <h2>Start managing your grocery!...</h2>
+                <input type="text" placeholder="Full Name" id="name" required>
+                <input type="email" placeholder="Email" id="signupemail" required>
+                <input type="password" placeholder="Password" id="signuppassword" required>
+                <button type="submit">SIGN UP</button>
+            </form>
+           
+           </div>
+        </div>
+    </div>
+    <script src="./js/login.js"></script>
+
+</body>
+
+</html>
