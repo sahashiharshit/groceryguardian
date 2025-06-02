@@ -6,14 +6,14 @@ import morgan from "morgan";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
-import { createClient } from "redis";
+
 
 //Routes
 import authenticationRoutes from "./routes/authentication.route.js";
  import userRoutes from "./routes/user.route.js";
 // import householdRoutes from "./routes/householdmanagement.routes.js";
-// import groceryroutes from "./routes/grocerylist.routes.js";
-// import pantryRoutes from "./routes/pantryinventory.routes.js";
+import groceryroutes from "./routes/grocerylist.route.js";
+// import pantryRoutes from "./routes/pantryinventory.route.js";
 // import notificationRoutes from "./routes/notifications.route.js";
 import { globalErrorHandler } from "./middlewares/error.middleware.js";
 
@@ -59,7 +59,7 @@ app.use(limiter);
 app.use("/api/auth", authenticationRoutes);
 app.use("/api/users", userRoutes);
 // app.use("/api/households", householdRoutes);
-// app.use("/api/grocerylists", groceryroutes);
+app.use("/api/grocery", groceryroutes);
 // app.use("/api/pantry", pantryRoutes);
 // app.use("/api/notifications", notificationRoutes);
 

@@ -1,0 +1,65 @@
+
+
+
+h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  background: #ffffff;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.2s;
+}
+
+li:hover {
+  transform: scale(1.02);
+}
+
+.item-info {
+  flex: 1;
+  margin-right: 1rem;
+}
+
+.item-info.purchase strong {
+  text-decoration: line-through;
+  color: #6c757d;
+}
+
+.item-info span {
+  margin-left: 0.5rem;
+  font-weight: bold;
+}
+
+button {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+button.purchase-btn {
+  background-color: #28a745;
+  color: white;
+}
+
+button.delete-btn {
+  background-color: #dc3545;
+  color: white;
+}

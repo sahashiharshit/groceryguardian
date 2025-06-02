@@ -2,17 +2,17 @@ import GroceryListItem from "../models/GroceryListItem.js";
 import PantryItem from "../models/PantryItem.js";
 
 export const addGroceries = async (req, res) => {
-  const userId = req.user._id;
+  const userId = req.params.id;
   const householdId = req.user.householdId || null;
-  const { itemName, quantity, additionalNotes = "" } = req.body;
-
+  const { itemName, quantity,unit, additionalNotes } = req.body;
+  console.log(additionalNotes);
   const newGrocery = new GroceryListItem({
     householdId,
     itemName,
     quantity,
     unit,
     addedBy: userId,
-    additionalNotes,
+    additionalNotes:additionalNotes,
   });
 
   await newGrocery.save();
@@ -21,9 +21,12 @@ export const addGroceries = async (req, res) => {
 
 export const getGrocerieslist = async (req, res) => {
 
-const filter = req.user.householdId?{householdId:req.user.householdId}:{addedBy:req.user._id,householdId:null};
+const filter = req.user.householdId?{householdId:req.user.householdId}:{addedBy:req.user.id,householdId:null};
+
+
 const groceries = await GroceryListItem.find({...filter,status:'pending'});
 res.status(200).json({groceries});
+
 };
 
 export const updateGroceriesList = async (req, res) => {

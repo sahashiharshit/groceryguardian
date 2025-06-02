@@ -35,11 +35,12 @@ export const login = async(req, res) => {
 // Register a new user
 export const register = async(req, res) => {
 
-const { name, email, password } = req.body;
+const { name, email,mobileNo, password } = req.body;
 
 const newUser = {
     name,
     email,
+    mobileNo,
     password
     }
   await User.create(newUser); 

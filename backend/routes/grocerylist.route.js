@@ -1,11 +1,13 @@
 import { Router } from "express";
-import { addGroceries, deleteGroceryItem, getGrocerieslist, updateGroceriesList } from "../controllers/grocery.controller";
+import { addGroceries, deleteGroceryItem, getGrocerieslist, updateGroceriesList } from "../controllers/grocery.controller.js";
+import { authenticationMiddleware } from "../middlewares/authentication.middleware.js";
+import { asyncHandler } from "../middlewares/asyncHandler.middleware.js";
 const router = Router();
 
 // routes for grocery list management
-router.get('/households/:id/grocery-list',getGrocerieslist);
-router.post('/households/:id/grocery-list',addGroceries);
-router.put('/households/:id/grocery-list/:itemId',updateGroceriesList);
-router.delete('/households/:id/grocery-list/:itemId',deleteGroceryItem);
+router.get('/grocerylist',authenticationMiddleware,asyncHandler(getGrocerieslist));
+router.post('/:id/grocery-list',addGroceries);
+router.put('/:id/grocery-list/:itemId',updateGroceriesList);
+router.delete('/:id/grocery-list/:itemId',deleteGroceryItem);
 
 export default router;

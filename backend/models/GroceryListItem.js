@@ -34,7 +34,7 @@ householdId: {
   },
   additonalNotes: {
   type: String,
-  default: ""
+  default: null
   },
   purchasedAt:{
   type:Date,

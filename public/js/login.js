@@ -63,19 +63,21 @@ const drawer = document.querySelector('.mobile-drawer');
   });
   signupform.addEventListener("submit", function (event) {
   event.preventDefault();
-  const username = document.getElementById("name").value;
-    const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
+  const name = document.getElementById("username").value;
+  const email = document.getElementById("signupemail").value;
+  const mobileNo=document.getElementById("mobileno").value;  
+  const password = document.getElementById("signuppassword").value;
+ 
   
   fetch("http://localhost:5000/api/auth/register", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ username, password, email }),
+    body: JSON.stringify({ name, email,mobileNo, password }),
   })
     .then((response) => {
+    console.log(response)
       if (response.ok) {
         alert("Signup successful! You can now log in.");
         loginBtn.click(); // Switch to login form

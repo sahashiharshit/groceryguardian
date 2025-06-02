@@ -9,8 +9,8 @@ const userSchema = new mongoose.Schema({
  password:{type: String, required: true},
  households:[{
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Household" 
- 
+    ref: "Household" ,
+    default:null
  }],
     
 },{timestamps:true}); 
