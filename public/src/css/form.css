@@ -1,0 +1,162 @@
+.form-container {
+  max-width: 500px;
+  margin: 1rem auto;
+
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  transition: all 0.3s ease-in-out;
+}
+
+.form-field {
+  margin-bottom: 1.5rem;
+}
+
+.form-field label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  width: 100%;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+  border-color: #0077cc;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 119, 204, 0.2);
+}
+
+.inline-label {
+  margin-left: 0.4rem;
+  margin-right: 1rem;
+  font-weight: normal;
+  color: #444;
+}
+
+.form-submit {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  background-color: #0077cc;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out, transform 0.1s;
+}
+
+.form-submit:hover {
+  background-color: #005fa3;
+}
+
+.form-submit:active {
+  transform: scale(0.97);
+}
+
+/* Optional: style buttons inside form rows for inline edit/remove */
+.form-field button {
+  margin-top: 0.5rem;
+  margin-right: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+}
+.grocery-form-wrapper {
+  flex: 1 1 300px;
+  max-width: 500px;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+.grocery-list {
+  flex: 1 1 300px;
+  max-width: 500px;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+
+  justify-content: space-between;
+}
+
+.grocery-item {
+  padding: 10px;
+  margin-bottom: 6px;
+  background-color: #f0f8ff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.grocery-item.fade-out {
+  opacity: 0;
+  transform: translateX(100px);
+}
+
+.grocery-item.edit-blink {
+  animation: blink 0.3s ease-in-out;
+}
+
+@keyframes blink {
+  0% {
+    background-color: #fff176;
+  }
+  100% {
+    background-color: #f0f8ff;
+  }
+}
+
+.action-btn {
+  margin-left: 6px;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.edit-btn {
+  background-color: #ffd54f;
+}
+
+.remove-btn {
+  background-color: #ef5350;
+  color: white;
+}
+
+.submit-all-btn {
+background-color: #10b981; /* Tailwind green-500 */
+  color: white;
+  border: none;
+  padding: 0.7rem 1.2rem;
+  margin-top: 1rem;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.3s ease;
+}
+.submit-all-btn:hover {
+  background-color: #059669; /* Slightly darker green */
+}

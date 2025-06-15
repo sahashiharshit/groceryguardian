@@ -1,0 +1,24 @@
+{
+  "name": "groceryappfrontend",
+  "version": "1.0.0",
+  "description": "Frontend for grocery app",
+  "main": "app.ts",
+  "scripts": {
+    "dev": "node esbuild.mjs --watch",
+    "build": "node esbuild.mjs"
+  },
+  "type": "module",
+  "author": "harshit sah",
+  "license": "ISC",
+  "devDependencies": {
+    "esbuild": "^0.25.5",
+    "esbuild-plugin-copy": "^2.1.1",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@tensorflow-models/mobilenet": "^2.1.1",
+    "@tensorflow/tfjs": "^4.22.0",
+    "@zxing/browser": "^0.1.5",
+    "@zxing/library": "^0.21.3"
+  }
+}

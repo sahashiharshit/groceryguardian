@@ -5,3 +5,7 @@
 .vscode
 /backend/.env
 /backend/package-lock.json
+/backend/dist
+/public/node_modules
+/public/package-lock.json
+/public/dist

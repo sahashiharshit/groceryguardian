@@ -1,0 +1,19 @@
+/* reset & base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html {
+  width: 100%;
+  height: 100%;
+  font-family: "Times New Roman", serif;
+}
+#app {
+
+display: flex;
+justify-content: center;
+align-items: center;
+width: 100%;
+height: 100%;
+}

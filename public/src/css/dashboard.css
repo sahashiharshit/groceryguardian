@@ -1,0 +1,112 @@
+/* Layout */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f3f4f6;
+  color: #333;
+}
+
+.dashboard {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 220px;
+  background-color: #1e293b;
+  color: white;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.sidebar h2 {
+  font-size: 1.4rem;
+  margin-bottom: 1.5rem;
+}
+
+.sidebar nav a {
+  display: block;
+  color: white;
+  text-decoration: none;
+  padding: 0.75rem 0;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.sidebar nav a:hover {
+  background-color: #334155;
+  border-radius: 4px;
+}
+
+.logout-btn {
+  margin-top: auto;
+  padding: 0.75rem;
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 4px;
+}
+
+.logout-btn:hover {
+  background-color: #dc2626;
+}
+
+/* Main */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
+
+/* Topbar */
+.topbar {
+  background-color: white;
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* View container */
+.view-container {
+ padding: 2rem 1rem;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background-color: #f3f4f6;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .dashboard {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  .sidebar nav {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .main-content {
+    height: calc(100vh - 60px); /* adjust for mobile top */
+  }
+
+  .topbar {
+    text-align: center;
+  }
+}
