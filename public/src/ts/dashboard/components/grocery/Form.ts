@@ -1,14 +1,26 @@
 
+
+import { apiFetch } from "../../../services/api.js";
 import { AddGroceryItems } from "../../views/addGrocery.js";
 import { FormBuilder } from "../FormBuilder.js";
 
-export function GroceryForm(onSubmit:(item:AddGroceryItems)=>void):HTMLElement{
+export async function GroceryForm(onSubmit:(item:AddGroceryItems)=>void):Promise<HTMLElement>{
  const wrapper = document.createElement("div");
   wrapper.classList.add("grocery-form-wrapper");
+  
+  const categoryOptions = await fetchCategories();
+  
    const form = FormBuilder<AddGroceryItems>({
     id: "grocery-form",
     submitLabel: "Add Item",
     fields: [
+    {
+        name: "category",
+        label: "Category",
+        type: "select",
+        options: [{ value: "", label: "Select a Category" }, ...categoryOptions],
+        required: true,
+      },
       { name: "itemname", label: "Item Name", required: true, minLength: 3 },
       {
         name: "quantity",
@@ -29,6 +41,7 @@ export function GroceryForm(onSubmit:(item:AddGroceryItems)=>void):HTMLElement{
           { value: "ml", label: "Mili Liters" },
           { value: "packs", label: "Packs" },
           { value: "other", label: "Not Sure" },
+          {value:"dozen",label:"Dozen"},
         ],
       },
       {
@@ -46,4 +59,17 @@ export function GroceryForm(onSubmit:(item:AddGroceryItems)=>void):HTMLElement{
 
     wrapper.appendChild(form);
     return wrapper;
+}
+export async function fetchCategories():Promise<{value:string;label:string}[]> {
+  try {
+    const data = await apiFetch<{_id:string;name:string}[]>("/api/grocery/getcategories");
+   
+    return data.map((cat)=>({
+      value:cat.name,
+      label:cat.name,
+    }));
+  } catch (error) {
+    console.error("Failed to fetch categories", error);
+    return [{ value: "", label: "Failed to load categories" }];
+  }
 }

@@ -2,13 +2,13 @@ import mongoose, { Schema, Document, Model, Types } from "mongoose";
 
 
 export const UnitType = {
-  PCS : "pcs",
-  KG : "kg",
-  G :"g",
-  LITERS : "liters",
-  ML : "ml",
-  PACKS : "packs",
-  OTHER : "other",
+  PCS: "pcs",
+  KG: "kg",
+  G: "g",
+  LITERS: "liters",
+  ML: "ml",
+  PACKS: "packs",
+  OTHER: "other",
 } as const;
 
 
@@ -22,7 +22,7 @@ export interface IGroceryListItem extends Document {
   itemName: string;
   quantity: number;
   unit: UnitTypeValue;
-  barcode:string;
+  categoryId: Types.ObjectId;
   addedBy: Types.ObjectId;
   notes?: string | null;
   purchasedAt?: Date | null;
@@ -52,16 +52,16 @@ const groceryListItemSchema: Schema<IGroceryListItem> = new Schema(
       enum: Object.values(UnitType),
       default: UnitType.PCS,
     },
-    barcode:{
-    type:String,
-    default:null  
+    categoryId: {
+      type: Schema.Types.ObjectId,
+      ref: "Categories",
+
     },
     addedBy: {
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-  
     notes: {
       type: String,
       default: null,

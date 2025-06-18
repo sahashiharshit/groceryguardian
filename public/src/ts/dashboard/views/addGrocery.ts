@@ -75,7 +75,7 @@ export function render() {
   submitBtn.className = "submit-all-btn ";
   submitBtn.onclick = async () => {
     try {
-      console.log("Items to be submitted",groceryItems);
+     
       await apiFetch("/api/grocery/add-grocery", {
         method: "POST",
         body:{ items: groceryItems }

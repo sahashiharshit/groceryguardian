@@ -9,6 +9,7 @@ const routes: Record<string, RouteHandler> = {
     group: () => importView('group'),
     invite: () => importView('invite'),
     addGrocery: () => importView('addGrocery'),
+    scanView:()=>importView('scanView'),
 };
 
 /**

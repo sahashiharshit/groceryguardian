@@ -8,6 +8,7 @@ type GroceryItem = {
   unit: string;
   status: 'pending' | 'purchased' | string;
   notes?: string;
+  barcode:string;
 }
 
 export function GroceryList(items: GroceryItem[] = []): HTMLUListElement {
@@ -17,6 +18,11 @@ export function GroceryList(items: GroceryItem[] = []): HTMLUListElement {
   items.forEach((item, index) => {
     const li = document.createElement("li");
     const itemId = item.id;
+        
+    // if(!barcode) {
+    //   alert("no barcode found in product")
+    //   return
+    // }
     const itemInfo = document.createElement("div");
     itemInfo.className = "item-info";
     itemInfo.innerHTML = `
@@ -33,11 +39,19 @@ export function GroceryList(items: GroceryItem[] = []): HTMLUListElement {
 
     purchasedBtn.onclick = async () => {
       const useBarcode = confirm("Use barcode scanner?\nCancel = Use photo scanner");
-      const validateItem = useBarcode?await scanBarcodeAndMatch(itemId):await scanPhotoAndMatch(item.name);
-      if(!validateItem){
+      try {
+        const barcodeData = await apiFetch(`/api/barcode/getbarcodeinfo`,{method:"GET"});
+         const validateItem = useBarcode?await scanBarcodeAndMatch(barcodeData):await scanPhotoAndMatch(item.name);
+           if(!validateItem){
       alert("Item does not match scanned data.");
       return;
       }
+      } catch (error) {
+        console.error("Something went wrong in fetching barcode data");
+        return;
+      }
+     
+    
     
       try {
         await apiFetch(`/api/grocery/movetoinventory/${itemId}`, { method: "POST" });

@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import GroceryListItem from "../models/GroceryListItem.js";
 import PantryItem from "../models/PantryItem.js";
 import User from "../models/User.js";
+import Categories from "../models/Category.js";
 type AddGroceryItem = {
   itemname: string;
   quantity: number;
@@ -48,8 +49,8 @@ export const getGrocerieslist = async (req: Request, res: Response): Promise<voi
   }
   const filter = user.household
     ? { householdId: user.household } // Group groceries
-    : { addedBy: user._id, householdId: null}; // Solo 
-    console.log(filter);
+    : { addedBy: user._id, householdId: null }; // Solo 
+  console.log(filter);
   const groceries = await GroceryListItem.find(filter).lean();
   console.log(groceries);
   res.status(200).json({ groceries });
@@ -62,33 +63,33 @@ export const updateGroceriesList = async (req: Request, res: Response) => {
 };
 
 //delete items
-export const deleteGroceryItem = async (req: Request, res: Response):Promise<void> => {
+export const deleteGroceryItem = async (req: Request, res: Response): Promise<void> => {
   const userid = req.user?.id;
-  if(!userid){
-   res.status(300).json({error:"Unauthorized"});
-   return
+  if (!userid) {
+    res.status(300).json({ error: "Unauthorized" });
+    return
   }
   const id = req.params?.itemId;
   console.log(id);
-  if(!id){
-    res.status(400).json({error:"No id available"});
+  if (!id) {
+    res.status(400).json({ error: "No id available" });
     return
   }
-  
-  const item = await GroceryListItem.findOne({ _id: id ,addedBy:userid });
-  if(!item){
-   res.status(404).json({ message: "Item not found or unauthorized" });
+
+  const item = await GroceryListItem.findOne({ _id: id, addedBy: userid });
+  if (!item) {
+    res.status(404).json({ message: "Item not found or unauthorized" });
     return
   }
-  await GroceryListItem.deleteOne({_id:id});
+  await GroceryListItem.deleteOne({ _id: id });
   res.status(200).json({ message: "Item deleted successfully" });
 };
 
 
-export const moveToPantry = async (req: Request, res: Response):Promise<void> => {
+export const moveToPantry = async (req: Request, res: Response): Promise<void> => {
   const groceryItemId = req.params?.itemId;
   const groceryItem = await GroceryListItem.findById({ _id: groceryItemId });
-  if (!groceryItem ) {
+  if (!groceryItem) {
 
     res.status(404).json({ error: "no item found" });
     return;
@@ -104,5 +105,12 @@ export const moveToPantry = async (req: Request, res: Response):Promise<void> =>
 
   await pantryItem.save();
   await GroceryListItem.findByIdAndDelete(groceryItemId);
-  res.status(200).json({message:"Successfully moved to inventory"});
+  res.status(200).json({ message: "Successfully moved to inventory" });
 };
+
+export const getCategories = async (req: Request, res: Response): Promise<void> => {
+
+  const categories = await Categories.find();
+  res.status(200).json( categories );
+
+}

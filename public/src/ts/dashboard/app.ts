@@ -6,7 +6,7 @@ import { loadCSS } from './utils/LoadCSS.js';
 
 const token = localStorage.getItem("accesstoken");
 if(!token){
-console.log("No token");
+
 renderAuth();
 
 }else{
@@ -24,6 +24,8 @@ const sidebarHTML = `
       <a href="#group"><i class="fas fa-people-roof"></i> Group</a>
       <a href="#invite"><i class="fas fa-people-roof"></i> Invite</a>
       <a href="#addGrocery"><i class="fas fa-people-roof"></i> Add Grocery</a>
+      <a href="#scanView"><i class="fas fa-people-roof"></i> Add to database</a>
+      
     </nav>
     <button id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
   </aside>`;
@@ -32,7 +34,8 @@ function setupLogoutButton(): void {
   const logoutBtn = document.getElementById('logoutBtn');
   logoutBtn?.addEventListener('click', () => {
     localStorage.removeItem('accesstoken');
-    window.location.href = '/';
+    localStorage.removeItem('username');
+    renderAuth();
   });
 }
 

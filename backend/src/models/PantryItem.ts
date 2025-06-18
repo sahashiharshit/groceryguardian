@@ -1,13 +1,14 @@
-import mongoose, { Document, Schema, Model } from "mongoose";
+import mongoose, { Document, Schema, Model, Types } from "mongoose";
 
 
 export interface IPantryItem extends Document {
 
-  householdId?: mongoose.Types.ObjectId | null;
+  householdId?: Types.ObjectId | null;
   itemName: string;
   quantity: number;
-  category?: string;
-  addedBy: mongoose.Types.ObjectId;
+  categoryId: Types.ObjectId;
+  barcode?: string;
+  addedBy: Types.ObjectId;
   purchaseDate?: Date;
   expirationDate?: Date;
   notes?: string;
@@ -32,8 +33,14 @@ const pantryItemSchema: Schema<IPantryItem> = new Schema({
     required: true,
     default: 1
   },
-  category: {
+  categoryId: {
+    type: Schema.Types.ObjectId,
+    ref:"Categories"
+  },
+  barcode: {
     type: String,
+    ref: "Barcode",
+    default: null
 
   },
   addedBy: {
@@ -61,5 +68,5 @@ const pantryItemSchema: Schema<IPantryItem> = new Schema({
 
 }, { timestamps: true });
 
-const PantryItem:Model<IPantryItem> = mongoose.model<IPantryItem>("PantryItem",pantryItemSchema);
+const PantryItem: Model<IPantryItem> = mongoose.model<IPantryItem>("PantryItem", pantryItemSchema);
 export default PantryItem;
