@@ -28,3 +28,23 @@
 - TypeScript
 - RESTful API
 - JWT-based authentication
+
+
+## 🛠 Setup & Run Locally
+
+### 1. Clone the Repo
+
+```bash
+git clone https://github.com/sahashiharshit/groceryguardian.git
+cd groceryguardian
+### Backend Setup
+cd backend
+npm install
+cp .env.example .env
+# Fill in your environment variables (MongoDB URI, JWT_SECRET, etc.)
+npm run dev
+
+### Frontend Setup
+cd public
+npm install
+npm run dev
