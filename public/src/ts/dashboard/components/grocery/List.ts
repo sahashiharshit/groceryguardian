@@ -8,7 +8,7 @@ type GroceryItem = {
   unit: string;
   status: 'pending' | 'purchased' | string;
   notes?: string;
-  barcode:string;
+  
 }
 
 export function GroceryList(items: GroceryItem[] = []): HTMLUListElement {
@@ -18,11 +18,7 @@ export function GroceryList(items: GroceryItem[] = []): HTMLUListElement {
   items.forEach((item, index) => {
     const li = document.createElement("li");
     const itemId = item.id;
-        
-    // if(!barcode) {
-    //   alert("no barcode found in product")
-    //   return
-    // }
+      
     const itemInfo = document.createElement("div");
     itemInfo.className = "item-info";
     itemInfo.innerHTML = `
@@ -35,7 +31,7 @@ export function GroceryList(items: GroceryItem[] = []): HTMLUListElement {
     buttonGroup.style.gap = "0.5rem";
     const purchasedBtn = document.createElement("button");
     purchasedBtn.className = "purchase-btn"
-    purchasedBtn.innerHTML = "✅ Purchase";
+    purchasedBtn.innerHTML = "Purchase";
 
     purchasedBtn.onclick = async () => {
       const useBarcode = confirm("Use barcode scanner?\nCancel = Use photo scanner");
@@ -66,7 +62,7 @@ export function GroceryList(items: GroceryItem[] = []): HTMLUListElement {
     };
     const deleteBtn = document.createElement("button");
     deleteBtn.className = "delete-btn";
-    deleteBtn.innerHTML = "🗑️ Delete";
+    deleteBtn.innerHTML = "Delete";
 
     deleteBtn.onclick = async () => {
       try {

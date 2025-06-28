@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, Model, Types } from "mongoose";
+import mongoose, { Schema, Document, Model } from "mongoose";
 
 
 export const UnitType = {
@@ -8,9 +8,17 @@ export const UnitType = {
   LITERS: "liters",
   ML: "ml",
   PACKS: "packs",
+  DOZEN: "dozen",
   OTHER: "other",
 } as const;
 
+export const StatusType = {
+  PENDING: "pending",
+  PURCHASED: "purchased",
+  MOVEDTOPANTRY: "movedToPantry",
+} as const;
+export type StatusTypeKey = keyof typeof StatusType;
+export type StatusTypeValue = typeof StatusType[StatusTypeKey];
 
 export type UnitTypeKey = keyof typeof UnitType;
 export type UnitTypeValue = typeof UnitType[UnitTypeKey];
@@ -18,12 +26,14 @@ export type UnitTypeValue = typeof UnitType[UnitTypeKey];
 
 // TS Interface for a Grocery List Item
 export interface IGroceryListItem extends Document {
-  householdId?: Types.ObjectId | null;
+  householdId?: Schema.Types.ObjectId | null;
   itemName: string;
   quantity: number;
+  barcode?: Schema.Types.ObjectId | null;
   unit: UnitTypeValue;
-  categoryId: Types.ObjectId;
-  addedBy: Types.ObjectId;
+  status: StatusTypeValue;
+  categoryId: Schema.Types.ObjectId;
+  addedBy: Schema.Types.ObjectId;
   notes?: string | null;
   purchasedAt?: Date | null;
   createdAt: Date;
@@ -47,10 +57,20 @@ const groceryListItemSchema: Schema<IGroceryListItem> = new Schema(
       required: true,
       default: 1,
     },
+    barcode: {
+      type: Schema.Types.ObjectId,
+      ref: "Barcode",
+      default: null
+    },
     unit: {
       type: String,
       enum: Object.values(UnitType),
       default: UnitType.PCS,
+    },
+    status: {
+      type: String,
+      enum: Object.values(StatusType),
+      default: StatusType.PENDING,
     },
     categoryId: {
       type: Schema.Types.ObjectId,
@@ -75,7 +95,8 @@ const groceryListItemSchema: Schema<IGroceryListItem> = new Schema(
     timestamps: true,
   }
 );
-
+groceryListItemSchema.index({ barcode: 1 });
+groceryListItemSchema.index({ householdId: 1, categoryId: 1 });
 // Export the model
 const GroceryListItem: Model<IGroceryListItem> = mongoose.model<IGroceryListItem>(
   "GroceryListItem",

@@ -1,17 +1,20 @@
-import mongoose, { Document, Schema, Model, Types } from "mongoose";
+import mongoose, { Document, Schema, Model } from "mongoose";
+import { UnitType, type UnitTypeValue } from "./GroceryListItem";
 
 
 export interface IPantryItem extends Document {
 
-  householdId?: Types.ObjectId | null;
+  householdId?: Schema.Types.ObjectId | null;
   itemName: string;
   quantity: number;
-  categoryId: Types.ObjectId;
+  unit: UnitTypeValue;
+  categoryId: Schema.Types.ObjectId;
   barcode?: string;
-  addedBy: Types.ObjectId;
+  addedBy: Schema.Types.ObjectId;
   purchaseDate?: Date;
   expirationDate?: Date;
   notes?: string;
+  purchasedBy: Schema.Types.ObjectId;
   isAvailable?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
@@ -33,12 +36,17 @@ const pantryItemSchema: Schema<IPantryItem> = new Schema({
     required: true,
     default: 1
   },
+  unit: {
+    type: String,
+    enum: Object.values(UnitType),
+    default: UnitType.PCS
+  },
   categoryId: {
     type: Schema.Types.ObjectId,
-    ref:"Categories"
+    ref: "Categories"
   },
   barcode: {
-    type: String,
+    type: Schema.Types.ObjectId,
     ref: "Barcode",
     default: null
 
@@ -51,6 +59,11 @@ const pantryItemSchema: Schema<IPantryItem> = new Schema({
   purchaseDate: {
     type: Date,
 
+  },
+  purchasedBy: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    default: null
   },
   expirationDate: {
     type: Date,

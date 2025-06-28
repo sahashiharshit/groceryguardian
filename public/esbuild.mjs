@@ -1,10 +1,28 @@
 // public/esbuild.mjs
-import * as esbuild from 'esbuild';
+import * as esbuild from "esbuild";
 import fs from "fs";
 import path from "path";
-
+import { WebSocketServer } from "ws";
 
 const isWatch = process.argv.includes("--watch");
+
+const LIVE_RELOAD_PORT = 35729;
+let reloadServer;
+
+if (isWatch) {
+  reloadServer = new WebSocketServer({port:LIVE_RELOAD_PORT});
+  console.log(
+    `🔌 Live reload server running on ws://localhost:${LIVE_RELOAD_PORT}`
+  );
+}
+const broadcastReload = () => {
+  console.log("🔁 Broadcasting reload to clients");
+  reloadServer?.clients.forEach((client) => {
+    if (client.readyState === 1) {
+      client.send("reload");
+    }
+  });
+};
 
 // 🍱 Copy static assets
 const copyStaticAssets = () => {
@@ -32,12 +50,14 @@ const copyStaticAssets = () => {
     }
   });
 };
-
+// 🌐 Start esbuild context
 const context = await esbuild.context({
-  entryPoints: [
-    "src/ts/app.ts",
-    "src/ts/dashboard/app.ts",    
-  ],
+  entryPoints: ["src/ts/hmr.ts"],
+  ignoreAnnotations:true,
+  supported:{
+    "import-meta":true,
+    "dynamic-import":true,
+  },
   bundle: true,
   outdir: "dist/js",
   platform: "browser",
@@ -52,28 +72,37 @@ const context = await esbuild.context({
  
 });
 
-console.log("✅ Initial build complete");
-copyStaticAssets();
 
+copyStaticAssets();
+console.log("✅ Initial build complete");
 // 🚀 Launch live-server in watch mode
 if (isWatch) {
-  await context.watch();
-
-  console.log('👀 Watching for changes...');
-
-  // Copy static assets on rebuild too
-  context.rebuild = async () => {
-    await context.rebuild();
-    copyStaticAssets();
-  };
-
-  // Start dev server
+   // Start dev server
   const server = await context.serve({
-    servedir: 'dist',
+    servedir: "dist",
     port: 3000,
   });
-
   console.log(`🚀 Running at http://localhost:${server.port}`);
+
+ 
+
+  // You can optionally watch your static files separately
+  fs.watch("src", { recursive: true }, async(eventType, filename) => {
+  if(!filename) return;
+  console.log(`📝 Change detected in: ${filename}`);
+  
+  try {
+    await context.rebuild();
+    copyStaticAssets();
+    broadcastReload();
+    
+  } catch (error) {
+    console.error("Rebuild error:", error)
+  }
+  
+  });
+
+ 
 } else {
   await context.rebuild();
   await context.dispose();

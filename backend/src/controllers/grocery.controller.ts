@@ -18,7 +18,7 @@ type AddGroceryRequestBody = {
 export const addGroceries = async (req: Request<{}, {}, AddGroceryRequestBody>, res: Response): Promise<void> => {
   const userId = req.user?.id;
   const { items } = req.body;
-  console.log(items);
+  
   if (!items || !Array.isArray(items) || items.length === 0) {
     res.status(400).json({ message: "No items provided" });
     return
@@ -50,9 +50,8 @@ export const getGrocerieslist = async (req: Request, res: Response): Promise<voi
   const filter = user.household
     ? { householdId: user.household } // Group groceries
     : { addedBy: user._id, householdId: null }; // Solo 
-  console.log(filter);
   const groceries = await GroceryListItem.find(filter).lean();
-  console.log(groceries);
+  
   res.status(200).json({ groceries });
 };
 
@@ -70,7 +69,7 @@ export const deleteGroceryItem = async (req: Request, res: Response): Promise<vo
     return
   }
   const id = req.params?.itemId;
-  console.log(id);
+  
   if (!id) {
     res.status(400).json({ error: "No id available" });
     return

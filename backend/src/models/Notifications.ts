@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, Types, Model } from "mongoose";
+import mongoose, { Schema, Document, Model } from "mongoose";
 
 // Interface for the 'type' object
 interface INotificationType {
@@ -8,8 +8,8 @@ interface INotificationType {
 
 // Main Notification interface
 export interface INotification extends Document {
-  userId: Types.ObjectId;
-  householdId: Types.ObjectId;
+  userId: Schema.Types.ObjectId;
+  householdId: Schema.Types.ObjectId;
   type: INotificationType;
   message: string;
   isRead: boolean;

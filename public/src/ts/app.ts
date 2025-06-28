@@ -1,5 +1,11 @@
 import { initAuth } from "./authHandler";
 import { renderDashboardLayout } from "./dashboard/app";
+
+
+let cleanupCallbacks: (() => void)[] = [];
+
+
+
 function loadCSS(href: string) {
   document.querySelectorAll("link[data-dynamic]").forEach(el => el.remove());
 
@@ -14,11 +20,11 @@ function loadCSS(href: string) {
 
 function renderLanding(): void {
   const app = document.getElementById("app");
-  if(!app) return;
+  if (!app) return;
   document.body.className = "landing";
   loadCSS("./css/landing.css");
   app.innerHTML = `
-<div class="start-page">
+    <div class="start-page">
       <div class="overlay">
         <div class="content-wrapper">
           <div class="content">
@@ -44,17 +50,18 @@ function renderLanding(): void {
 
   const getStartedBtn = document.getElementById('getStartedBtn') as HTMLElement;
   if (getStartedBtn) {
-    getStartedBtn.addEventListener('click', () => {
-      renderAuth();
-    });
+    const handler = ()=>renderAuth();
+    
+    getStartedBtn.addEventListener('click',handler ); 
+    cleanupCallbacks.push(()=>getStartedBtn.removeEventListener("click",handler));
   }
 
 
 }
 
 export function renderAuth(): void {
- const app = document.getElementById("app");
-  if(!app) return;
+  const app = document.getElementById("app");
+  if (!app) return;
   document.body.className = "auth";
   loadCSS("./css/auth.css");
   app.innerHTML = `<div class="container">
@@ -97,20 +104,25 @@ export function renderAuth(): void {
       </div>
     </div>`;
 
-  initAuth(()=>{
+  initAuth(() => {
+    (window as any).hmrLoad?.("./dashboard/app.ts");
     renderDashboardLayout();
   });
 }
 
-
-
-document.addEventListener('DOMContentLoaded', ()=>{
-
-const token =localStorage.getItem('accesstoken');
-if(!token){
-renderLanding()
-}else
-{
-renderDashboardLayout();
+export function init(){
+  const token = localStorage.getItem("accesstoken");
+ token ? (window as any).hmrLoad?.("./dashboard/app.js") : renderLanding();
 }
-});
+export function dispose(){
+ console.log("♻️ Disposing app before hot reload");
+ 
+ const app = document.getElementById("app");
+ if(app) app.innerHTML ="";
+
+  cleanupCallbacks.forEach(fn=>fn());
+  cleanupCallbacks=[];
+  
+  document.querySelectorAll("link[data-dynamic]").forEach(el=>el.remove());
+}
+

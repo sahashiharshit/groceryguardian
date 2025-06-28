@@ -1,17 +1,19 @@
 
 
 import { renderAuth } from '../app.js';
-import {handleRouting} from './router.js';
+import { handleRouting } from './router.js';
 import { loadCSS } from './utils/LoadCSS.js';
 
-const token = localStorage.getItem("accesstoken");
-if(!token){
 
-renderAuth();
-
-}else{
-renderDashboardLayout();
+declare global {
+  interface Window {
+    _routingSetupDone?: boolean;
+  }
 }
+
+
+let hasRenderedDashboard = false;
+let cleanupFns:(()=>void)[]=[];
 
 
 const sidebarHTML = `
@@ -29,23 +31,30 @@ const sidebarHTML = `
     </nav>
     <button id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
   </aside>`;
-  
+
 function setupLogoutButton(): void {
   const logoutBtn = document.getElementById('logoutBtn');
-  logoutBtn?.addEventListener('click', () => {
-    localStorage.removeItem('accesstoken');
+  const handler = ()=>{
+   localStorage.removeItem('accesstoken');
     localStorage.removeItem('username');
+    window._routingSetupDone = false;
+    hasRenderedDashboard = false;
     renderAuth();
-  });
+  
+  }
+  logoutBtn?.addEventListener('click',handler);
+  cleanupFns.push(()=>logoutBtn?.removeEventListener("click",handler));
 }
 
-export function renderDashboardLayout():void{
- 
-  
-const app = document.getElementById("app");
-if(!app) return;
 
-app.innerHTML =`<div class="dashboard">
+export function renderDashboardLayout(): void {
+
+  if (hasRenderedDashboard) return;
+  hasRenderedDashboard = true;
+  const app = document.getElementById("app");
+  if (!app) return;
+
+  app.innerHTML = `<div class="dashboard">
      ${sidebarHTML}
       <main class="main-content">
         <header class="topbar">
@@ -57,12 +66,35 @@ app.innerHTML =`<div class="dashboard">
         </section>
       </main>
     </div>`;
-    
-    setupLogoutButton();
-     loadCSS("../css/dashboard.css");
-    window.addEventListener("hashchange",handleRouting);
-    window.addEventListener("DOMContentLoaded",handleRouting);
-    handleRouting();
-    
-   
+
+  setupLogoutButton();
+  loadCSS("../css/dashboard.css");
+  
+  if (!window._routingSetupDone) {
+    window.addEventListener("hashchange", handleRouting);
+    window.addEventListener("DOMContentLoaded", handleRouting);
+    cleanupFns.push(()=>{
+      window.removeEventListener("hashchange",handleRouting);
+      window.removeEventListener("DOMContentLoaded",handleRouting);
+    });
+    window._routingSetupDone = true;
+  }
+
+  handleRouting();
+
+
+}
+
+export function init(){
+const token = localStorage.getItem("accesstoken");
+token?renderDashboardLayout():renderAuth();
+}
+
+export function dispose(){
+  const app = document.getElementById("app");
+  if(app) app.innerHTML="";
+  cleanupFns.forEach((fn)=>fn());
+  cleanupFns=[];
+  hasRenderedDashboard=false;
+  window._routingSetupDone=false;
 }

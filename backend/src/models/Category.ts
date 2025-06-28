@@ -9,7 +9,6 @@ updatedAt:Date;
 }
 
 const categorySchema: Schema<ICategory> = new Schema({
-
 name:{
 type:String,
 unique:true

@@ -4,17 +4,17 @@ import { apiFetch } from "../../../services/api.js";
 import { AddGroceryItems } from "../../views/addGrocery.js";
 import { FormBuilder } from "../FormBuilder.js";
 
-export async function GroceryForm(onSubmit:(item:AddGroceryItems)=>void):Promise<HTMLElement>{
- const wrapper = document.createElement("div");
+export async function GroceryForm(onSubmit: (item: AddGroceryItems) => void): Promise<HTMLElement> {
+  const wrapper = document.createElement("div");
   wrapper.classList.add("grocery-form-wrapper");
-  
+
   const categoryOptions = await fetchCategories();
-  
-   const form = FormBuilder<AddGroceryItems>({
+
+  const form = FormBuilder<AddGroceryItems>({
     id: "grocery-form",
     submitLabel: "Add Item",
     fields: [
-    {
+      {
         name: "category",
         label: "Category",
         type: "select",
@@ -41,7 +41,7 @@ export async function GroceryForm(onSubmit:(item:AddGroceryItems)=>void):Promise
           { value: "ml", label: "Mili Liters" },
           { value: "packs", label: "Packs" },
           { value: "other", label: "Not Sure" },
-          {value:"dozen",label:"Dozen"},
+          { value: "dozen", label: "Dozen" },
         ],
       },
       {
@@ -51,22 +51,24 @@ export async function GroceryForm(onSubmit:(item:AddGroceryItems)=>void):Promise
         placeholder: "Leave note if any...",
       },
     ],
-    onSubmit: (data:AddGroceryItems) => {
-      console.log("Form Data:", data);
-     onSubmit(data);
+    onSubmit: (data: AddGroceryItems) => {
+  
+      onSubmit(data);
+      form.reset();
     },
   });
-
-    wrapper.appendChild(form);
-    return wrapper;
+  
+  wrapper.appendChild(form);
+  
+  return wrapper;
 }
-export async function fetchCategories():Promise<{value:string;label:string}[]> {
+export async function fetchCategories(): Promise<{ value: string; label: string }[]> {
   try {
-    const data = await apiFetch<{_id:string;name:string}[]>("/api/grocery/getcategories");
-   
-    return data.map((cat)=>({
-      value:cat.name,
-      label:cat.name,
+    const data = await apiFetch<{ _id: string; name: string }[]>("/api/grocery/getcategories");
+
+    return data.map((cat) => ({
+      value: cat.name,
+      label: cat.name,
     }));
   } catch (error) {
     console.error("Failed to fetch categories", error);

@@ -1,4 +1,4 @@
-type RouteHandler =()=>void;
+type RouteHandler = () => void;
 
 
 const routes: Record<string, RouteHandler> = {
@@ -9,7 +9,7 @@ const routes: Record<string, RouteHandler> = {
     group: () => importView('group'),
     invite: () => importView('invite'),
     addGrocery: () => importView('addGrocery'),
-    scanView:()=>importView('scanView'),
+    scanView: () => importView('scanView'),
 };
 
 /**
@@ -17,7 +17,7 @@ const routes: Record<string, RouteHandler> = {
  * @param viewName - Name of the view to load
  */
 
-export function importView(viewName: string):void {
+export function importView(viewName: string): void {
     const view = document.getElementById("view");
     if (!view) {
         console.warn("Dashboard layout not initialized yet.");
@@ -31,7 +31,7 @@ export function importView(viewName: string):void {
                 module.render();
 
             } else {
-             view.innerHTML = `<h2>Error loading view ${viewName}</h2>`;
+                view.innerHTML = `<h2>Error loading view ${viewName}</h2>`;
             }
         }).catch(error => {
             console.error(`Error loading view ${viewName}:`, error);
@@ -40,18 +40,19 @@ export function importView(viewName: string):void {
 
 }
 
-export function handleRouting():void {
+let lastHash = "";
+export function handleRouting(): void {
 
     const hash = window.location.hash.replace('#', '') || 'groceries';
+    if (hash === lastHash) return;
+    lastHash = hash;
     const route = routes[hash];
     if (route) {
         route();
     } else {
         const view = document.getElementById("view");
-    if (view) {
-      view.innerHTML = `<h2>Page not found</h2>`;
-    } else {
-      console.warn("Dashboard layout not ready for routing.");
-    }
+        if (view) {
+            view.innerHTML = `<h2>Page not found</h2>`;
+        }
     }
 }
