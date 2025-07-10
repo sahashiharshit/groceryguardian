@@ -3,7 +3,7 @@ import { getAccessToken } from "./tokenservice";
 export const API_BASE = "http://localhost:5000";
 
 type RequestOptions ={
-  method?: "GET" | "POST" | "PUT" | "DELETE";
+  method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
   body?: any;
   
 }

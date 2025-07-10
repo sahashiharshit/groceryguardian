@@ -1,0 +1,324 @@
+/* === Layout === */
+.group-layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  padding: 2rem;
+  margin: 2rem auto;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  animation: fadeInUp 0.4s ease-out;
+}
+
+.group-left,
+.group-right {
+  flex: 1 1 45%;
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+}
+
+/* === Headings & Text === */
+.group-layout h2 {
+  color: #333;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-size: 1.6rem;
+}
+
+.group-left h2 {
+  margin-bottom: 0.5rem;
+}
+
+.group-layout p {
+  font-size: 1.05rem;
+  color: #555;
+  margin-bottom: 1.2rem;
+  text-align: center;
+}
+
+.group-left ul {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 0.5rem;
+}
+
+.group-left li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0.3rem 0;
+  padding: 0.5rem 0.75rem;
+  background: #f9f9f9;
+  border-radius: 6px;
+  color: #0056b3;
+  font-size: 0.95rem;
+}
+.remove-member-btn {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.7rem;
+  background-color: crimson;
+  color: white;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.remove-member-btn:hover {
+  background-color: rgb(196, 5, 43);
+}
+/* === Button Styles === */
+.add-group-btn,
+.cancel-button,
+.accept-btn,
+.reject-btn {
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  display: block;
+  margin: 0 auto;
+  transition: background-color 0.3s ease;
+}
+
+.add-group-btn {
+  background: #007bff;
+  color: white;
+}
+
+.add-group-btn:hover {
+  background-color: #0056b3;
+}
+
+.cancel-button {
+  background: #f33c24;
+  color: white;
+}
+
+.cancel-button:hover {
+  background: #d6280c;
+}
+
+.accept-btn {
+  background-color: #16a34a;
+  color: white;
+}
+
+.accept-btn:hover {
+  background-color: #15803d;
+}
+
+.reject-btn {
+  background-color: #dc2626;
+  color: white;
+}
+
+.reject-btn:hover {
+  background-color: #b91c1c;
+}
+
+/* === Forms === */
+.group-right .form-container {
+  margin-top: 1rem;
+}
+
+.group-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+}
+
+.group-form-grid .form-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-field input {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 0.6rem 0.8rem;
+  font-size: 1rem;
+  background-color: #fdfdfd;
+  transition: border 0.2s ease-in-out;
+}
+
+.form-field input:focus {
+  border-color: #0077cc;
+  outline: none;
+}
+
+.form-field label {
+  margin-bottom: 0.3rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.form-submit {
+  margin-top: 1rem;
+  grid-column: span 2;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  background-color: #10b981;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.form-submit:hover {
+  background-color: #059669;
+}
+
+/* === Search Result === */
+#search-result {
+  margin-top: 1.5rem;
+  padding: 1.2rem 1.5rem;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #f9fafb;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  font-size: 1rem;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+#search-result p {
+  margin-bottom: 1rem;
+  color: #333;
+  line-height: 1.5;
+}
+
+#search-result p strong {
+  font-size: 1.1rem;
+  color: #111827;
+}
+
+#search-result p[style*="color:red"] {
+  color: #dc2626;
+  font-weight: bold;
+}
+
+#search-result-buttons {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+#search-result-buttons button {
+  flex: 1;
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+#search-result .send-invite {
+  background-color: #10b981;
+  color: white;
+}
+
+#search-result .send-invite:hover {
+  background-color: #059669;
+}
+
+#search-result .cancel-button {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+#search-result .cancel-button:hover {
+  background-color: #d1d5db;
+}
+
+/* === Invitations === */
+.invitation-box {
+  background: #fffbe6;
+  border: 2px solid #facc15;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 2rem 0;
+  box-shadow: 0 4px 12px rgba(250, 202, 21, 0.15);
+}
+
+.invitation-box h3 {
+  font-size: 1.3rem;
+  color: #92400e;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.invitation-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  animation: fadeIn 0.3s ease-in-out;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04);
+}
+
+.invitation-card p {
+  margin: 0.25rem 0;
+  color: #374151;
+}
+
+.invite-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+/* === Animations === */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+  .group-layout {
+    flex-direction: column;
+    padding: 1rem;
+  }
+
+  .group-left,
+  .group-right {
+    flex: 1 1 100%;
+  }
+
+  .group-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-submit {
+    grid-column: span 1;
+  }
+
+  .add-group-btn {
+    width: 100%;
+  }
+}

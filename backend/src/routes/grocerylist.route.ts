@@ -13,4 +13,6 @@ router.put('/grocery-list/:itemId',groceryController.updateGroceriesList);
 router.delete('/grocery-list/:itemId',authenticationMiddleware,groceryController.deleteGroceryItem);
 router.post('/movetoinventory/:itemId',authenticationMiddleware,groceryController.moveToPantry);
 router.get('/getcategories',authenticationMiddleware,groceryController.getCategories);
+router.get('/barcode/:barcode',authenticationMiddleware,groceryController.getBarcodeInfo);
+
 export default router;

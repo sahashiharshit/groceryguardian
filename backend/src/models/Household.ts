@@ -1,11 +1,12 @@
-import mongoose,{Schema,Document,Model, Types} from "mongoose";
+import mongoose,{Schema,Document,Model} from "mongoose";
+import type { ObjectId } from "../types/mongo";
 
-export const ROLES =["owner","admin","member"] as const;
+export const ROLES =["owner","member"] as const;
 export type Role = typeof ROLES[number];
 
 interface IHouseholdMember{
 
-userId:Types.ObjectId;
+userId:ObjectId;
 role:Role;
 }
 export interface IHousehold extends Document{
@@ -28,6 +29,7 @@ const householdSchema:Schema<IHousehold> = new Schema({
       },
       role: {
         type: String,
+        enum:ROLES,
         default: "owner",
       },
     },
@@ -36,5 +38,6 @@ const householdSchema:Schema<IHousehold> = new Schema({
 },
 {timestamps:true}
 );
+householdSchema.index({ "members.userId": 1 });
 const Household: Model<IHousehold> = mongoose.model<IHousehold>("Household", householdSchema);
 export default Household;

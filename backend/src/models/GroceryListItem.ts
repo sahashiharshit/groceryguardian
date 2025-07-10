@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
+import type { ObjectId } from "../types/mongo";
 
 
 export const UnitType = {
@@ -26,16 +27,16 @@ export type UnitTypeValue = typeof UnitType[UnitTypeKey];
 
 // TS Interface for a Grocery List Item
 export interface IGroceryListItem extends Document {
-  householdId?: Schema.Types.ObjectId | null;
+  householdId?: ObjectId | null;
   itemName: string;
   quantity: number;
-  barcode?: Schema.Types.ObjectId | null;
+  barcode?: ObjectId | null;
   unit: UnitTypeValue;
   status: StatusTypeValue;
-  categoryId: Schema.Types.ObjectId;
-  addedBy: Schema.Types.ObjectId;
+  categoryId: ObjectId;
+  addedBy: ObjectId;
   notes?: string | null;
-  purchasedAt?: Date | null;
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -86,10 +87,7 @@ const groceryListItemSchema: Schema<IGroceryListItem> = new Schema(
       type: String,
       default: null,
     },
-    purchasedAt: {
-      type: Date,
-      default: null,
-    },
+    
   },
   {
     timestamps: true,

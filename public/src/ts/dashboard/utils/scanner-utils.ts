@@ -3,10 +3,10 @@ import * as mobilenetModule from '@tensorflow-models/mobilenet';
 import * as tf from '@tensorflow/tfjs';
 import { BarcodeFormat,DecodeHintType } from "@zxing/library";
 
-export async function scanBarcodeAndMatch(barcode: object): Promise<boolean> {
+export async function scanBarcodeAndReturn(): Promise<string | null> {
 if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
   alert("Your browser does not support camera access.");
-  
+  return null;
 }
     const codeReader = new BrowserMultiFormatReader();
     const formats = [BarcodeFormat.CODE_128,BarcodeFormat.EAN_13,BarcodeFormat.UPC_A];
@@ -16,24 +16,16 @@ if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         let controls: any;
         const modal = createScannerModal(video, () => {
             if (controls) controls.stop();
-            resolve(false);
+            resolve(null);
 
         })
         document.body.appendChild(modal);
         controls = await codeReader.decodeFromVideoDevice(undefined, video, (result, err) => {
             if (result) {
                 const scannedCode = result.getText();
-                
-                if (scannedCode === barcode) {
-                    controls.stop()
-                    modal.remove();
-                    resolve(true);
-                } else {
-                    alert(`❌ Scanned barcode does not match expected item.`);
-                    controls.stop();
-                    modal.remove();
-                    resolve(false);
-                }
+                controls.stop();
+                modal.remove();
+                resolve(scannedCode);
             }
 
         });

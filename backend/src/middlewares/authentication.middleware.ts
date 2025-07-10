@@ -2,12 +2,13 @@
 import type { Request, Response, NextFunction } from 'express';
 import type { UserPayload } from '../types/userPayload.js';
 import jwt from 'jsonwebtoken';
+import User from '../models/User.js';
 interface AuthenticatedRequest extends Request{
 
     user?:UserPayload;
 }
 
-export const authenticationMiddleware = (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
+export const authenticationMiddleware =async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
 
     const authHeader = req.headers['authorization'];
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -30,7 +31,9 @@ export const authenticationMiddleware = (req: AuthenticatedRequest, res: Respons
 
     try {
         const decoded = jwt.verify(token, secretKey) as UserPayload;
-
+        const user = await User.findById(decoded.id);
+        const householdId = user?.householdId??null;
+        decoded.householdId = householdId; 
         req.user = decoded; // Attach user info to request object
         next(); // Proceed to the next middleware or route handler
     } catch (error) {

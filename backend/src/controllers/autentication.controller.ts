@@ -47,9 +47,14 @@ export const login = async (req: Request<{}, {}, LoginRequestBody>, res: Respons
   });
   res.status(200).json({
     message: "Login successful",
-    user: {
-      id: user._id,
-
+    user:{
+    id:user._id,
+    name:user.name,
+    email:user.email,
+    householdId:user.householdId,
+    mobileNo:user.mobileNo,
+    createdAt:user.createdAt,
+    
     },
     accessToken
   });
@@ -82,6 +87,12 @@ export const register = async (req: Request<{}, {}, RegisterRequestBody>, res: R
     message: "Signup successful",
     user: {
       id: user._id,
+      name:user.name,
+    email:user.email,
+    householdId:user.householdId,
+    mobileNo:user.mobileNo,
+    createdAt:user.createdAt,
+    
     },
     accessToken
   });

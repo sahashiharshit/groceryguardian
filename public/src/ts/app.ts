@@ -1,9 +1,22 @@
-import { initAuth } from "./authHandler";
+
 import { renderDashboardLayout } from "./dashboard/app";
+import { apiFetch } from "./services/api";
 
 
 let cleanupCallbacks: (() => void)[] = [];
+type AuthResponse = {
 
+  accessToken: string;
+  user: {
+    _id: string;
+    name: string;
+    email: string;
+    household?: string | null;
+    mobileNo?:string | null;
+    createdAt:string;
+    // add other fields if needed
+  };
+}
 
 
 function loadCSS(href: string) {
@@ -50,20 +63,21 @@ function renderLanding(): void {
 
   const getStartedBtn = document.getElementById('getStartedBtn') as HTMLElement;
   if (getStartedBtn) {
-    const handler = ()=>renderAuth();
-    
-    getStartedBtn.addEventListener('click',handler ); 
-    cleanupCallbacks.push(()=>getStartedBtn.removeEventListener("click",handler));
+    const handler = () => renderAuth();
+
+    getStartedBtn.addEventListener('click', handler);
+    cleanupCallbacks.push(() => getStartedBtn.removeEventListener("click", handler));
   }
 
 
 }
 
-export function renderAuth(): void {
+export function renderAuth(runInitAuth = true): void {
   const app = document.getElementById("app");
   if (!app) return;
   document.body.className = "auth";
   loadCSS("./css/auth.css");
+
   app.innerHTML = `<div class="container">
       <div class="left">
         <div class="mobile-menu-icon">
@@ -82,7 +96,7 @@ export function renderAuth(): void {
       <div class="right">
         <img src="./assets/logo.png" alt="Logo" class="logo">
         <div class="forms-wrapper">
-          <form id="login-form" class="form active">
+          <form id="login-form" class="form active" method="POST">
             <h2>Welcome back again!</h2>
             <input type="email" name="loginemail" id="loginemail" required placeholder="Email">
             <input type="password" name="loginpassword" id="loginpassword" required placeholder="Password">
@@ -92,7 +106,7 @@ export function renderAuth(): void {
             </div>
           </form>
 
-          <form id="signup-form" class="form">
+          <form id="signup-form" class="form" method="POST">
             <h2>Start managing your grocery!...</h2>
             <input type="text" placeholder="Full Name" id="username" name="username" required>
             <input type="email" placeholder="Email" id="signupemail" name="signupemail" required>
@@ -104,25 +118,132 @@ export function renderAuth(): void {
       </div>
     </div>`;
 
-  initAuth(() => {
-    (window as any).hmrLoad?.("./dashboard/app.ts");
-    renderDashboardLayout();
-  });
+  if (runInitAuth) {
+    initAuth(() => {
+      console.log("🔥 Auth success: loading dashboard");
+      (window as any).hmrLoad?.("./dashboard/app.js");
+      setTimeout(() => {
+        const interval = setInterval(async () => {
+          const app = document.getElementById("app");
+          if (app) {
+            clearInterval(interval);
+            if (!window.location.hash) {
+              window.location.hash = "#groceries";
+            } else {
+              const { handleRouting } = await import("./dashboard/router.js");
+              handleRouting();
+            }
+            renderDashboardLayout(); // Now everything is ready!
+          }
+        }, 50);
+      }, 0);
+    });
+  }
 }
 
-export function init(){
+export function init() {
   const token = localStorage.getItem("accesstoken");
- token ? (window as any).hmrLoad?.("./dashboard/app.js") : renderLanding();
+  token ? (window as any).hmrLoad?.("./dashboard/app.js") : renderLanding();
 }
-export function dispose(){
- console.log("♻️ Disposing app before hot reload");
- 
- const app = document.getElementById("app");
- if(app) app.innerHTML ="";
+export function dispose() {
+  console.log("♻️ Disposing app before hot reload");
 
-  cleanupCallbacks.forEach(fn=>fn());
-  cleanupCallbacks=[];
-  
-  document.querySelectorAll("link[data-dynamic]").forEach(el=>el.remove());
+  const app = document.getElementById("app");
+  if (app) app.innerHTML = "";
+
+  cleanupCallbacks.forEach(fn => fn());
+  cleanupCallbacks = [];
+
+  document.querySelectorAll("link[data-dynamic]").forEach(el => el.remove());
 }
 
+export function initAuth(onAuthSuccess: () => void): void {
+
+  const loginform = document.getElementById("login-form") as HTMLFormElement | null;
+  const signupform = document.getElementById("signup-form") as HTMLFormElement | null;
+
+  if (loginform) {
+
+    loginform.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const email = (document.getElementById("loginemail") as HTMLInputElement).value;
+      const password = (document.getElementById("loginpassword") as HTMLInputElement).value;
+
+      try {
+        const data = await apiFetch<AuthResponse>("/api/auth/login", {
+          method: "POST",
+          body: { email, password },
+        });
+        localStorage.setItem("accesstoken", data.accessToken);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        document.body.className = "";
+        onAuthSuccess();
+        window.history.replaceState({}, "", window.location.pathname);
+      } catch (error: any) {
+        alert("Login failed. Please try again.");
+        console.error(error);
+      }
+    });
+  }
+
+  if (signupform) {
+    signupform.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const name = (document.getElementById("username") as HTMLInputElement).value;
+      const email = (document.getElementById("signupemail") as HTMLInputElement).value;
+      const mobileNo = (document.getElementById("mobileno") as HTMLInputElement).value;
+      const password = (document.getElementById("signuppassword") as HTMLInputElement).value;
+
+      try {
+        const data = await apiFetch<AuthResponse>("/api/auth/register", {
+          method: "POST",
+          body: { name, email, mobileNo, password },
+        });
+        localStorage.setItem("accesstoken", data.accessToken);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        document.body.className = "";
+        onAuthSuccess();
+        window.history.replaceState({}, "", window.location.pathname);
+      } catch (error: any) {
+        console.error("Error:", error);
+        alert("Signup failed. Please try again.");
+      }
+    });
+
+  }
+  const loginBtn = document.getElementById("loginBtn") as HTMLButtonElement;
+  const signupBtn = document.getElementById("signupBtn") as HTMLButtonElement;
+  if (loginBtn && signupBtn) {
+    loginBtn.addEventListener("click", () => {
+      loginform?.classList.add("active");
+      signupform?.classList.remove("active");
+      loginBtn.classList.add("active");
+      signupBtn.classList.remove("active");
+
+    });
+
+  }
+
+
+
+  signupBtn.addEventListener("click", () => {
+    signupform?.classList.add("active");
+    loginform?.classList.remove("active");
+    signupBtn.classList.add("active");
+    loginBtn.classList.remove("active");
+
+  });
+
+  // Mobile drawer toggle
+  document.querySelector(".mobile-menu-icon span")?.addEventListener("click", () => {
+    document.querySelector(".mobile-drawer")?.classList.toggle("show");
+  });
+
+  document.querySelector(".drawer-login")?.addEventListener("click", () => loginBtn?.click());
+  document.querySelector(".drawer-signup")?.addEventListener("click", () => signupBtn?.click());
+
+
+
+}

@@ -1,25 +1,27 @@
 
-import mongoose, { Model, Schema, Document, Types } from "mongoose";
+import mongoose, { Model, Schema, Document } from "mongoose";
+import type { ObjectId } from "../types/mongo";
 export interface IBarcode extends Document {
-    barcode: string;
-    name: string;
-    categoryId?: Types.ObjectId;
+    code: string;
+    itemName: string;
+    categoryId?: ObjectId | {_id:ObjectId;name:string};
+    unit: string;
+    defaultQuantity: number;
     createdAt: Date;
     updatedAt: Date;
 }
 
 const barcodeSchema: Schema<IBarcode> = new Schema({
-    barcode: {
+    code: {
         type: String,
         required: true,
         unique: true
     },
-    name: {
-        type: String,
-        required: true
-    },
+    itemName: { type: String, required: true },
+    unit: { type: String, required: true },
+    defaultQuantity: { type: Number, default: 1 },
     categoryId: {
-        type: Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: "Categories"
     },
 },

@@ -7,9 +7,7 @@ const routes: Record<string, RouteHandler> = {
     inventory: () => importView('inventory'),
     settings: () => importView('settings'),
     group: () => importView('group'),
-    invite: () => importView('invite'),
-    addGrocery: () => importView('addGrocery'),
-    scanView: () => importView('scanView'),
+  
 };
 
 /**
@@ -42,8 +40,13 @@ export function importView(viewName: string): void {
 
 let lastHash = "";
 export function handleRouting(): void {
-
+    const token = localStorage.getItem("accesstoken");
+  if (!token) {
+    console.warn("🔐 No token, aborting route");
+    return;
+  }
     const hash = window.location.hash.replace('#', '') || 'groceries';
+    console.log("Routing to:", hash);
     if (hash === lastHash) return;
     lastHash = hash;
     const route = routes[hash];

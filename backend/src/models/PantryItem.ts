@@ -1,20 +1,20 @@
 import mongoose, { Document, Schema, Model } from "mongoose";
 import { UnitType, type UnitTypeValue } from "./GroceryListItem";
+import type { ObjectId } from "../types/mongo";
 
 
 export interface IPantryItem extends Document {
 
-  householdId?: Schema.Types.ObjectId | null;
+  householdId?: ObjectId | null;
   itemName: string;
   quantity: number;
   unit: UnitTypeValue;
-  categoryId: Schema.Types.ObjectId;
+  categoryId: ObjectId;
   barcode?: string;
-  addedBy: Schema.Types.ObjectId;
+  addedBy: ObjectId;
   purchaseDate?: Date;
   expirationDate?: Date;
-  notes?: string;
-  purchasedBy: Schema.Types.ObjectId;
+  purchasedBy: ObjectId;
   isAvailable?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
@@ -68,10 +68,6 @@ const pantryItemSchema: Schema<IPantryItem> = new Schema({
   expirationDate: {
     type: Date,
 
-  },
-  notes: {
-    type: String,
-    default: ""
   },
   isAvailable: {
     type: Boolean,

@@ -37,7 +37,7 @@ export const createGroup = async (req:Request, res:Response):Promise<void> => {
   res.status(404).json({ message: "User not found" });
   return;
   } 
-  if (user.household) {
+  if (user.householdId) {
      res.status(400).json({ message: "User belongs to a household" });
      return;
   }
@@ -47,7 +47,7 @@ export const createGroup = async (req:Request, res:Response):Promise<void> => {
     members: [{ userId: userId, role: "owner" }],
   });
   await newGroup.save();
-  user.household = newGroup._id as Types.ObjectId;
+  user.householdId = newGroup._id as Types.ObjectId;
   await user.save();
 
   res.status(200).json({ message: "New Group Created", group: newGroup });
@@ -65,11 +65,11 @@ export const getGroupUsersList = async (req:Request, res:Response):Promise<void>
     },
   
   });
-   if (!user || !user.household) {
+   if (!user || !user.householdId) {
      res.status(404).json({ message: "No household found" });
      return;
   }
-  res.status(200).json({household: user?.household });
+  res.status(200).json({household: user?.householdId });
   return;
 };
 

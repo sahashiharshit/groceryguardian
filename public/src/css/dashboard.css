@@ -78,9 +78,8 @@ body {
  padding: 2rem 1rem;
   overflow-y: auto;
   flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  /* ✅ fix layout conflict */
+  display: block;
   background-color: #f3f4f6;
 }
 

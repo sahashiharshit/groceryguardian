@@ -1,7 +1,9 @@
 
-import type {Types} from "mongoose";
+
+import type { ObjectId } from "./mongo";
 
 export type UserPayload = {
-id:Types.ObjectId | string;
+id:ObjectId | string;
+householdId: ObjectId | null;
 
 }

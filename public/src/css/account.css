@@ -1,0 +1,68 @@
+.account-wrapper{
+
+ max-width: 700px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  animation: fadeInUp 0.4s ease-out;
+  font-family: system-ui, sans-serif;
+}
+
+.account-wrapper h2{
+ font-size: 1.8rem;
+  color: #333;
+  text-align: center;
+  margin-bottom: 1.5rem;
+
+}
+.account-wrapper p{
+ font-size: 1.05rem;
+  color: #444;
+  margin-bottom: 0.8rem;
+}
+.account-actions{
+ display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 2rem;
+  justify-content: center;
+
+}
+.account-btn{
+ padding: 0.75rem 1.25rem;
+  background-color: #2563eb;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  min-width: 160px;
+  text-align: center;
+}
+.account-btn:hover {
+  background-color: #1e40af;
+}
+
+/* Danger buttons (leave group, delete account) */
+.account-btn.danger {
+  background-color: #dc2626;
+}
+
+.account-btn.danger:hover {
+  background-color: #b91c1c;
+}
+/* Simple fade-in animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

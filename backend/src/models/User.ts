@@ -1,13 +1,14 @@
 
 import mongoose, { Schema, Document, Model } from "mongoose";
 import bcrypt from "bcrypt";
+import type { ObjectId } from "../types/mongo";
 
 export interface IUser extends Document {
     name: string;
     email: string;
     mobileNo?: string;
     password: string;
-    household?: mongoose.Types.ObjectId | null;
+    householdId?: ObjectId | null;
     comparePassword(candidatePassword: string): Promise<boolean>;
     createdAt:Date;
     updatedAt:Date;
@@ -20,7 +21,7 @@ const userSchema:Schema<IUser> = new Schema({
     email: { type: String, required: true, unique: true },
     mobileNo: { type: String, unique: true },
     password: { type: String, required: true },
-    household: {
+    householdId: {
         type: Schema.Types.ObjectId,
         ref: "Household",
         default: null

@@ -7,7 +7,7 @@ interface FormFieldOption {
 interface FormField {
   name: string;
   label: string;
-  type?: "text" | "textarea" | "select" | "radio" | "checkbox";
+  type?: "text" | "textarea" | "select" | "radio" | "checkbox" | "password";
   required?: boolean;
   minLength?: number;
   maxLength?: number;
@@ -16,22 +16,30 @@ interface FormField {
   className?: string;
   options?: FormFieldOption[];
 }
+interface ExtraButton {
+  label: string;
+  onClick: (form: HTMLFormElement) => void;
+  className?: string;
+
+}
+
 interface FormBuilderProps<T> {
   id?: string;
   fields: FormField[];
   submitLabel?: string;
+  className: string;
   onSubmit: (data: T) => void;
-
+  buttons?: ExtraButton[];
 }
 
-export function FormBuilder<T = any>({ id = "form", fields = [], submitLabel = "Submit", onSubmit = () => { } }: FormBuilderProps<T>): HTMLFormElement {
+export function FormBuilder<T = any>({ id = "form", fields = [], submitLabel = "Submit", className, onSubmit = () => { }, buttons = [] }: FormBuilderProps<T>): HTMLFormElement {
   const formEl = document.createElement("form");
   formEl.id = id;
-  formEl.className = "form-container";
+  formEl.className = className;
 
   fields.forEach((field) => {
     const wrapper = document.createElement("div");
-    wrapper.className = "form-field";
+    wrapper.className = `form-field ${field.className || ""}`;
 
     const label = document.createElement("label");
     label.htmlFor = field.name;
@@ -73,9 +81,30 @@ export function FormBuilder<T = any>({ id = "form", fields = [], submitLabel = "
         break;
       default:
         input = document.createElement("input");
-        (input as HTMLInputElement).type = field.type || "text";
+        const inputType = field.type === "password" ? "password" : field.type || "text";
+        (input as HTMLInputElement).type = inputType;
     }
+    if (field.type === "password") {
+      const wrapperWithToggle = document.createElement("div");
+      wrapperWithToggle.className = "password-wrapper";
 
+      const toggleBtn = document.createElement("button");
+      toggleBtn.type = "button";
+      toggleBtn.textContent = "Show";
+      toggleBtn.className = "toggle-password-btn";
+      toggleBtn.onclick = (e) => {
+        e.preventDefault();
+        const inputEl = input as HTMLInputElement;
+        const isHidden = inputEl.type === "password";
+        inputEl.type = isHidden ? "text" : "password";
+        toggleBtn.textContent = isHidden ? "Hide" : "Show";
+      };
+
+      wrapperWithToggle.appendChild(input);
+      wrapperWithToggle.appendChild(toggleBtn);
+
+      input = wrapperWithToggle; // Override input to be the wrapper div
+    }
     if (field.type !== "checkbox" && field.type !== "radio") {
       const inputEl = input as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
       inputEl.name = field.name;
@@ -96,6 +125,7 @@ export function FormBuilder<T = any>({ id = "form", fields = [], submitLabel = "
 
 
       if (field.className) inputEl.className = field.className;
+
     }
 
     wrapper.appendChild(label);
@@ -103,11 +133,34 @@ export function FormBuilder<T = any>({ id = "form", fields = [], submitLabel = "
     formEl.appendChild(wrapper);
   });
 
+
+
+  if (buttons.length > 0) {
+    const extrasWrapper = document.createElement("div");
+    extrasWrapper.className = "form-extra-buttons";
+
+    buttons.forEach((btn) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = btn.label;
+      button.className = btn.className || "form-extra-button";
+      button.onclick = () => btn.onClick(formEl);
+      extrasWrapper.appendChild(button);
+    });
+
+    formEl.appendChild(extrasWrapper);
+  }
+  // Submit button (separate wrapper)
+  const submitWrapper = document.createElement("div");
+  submitWrapper.className = "form-submit-wrapper";
+
   const submitBtn = document.createElement("button");
   submitBtn.type = "submit";
   submitBtn.textContent = submitLabel;
   submitBtn.className = "form-submit";
-  formEl.appendChild(submitBtn);
+
+  submitWrapper.appendChild(submitBtn);
+  formEl.appendChild(submitWrapper);
 
   formEl.addEventListener("submit", (e) => {
     e.preventDefault();

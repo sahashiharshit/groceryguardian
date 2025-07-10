@@ -1,13 +1,76 @@
+:root {
+  --bg: #f7f9fb;
+  --card-bg: #fff;
+  --text: #333;
+  --accent: #4caf50;
+  --danger: #e53935;
+  --shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  --radius: 12px;
+  --font: 'Segoe UI', sans-serif;
+}
+
+
 .inventory-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-top: 1rem;
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)) !important;
+  gap: 1.5rem;
+  margin: 2rem 0;
+  padding: 0 1rem;
 }
 
 .inventory-card {
-  padding: 1rem;
-  border-radius: 10px;
-  background-color: #fff;
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+ background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.2rem;
+  transition: transform 0.2s ease;
+  border-left: 6px solid var(--accent);
+
+  display: block;
+}
+
+.inventory-card:hover {
+  transform: translateY(-4px);
+}
+
+.inventory-card h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+  color: #222;
+}
+
+.inventory-card p {
+  margin: 0.3rem 0;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.inventory-card strong {
+  font-weight: 600;
+}
+
+.status-available {
+  color: var(--accent);
+  font-weight: bold;
+}
+
+
+
+/* Optional: Responsive tweaks */
+@media screen and (max-width: 480px) {
+  .inventory-card {
+    padding: 1rem;
+  }
+
+  .inventory-card h3 {
+    font-size: 1.1rem;
+  }
+}
+.card-left {
+  flex: 1;
+}
+
+.card-right {
+  text-align: right;
+  min-width: 120px;
 }
