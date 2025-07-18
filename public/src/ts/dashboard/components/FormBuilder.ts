@@ -44,9 +44,9 @@ export function FormBuilder<T = any>({ id = "form", fields = [], submitLabel = "
     const label = document.createElement("label");
     label.htmlFor = field.name;
     label.textContent = field.label;
-
+ 
     let input: HTMLElement;
-
+    let inputEl: HTMLInputElement | null = null;
     switch (field.type) {
       case "textarea":
         input = document.createElement("textarea");
@@ -80,30 +80,36 @@ export function FormBuilder<T = any>({ id = "form", fields = [], submitLabel = "
         });
         break;
       default:
-        input = document.createElement("input");
+        const actualInput = document.createElement("input");
         const inputType = field.type === "password" ? "password" : field.type || "text";
-        (input as HTMLInputElement).type = inputType;
-    }
-    if (field.type === "password") {
-      const wrapperWithToggle = document.createElement("div");
-      wrapperWithToggle.className = "password-wrapper";
+        actualInput.type = inputType;
+        inputEl = actualInput;
 
-      const toggleBtn = document.createElement("button");
-      toggleBtn.type = "button";
-      toggleBtn.textContent = "Show";
-      toggleBtn.className = "toggle-password-btn";
-      toggleBtn.onclick = (e) => {
-        e.preventDefault();
-        const inputEl = input as HTMLInputElement;
-        const isHidden = inputEl.type === "password";
-        inputEl.type = isHidden ? "text" : "password";
-        toggleBtn.textContent = isHidden ? "Hide" : "Show";
-      };
+        if (field.type === "password") {
+          const wrapperWithToggle = document.createElement("div");
+          wrapperWithToggle.className = "password-wrapper";
 
-      wrapperWithToggle.appendChild(input);
-      wrapperWithToggle.appendChild(toggleBtn);
+          const toggleBtn = document.createElement("button");
+          toggleBtn.type = "button";
+          toggleBtn.textContent = "Show";
+          toggleBtn.className = "toggle-password-btn";
+          toggleBtn.onclick = (e) => {
+            e.preventDefault();
+            if(!inputEl) return;
+           
+            const isHidden = inputEl.type === "password";
+            inputEl.type = isHidden ? "text" : "password";
+            toggleBtn.textContent = isHidden ? "Hide" : "Show";
+          };
 
-      input = wrapperWithToggle; // Override input to be the wrapper div
+          wrapperWithToggle.appendChild(inputEl);
+          wrapperWithToggle.appendChild(toggleBtn);
+
+          input = wrapperWithToggle; // Override input to be the wrapper div
+        } else {
+          input = actualInput;
+        }
+        break;
     }
     if (field.type !== "checkbox" && field.type !== "radio") {
       const inputEl = input as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;

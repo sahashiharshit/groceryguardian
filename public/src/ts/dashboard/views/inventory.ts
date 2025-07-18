@@ -1,6 +1,6 @@
 import { apiFetch } from "../../services/api";
 import { setPageTitle } from "../app";
-import { loadCSS } from "../utils/loadcss";
+
 setPageTitle("Inventory")
 type PantryItem ={
  _id: string;
@@ -22,7 +22,7 @@ export async function render():Promise<void>{
    if(!view) return;
    
    view.innerHTML=`<h2>Inventory</h2><p>Loading Items...</p>`;
-    loadCSS('../css/inventory.css');
+    
     try {
     const items: PantryItem[] = await apiFetch("/api/pantry", { method: "GET" });
 

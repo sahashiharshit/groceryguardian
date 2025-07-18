@@ -1,7 +1,8 @@
 
-import { renderAuth } from '../app.js';
+import { initAuth, renderAuth } from '../app.js';
 import { handleRouting } from './router.js';
-import { loadCSS } from './utils/loadcss.js';
+import { loadCSSAndWait } from './utils/loadcss.js';
+
 
 
 declare global {
@@ -40,21 +41,30 @@ function setupLogoutButton(): void {
   const logoutBtn = document.getElementById('logoutBtn');
   const handler = () => {
   console.log("👉 Logging out");
-    history.pushState("", document.title, window.location.pathname + window.location.search);
+   
     localStorage.removeItem('accesstoken');
     localStorage.removeItem('user')
     
     window._routingSetupDone = false;
     hasRenderedDashboard = false;
+    window.location.hash = "#";
+
      console.log("✅ Cleared hash, calling renderAuth");
     renderAuth(false);
+    setTimeout(() => {
+    initAuth(() => {
+      console.log("🔥 Auth success after logout");
+      (window as any).hmrLoad?.("./dashboard/app.js");
+      renderDashboardLayout();
+    });
+  }, 0);
   }
   logoutBtn?.addEventListener('click', handler);
   cleanupFns.push(() => logoutBtn?.removeEventListener("click", handler));
 }
 
 
-export function renderDashboardLayout(): void {
+export async function renderDashboardLayout(): Promise<void> {
 const token = localStorage.getItem("accesstoken");
   if (!token) {
     console.warn("⛔ No token, skipping dashboard render");
@@ -79,7 +89,8 @@ const token = localStorage.getItem("accesstoken");
     </div>`;
 
   setupLogoutButton();
-  loadCSS("../css/dashboard.css");
+   await loadCSSAndWait("../css/dashboard.css");
+
   
   if (!window._routingSetupDone) {
     window.addEventListener("hashchange", handleRouting);

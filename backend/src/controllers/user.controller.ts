@@ -3,9 +3,9 @@
 import mongoose, { Types } from "mongoose";
 import User from "../models/User.js";
 import Household from "../models/Household.js";
-import type { Request,Response } from "express";
+import type { Request, Response } from "express";
 
-export const getUser = async (req:Request, res:Response):Promise<void> => {
+export const getUser = async (req: Request, res: Response): Promise<void> => {
   const userId = req.user?.id;
 
   if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
@@ -15,8 +15,8 @@ export const getUser = async (req:Request, res:Response):Promise<void> => {
   const userinfo = await User.findById(userId);
 
   if (!userinfo) {
-     res.status(404).json({ message: "User not found" });
-     return;
+    res.status(404).json({ message: "User not found" });
+    return;
   }
   res.json({
     user: {
@@ -24,22 +24,24 @@ export const getUser = async (req:Request, res:Response):Promise<void> => {
       name: userinfo.name,
       email: userinfo.email,
       createdAt: userinfo.createdAt,
+      household: userinfo.householdId,
+      mobileNo: userinfo.mobileNo
     },
   });
 };
 
 
-export const createGroup = async (req:Request, res:Response):Promise<void> => {
+export const createGroup = async (req: Request, res: Response): Promise<void> => {
   const userId = req.params.id;
   const { name } = req.body;
   const user = await User.findById(userId);
   if (!user) {
-  res.status(404).json({ message: "User not found" });
-  return;
-  } 
+    res.status(404).json({ message: "User not found" });
+    return;
+  }
   if (user.householdId) {
-     res.status(400).json({ message: "User belongs to a household" });
-     return;
+    res.status(400).json({ message: "User belongs to a household" });
+    return;
   }
 
   const newGroup = new Household({
@@ -54,25 +56,51 @@ export const createGroup = async (req:Request, res:Response):Promise<void> => {
   return;
 };
 
-export const getGroupUsersList = async (req:Request, res:Response):Promise<void> => {
+export const getGroupUsersList = async (req: Request, res: Response): Promise<void> => {
   const userId = req.user?.id;
   const user = await User.findById({ userId }).populate({
-  path:"household",
-  populate:{
-    path:"members.userId",
-    model:"User",
-    select: "name email",
+    path: "household",
+    populate: {
+      path: "members.userId",
+      model: "User",
+      select: "name email",
     },
-  
+
   });
-   if (!user || !user.householdId) {
-     res.status(404).json({ message: "No household found" });
-     return;
+  if (!user || !user.householdId) {
+    res.status(404).json({ message: "No household found" });
+    return;
   }
-  res.status(200).json({household: user?.householdId });
+  res.status(200).json({ household: user?.householdId });
   return;
 };
 
-export const removeFromGroup = async (req:Request, res:Response):Promise<void> => {};
 
-export const changeRoles = async (req:Request, res:Response):Promise<void> => {};
+
+export const updateUserInfo = async (req: Request, res: Response): Promise<void> => {
+  const userId = req.user?.id;
+  const { name,mobileNo } = req.body;
+
+  if (!userId) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  const user = await User.findById(userId);
+  if (!user) {
+    res.status(404).json({ error: "User not found" });
+    return;
+  }
+  user.name = name ?? user.name;
+  user.mobileNo = mobileNo ?? user.mobileNo;
+  await user.save();
+  
+  res.status(200).json({
+    message: "User info updated successfully",
+    user: {
+      name: user.name,
+      mobileNo: user.mobileNo,
+      email: user.email,
+      id: user._id,
+    },
+  });
+};

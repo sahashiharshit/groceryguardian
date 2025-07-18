@@ -1,5 +1,6 @@
 
 import { renderDashboardLayout } from "./dashboard/app";
+
 import { apiFetch } from "./services/api";
 
 
@@ -18,24 +19,49 @@ type AuthResponse = {
   };
 }
 
+const loadedCSS = new Set<string>();
+function loadCSS(href: string): Promise<void> {
+  // Avoid reloading already loaded styles
+  if (loadedCSS.has(href)) {
+    console.log(`🟢 CSS already loaded: ${href}`);
+    return Promise.resolve();
+  }
 
-function loadCSS(href: string) {
-  document.querySelectorAll("link[data-dynamic]").forEach(el => el.remove());
+  // Remove old dynamic styles
+  document.querySelectorAll("link[data-dynamic]").forEach(link => {
+    const linkHref = link.getAttribute("href");
+    if (linkHref && !loadedCSS.has(linkHref)) {
+      link.remove();
+      console.log(`🧹 Removed previous CSS: ${linkHref}`);
+    }
+  });
 
-  const link = document.createElement("link");
-  link.rel = "stylesheet";
-  link.href = href;
-  link.dataset.dynamic = "true";
-  document.head.appendChild(link);
-
+  // Load new CSS
+  return new Promise<void>((resolve, reject) => {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = href;
+    link.dataset.dynamic = "true";
+    link.onload = () => {
+      console.log(`✅ Loaded CSS: ${href}`);
+      loadedCSS.add(href);
+      resolve();
+    };
+    link.onerror = () => {
+      console.error(`❌ Failed to load CSS: ${href}`);
+      reject(new Error(`Failed to load CSS: ${href}`));
+    };
+    document.head.appendChild(link);
+  });
 }
 
 
-function renderLanding(): void {
+
+async function renderLanding(): Promise<void> {
   const app = document.getElementById("app");
   if (!app) return;
   document.body.className = "landing";
-  loadCSS("./css/landing.css");
+ await loadCSS("./css/landing.css");
   app.innerHTML = `
     <div class="start-page">
       <div class="overlay">
@@ -72,11 +98,11 @@ function renderLanding(): void {
 
 }
 
-export function renderAuth(runInitAuth = true): void {
+export async function renderAuth(runInitAuth = true): Promise<void> {
   const app = document.getElementById("app");
   if (!app) return;
   document.body.className = "auth";
-  loadCSS("./css/auth.css");
+   await loadCSS("./css/auth.css");
 
   app.innerHTML = `<div class="container">
       <div class="left">
@@ -96,7 +122,7 @@ export function renderAuth(runInitAuth = true): void {
       <div class="right">
         <img src="./assets/logo.png" alt="Logo" class="logo">
         <div class="forms-wrapper">
-          <form id="login-form" class="form active" method="POST">
+          <form id="login-form" class="form active" method="POST" action="javascript:void(0)" >
             <h2>Welcome back again!</h2>
             <input type="email" name="loginemail" id="loginemail" required placeholder="Email">
             <input type="password" name="loginpassword" id="loginpassword" required placeholder="Password">
@@ -106,7 +132,7 @@ export function renderAuth(runInitAuth = true): void {
             </div>
           </form>
 
-          <form id="signup-form" class="form" method="POST">
+          <form id="signup-form" class="form" method="POST" action="javascript:void(0)">
             <h2>Start managing your grocery!...</h2>
             <input type="text" placeholder="Full Name" id="username" name="username" required>
             <input type="email" placeholder="Email" id="signupemail" name="signupemail" required>
@@ -180,6 +206,7 @@ export function initAuth(onAuthSuccess: () => void): void {
         document.body.className = "";
         onAuthSuccess();
         window.history.replaceState({}, "", window.location.pathname);
+    
       } catch (error: any) {
         alert("Login failed. Please try again.");
         console.error(error);

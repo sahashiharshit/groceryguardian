@@ -1,8 +1,8 @@
 import { apiFetch } from "../../services/api.js";
 import { setPageTitle } from "../app.js";
 import { FormBuilder } from "../components/FormBuilder.js";
-import { Modal } from "../components/Modal.js";
-import { loadCSS } from "../utils/loadcss.js";
+import { Modal, ModalInstance } from "../components/Modal.js";
+
 
 setPageTitle("Account Information");
 interface UserInfo {
@@ -28,11 +28,9 @@ export async function render(): Promise<void> {
 
   const view = document.getElementById("view");
   if (!view) return;
-  loadCSS('../css/account.css');
-  loadCSS('../css/modal.css');
-  loadCSS('../css/form.css');
+ 
   let user: UserInfo | null = getStoredUser();
-  if (!user || !user.name || !user.email) {
+  if (!user || !user.name || !user.email ||!user.household) {
     try {
       const response = await apiFetch<{ user: UserInfo }>(`/api/users/getuser`, { method: "GET" });
       user = response.user;
@@ -59,6 +57,8 @@ export async function render(): Promise<void> {
       </div>
     </div>
   `;
+  let editmodal:ModalInstance;
+
   document.getElementById("edit-profile-btn")?.addEventListener("click", async () => {
     const modalForm = FormBuilder({
       id: "edit-profile-form",
@@ -69,16 +69,18 @@ export async function render(): Promise<void> {
         { name: "mobileNo", label: "Mobile Number", defaultValue: user!.mobileNo || "" },
       ],
       onSubmit: async (data) => {
-        const updatedUser = await apiFetch<UserInfo>("/api/users/me", { method: "PATCH", body: data });
+        const updatedUser = await apiFetch<any>("/api/users/me", { method: "POST", body: data });
         localStorage.setItem("user", JSON.stringify(updatedUser));
         alert("Profile updated!");
+        editmodal.closeModal(); 
         render();
       },
+      
     });
-    const modal = Modal(modalForm, "custom-modal");
-    (modal as any).openModal();
+     editmodal = Modal(modalForm, "custom-modal");
+      editmodal.openModal();
   });
-
+  let passwordModal:ModalInstance;
   document.getElementById("change-password-btn")?.addEventListener("click", async () => {
     const modalForm = FormBuilder({
       id: "change-password-form",
@@ -96,10 +98,11 @@ export async function render(): Promise<void> {
         }
         await apiFetch("/api/users/change-password", { method: "POST", body: data });
         alert("Password changed successfully");
+        passwordModal.closeModal();
       },
     });
-    const modal = Modal(modalForm, "custom-modal");
-    (modal as any).openModal();
+     passwordModal = Modal(modalForm, "custom-modal");
+    passwordModal.openModal();
   });
 
   document.getElementById("leave-group-btn")?.addEventListener("click", async () => {

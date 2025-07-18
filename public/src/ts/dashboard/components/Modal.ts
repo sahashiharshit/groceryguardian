@@ -1,4 +1,10 @@
-export function Modal(content: HTMLElement, className = "custom-modal"): HTMLDialogElement {
+export type ModalInstance = {
+
+  modal: HTMLDialogElement;
+  openModal: () => void;
+  closeModal: () => void;
+};
+export function Modal(content: HTMLElement, className = "custom-modal"): ModalInstance {
   const modal = document.createElement("dialog");
   modal.className = className;
 
@@ -25,13 +31,13 @@ export function Modal(content: HTMLElement, className = "custom-modal"): HTMLDia
   });
 
   // Native showModal/close hooks
-  (modal as any).openModal = () => {
-   if (!document.body.contains(modal)) {
+  const openModal = () => {
+    if (!document.body.contains(modal)) {
       document.body.appendChild(modal);
     }
     if (!modal.open) modal.showModal();
   };
-  (modal as any).closeModal = closeModal;
 
-  return modal;
+
+  return {modal,openModal,closeModal};
 }

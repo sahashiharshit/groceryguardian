@@ -64,13 +64,21 @@ body {
   display: flex;
   flex-direction: column;
   overflow: auto;
+  background-image: url("../assets/background.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  min-height: 100vh;
+  background-color: rgba(255, 0, 0, 0.1); /* Red tint */
 }
 
 /* Topbar */
 .topbar {
-  background-color: white;
+  /* background-color: white; */
   padding: 1rem;
-  border-bottom: 1px solid #e5e7eb;
+  /* border-bottom: 1px solid #e5e7eb; */
+   background-color: rgba(255, 255, 255, 0.7); /* Slightly see-through white */
+  backdrop-filter: blur(1px); /* Optional: soft blur effect */
 }
 
 /* View container */
@@ -80,7 +88,9 @@ body {
   flex: 1;
   /* ✅ fix layout conflict */
   display: block;
-  background-color: #f3f4f6;
+  /* background-color: #f3f4f6; */
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(1px);
 }
 
 /* Mobile responsive */

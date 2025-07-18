@@ -2,7 +2,7 @@ import { apiFetch } from "../../services/api.js";
 import { setPageTitle } from "../app.js";
 import { FormBuilder } from "../components/FormBuilder.js";
 import { Modal } from "../components/Modal.js";
-import { loadCSS } from "../utils/loadcss.js";
+
 setPageTitle("Group");
 type Household = {
   _id: string;
@@ -21,14 +21,12 @@ export async function render(): Promise<void> {
   const view = document.getElementById("view");
   if (!view) return;
 
-  view.innerHTML = "<h2>Loading your group...</h2>";
-  loadCSS("../css/group.css");
-  loadCSS("../css/modal.css");
+  
   const layout = document.createElement("div");
   layout.className = "group-layout";
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-  if (!user.householdId) {
+  if (!user.household) {
     view.innerHTML = "";
     const left = document.createElement("div");
     left.className = "group-left";
@@ -144,22 +142,24 @@ export async function render(): Promise<void> {
 
   } else {
     const household = await apiFetch<Household>(`/api/households/me`);
+    const currentUserRole = household.members.find((m:any)=>m.userId._id ===user.id)?.role || "member";
+    const isAdmin = currentUserRole ==="owner";
     //---left section(Group Info panel)
 
     const left = document.createElement("div");
     left.className = "group-left";
     left.innerHTML = `
       <h2>Group: ${household.name}</h2>
-      <p>Your role: ${household.members.find((m: any) => m.userId._id === user.id)?.role || "member"
-      }</p>
+      <p>Your role: ${currentUserRole}</p>
       <h3>Members:</h3>
       <ul>
         ${household.members
         .map((m: any) => {
-          const isMember = m.role === "member";
+          const isTargetMember = m.role === "member";
+          const isNotSelf = m.userId._id !== user.id;
           return `<li data-user-id ="${m.userId._id}">
         ${m.userId.name} (${m.role})
-        ${isMember ? `<button class="remove-member-btn" data-id="${m.userId._id}">Remove</button>` : ""}
+        ${isAdmin && isTargetMember && isNotSelf ? `<button class="remove-member-btn" data-id="${m.userId._id}">Remove</button>` : ""}
         </li>`;
         })
         .join("")}
@@ -193,6 +193,9 @@ export async function render(): Promise<void> {
     // ---Right Section (Invite Panel)
     const right = document.createElement("div");
     right.className = "group-right";
+    if(isAdmin){
+    
+    
     const inviteForm = FormBuilder({
       id: "invite-user-form",
       submitLabel: "Search",
@@ -237,8 +240,9 @@ export async function render(): Promise<void> {
                   method: "POST",
                   body: { recipientId },
                 });
-                alert("Invite sent successfully!");
+                
                 result.remove();
+                alert("Invite sent successfully!");
               } catch (err) {
                 alert("Failed to send invite.");
                 console.error(err);
@@ -269,9 +273,10 @@ export async function render(): Promise<void> {
 
     right.appendChild(inviteHeader);
     right.appendChild(inviteForm);
-
+  }
     layout.appendChild(left);
-    layout.appendChild(right);
+    if(isAdmin)
+      layout.appendChild(right);
   }
 
 
