@@ -1,6 +1,6 @@
 import { getAccessToken } from "./tokenservice";
 
-export const API_BASE = "http://localhost:5000";
+export const API_BASE = "http://localhost:5000/api";
 
 type RequestOptions ={
   method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
