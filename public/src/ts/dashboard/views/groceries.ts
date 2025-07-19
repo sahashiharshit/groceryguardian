@@ -43,7 +43,7 @@ export async function render(): Promise<void> {
   try {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-    const data = await apiFetch<GroceryApiResponse>("/api/grocery/grocery-list", { method: "GET" });
+    const data = await apiFetch<GroceryApiResponse>("/grocery/grocery-list", { method: "GET" });
 
     const simplifiedList: GroceryItem[] = data.groceries.map((item) => ({
       id: item._id,
@@ -87,7 +87,7 @@ export async function render(): Promise<void> {
               alert("❌ No barcode detected. Please try again.");
               return;
             }
-            const barcodeDoc = await apiFetch<BarcodeResponse>(`/api/grocery/barcode/${scannedCode}`);
+            const barcodeDoc = await apiFetch<BarcodeResponse>(`/grocery/barcode/${scannedCode}`);
 
             if (!barcodeDoc || barcodeDoc?.id !== item.barcode) {
               alert("❌ Scanned barcode does not match this item.");
@@ -109,7 +109,7 @@ export async function render(): Promise<void> {
         // Prompt user to select an expiration date (can be skipped if desired)
         const expirationForm = createExpirationForm(async (expirationDate) => {
           try {
-            await apiFetch(`/api/grocery/movetoinventory/${itemId}`, { method: "POST", body: { expirationDate } });
+            await apiFetch(`/grocery/movetoinventory/${itemId}`, { method: "POST", body: { expirationDate } });
             li.remove();
             expirationModal.closeModal();
             alert("Moved Successfully");
@@ -129,7 +129,7 @@ export async function render(): Promise<void> {
 
         deleteBtn.onclick = async () => {
           try {
-            await apiFetch(`/api/grocery/grocery-list/${itemId}`, { method: "DELETE" });
+            await apiFetch(`/grocery/grocery-list/${itemId}`, { method: "DELETE" });
             li.remove();
 
           } catch (error: any) {
@@ -148,7 +148,7 @@ export async function render(): Promise<void> {
     //Create the modal (initially hidden)
     const form = await GroceryForm(async (item: AddGroceryItem, barcodeMatched) => {
       try {
-        await apiFetch<ApiGroceryItem>("/api/grocery/add-grocery", {
+        await apiFetch<ApiGroceryItem>("/grocery/add-grocery", {
           method: "POST",
           body: { items: [item] },
         });

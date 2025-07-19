@@ -197,7 +197,7 @@ export function initAuth(onAuthSuccess: () => void): void {
       const password = (document.getElementById("loginpassword") as HTMLInputElement).value;
 
       try {
-        const data = await apiFetch<AuthResponse>("/api/auth/login", {
+        const data = await apiFetch<AuthResponse>("/auth/login", {
           method: "POST",
           body: { email, password },
         });
@@ -224,7 +224,7 @@ export function initAuth(onAuthSuccess: () => void): void {
       const password = (document.getElementById("signuppassword") as HTMLInputElement).value;
 
       try {
-        const data = await apiFetch<AuthResponse>("/api/auth/register", {
+        const data = await apiFetch<AuthResponse>("/auth/register", {
           method: "POST",
           body: { name, email, mobileNo, password },
         });

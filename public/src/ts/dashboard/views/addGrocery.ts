@@ -97,7 +97,7 @@
 //     submitBtn.onclick = async () => {
 //       try {
 
-//         await apiFetch("/api/grocery/add-grocery", {
+//         await apiFetch("/grocery/add-grocery", {
 //           method: "POST",
 //           body: { items: groceryItems }
 //         });

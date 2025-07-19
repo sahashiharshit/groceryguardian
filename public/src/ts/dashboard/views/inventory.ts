@@ -24,7 +24,7 @@ export async function render(): Promise<void> {
   view.innerHTML = `<h2>Inventory</h2><p>Loading Items...</p>`;
 
   try {
-    const items: PantryItem[] = await apiFetch("/api/pantry", { method: "GET" });
+    const items: PantryItem[] = await apiFetch("/pantry", { method: "GET" });
 
     if (!Array.isArray(items) || items.length === 0) {
       view.innerHTML = `

@@ -94,7 +94,7 @@ export async function GroceryForm(onSubmit: (item: AddGroceryItem,barcodeMatched
                 if (!code) return;
                 try {
                  
-                  const itemData = await apiFetch<BarcodeResponse>(`/api/grocery/barcode/${code}`);
+                  const itemData = await apiFetch<BarcodeResponse>(`/grocery/barcode/${code}`);
                  
                   const nameField = form.querySelector<HTMLInputElement>('input[name="itemname"]');
                   const qtyField = form.querySelector<HTMLInputElement>('input[name="quantity"]');
@@ -140,7 +140,7 @@ export async function GroceryForm(onSubmit: (item: AddGroceryItem,barcodeMatched
 }
 export async function fetchCategories(): Promise<{ value: string; label: string }[]> {
   try {
-    const data = await apiFetch<{ _id: string; name: string }[]>("/api/grocery/getcategories");
+    const data = await apiFetch<{ _id: string; name: string }[]>("/grocery/getcategories");
 
     return data.map((cat) => ({
       value: cat.name,

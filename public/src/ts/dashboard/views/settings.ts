@@ -32,7 +32,7 @@ export async function render(): Promise<void> {
   let user: UserInfo | null = getStoredUser();
   if (!user || !user.name || !user.email || !user.household) {
     try {
-      const response = await apiFetch<{ user: UserInfo }>(`/api/users/getuser`, { method: "GET" });
+      const response = await apiFetch<{ user: UserInfo }>(`/users/getuser`, { method: "GET" });
       user = response.user;
       localStorage.setItem("user", JSON.stringify(user));
     } catch (error) {
@@ -69,7 +69,7 @@ export async function render(): Promise<void> {
         { name: "mobileNo", label: "Mobile Number", defaultValue: user!.mobileNo || "" },
       ],
       onSubmit: async (data) => {
-        const updatedUser = await apiFetch<any>("/api/users/me", { method: "POST", body: data });
+        const updatedUser = await apiFetch<any>("/users/me", { method: "POST", body: data });
         localStorage.setItem("user", JSON.stringify(updatedUser));
         alert("Profile updated!");
         editmodal.closeModal();
@@ -96,7 +96,7 @@ export async function render(): Promise<void> {
           alert("Passwords do not match!");
           return;
         }
-        await apiFetch("/api/users/change-password", { method: "POST", body: data });
+        await apiFetch("/users/change-password", { method: "POST", body: data });
         alert("Password changed successfully");
         passwordModal.closeModal();
       },
@@ -108,7 +108,7 @@ export async function render(): Promise<void> {
   document.getElementById("leave-group-btn")?.addEventListener("click", async () => {
     const confirmation = confirm("Are you sure you want to leave the group?");
     if (confirmation) {
-      await apiFetch(`/api/households/leave`, { method: "DELETE" });
+      await apiFetch(`/households/leave`, { method: "DELETE" });
       const updatedUser = { ...user!, household: null };
       localStorage.setItem("user", JSON.stringify(updatedUser));
       alert("You left the group.");
@@ -119,7 +119,7 @@ export async function render(): Promise<void> {
   document.getElementById("delete-account-btn")?.addEventListener("click", async () => {
     const confirmation = confirm("Are you sure you want to permanently delete your account?");
     if (confirmation) {
-      await apiFetch(`/api/users/me`, { method: "DELETE" });
+      await apiFetch(`/users/me`, { method: "DELETE" });
       localStorage.clear();
       alert("Account deleted.");
       location.reload();

@@ -12,7 +12,7 @@ export async function getAccessToken(): Promise<string | null> {
 
 
     try {
-        const res = await fetch(`${API_BASE}/api/auth/refresh`, { method: "POST",credentials:"include", });
+        const res = await fetch(`${API_BASE}/auth/refresh`, { method: "POST",credentials:"include", });
         if(!res.ok) throw new Error("Refresh failed");
         const data = await res.json();
         localStorage.setItem("accesstoken", data.accessToken);

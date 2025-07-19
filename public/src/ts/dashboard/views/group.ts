@@ -51,7 +51,7 @@ export async function render(): Promise<void> {
       ],
       onSubmit: async (data) => {
         try {
-          const household = await apiFetch<Household>("/api/households/", {
+          const household = await apiFetch<Household>("/households/", {
             method: "POST",
             body: { name: data.name },
           });
@@ -79,7 +79,7 @@ export async function render(): Promise<void> {
     right.className = "group-right";
     // ✅ Fetch pending invitations
     try {
-      const invitations = await apiFetch<any[]>("/api/households/invitations/me");
+      const invitations = await apiFetch<any[]>("/households/invitations/me");
 
       if (invitations.length > 0) {
         const inviteBox = document.createElement("div");
@@ -99,7 +99,7 @@ export async function render(): Promise<void> {
           acceptBtn.className = "accept-btn";
           acceptBtn.onclick = async () => {
             try {
-              await apiFetch(`/api/households/invitations/${invitation._id}/respond`, {
+              await apiFetch(`/households/invitations/${invitation._id}/respond`, {
                 method: "POST",
                 body: { action: "accept" },
               });
@@ -115,7 +115,7 @@ export async function render(): Promise<void> {
           rejectBtn.className = "reject-btn";
           rejectBtn.onclick = async () => {
             try {
-              await apiFetch(`/api/households/invitations/${invitation._id}/respond`, {
+              await apiFetch(`/households/invitations/${invitation._id}/respond`, {
                 method: "POST",
                 body: { action: "reject" },
               });
@@ -141,7 +141,7 @@ export async function render(): Promise<void> {
 
 
   } else {
-    const household = await apiFetch<Household>(`/api/households/me`);
+    const household = await apiFetch<Household>(`/households/me`);
     const currentUserRole = household.members.find((m:any)=>m.userId._id ===user.id)?.role || "member";
     const isAdmin = currentUserRole ==="owner";
     //---left section(Group Info panel)
@@ -176,7 +176,7 @@ export async function render(): Promise<void> {
           if (!confirmRemove) return;
 
           try {
-            await apiFetch(`/api/households/${household._id}/members/${userId}`, {
+            await apiFetch(`/households/${household._id}/members/${userId}`, {
               method: "DELETE",
             });
             alert("Member removed successfully.");
@@ -210,7 +210,7 @@ export async function render(): Promise<void> {
       onSubmit: async ({ identifier }) => {
         try {
 
-          const foundUser = await apiFetch<SearchedUser>(`/api/households/search-user?identifier=${encodeURIComponent(identifier)}`);
+          const foundUser = await apiFetch<SearchedUser>(`/households/search-user?identifier=${encodeURIComponent(identifier)}`);
           const recipientId = foundUser._id;
           const existing = document.getElementById("search-result");
           if (existing) existing.remove();
@@ -236,7 +236,7 @@ export async function render(): Promise<void> {
             inviteBtn.className = "send-invite";
             inviteBtn.onclick = async () => {
               try {
-                await apiFetch(`/api/households/${household._id}/invite`, {
+                await apiFetch(`/households/${household._id}/invite`, {
                   method: "POST",
                   body: { recipientId },
                 });
