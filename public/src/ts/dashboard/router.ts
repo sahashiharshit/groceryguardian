@@ -1,4 +1,4 @@
-import { loadCSSAndWait } from "./utils/loadcss.js";
+import { loadCSSAndWait } from "./utils/loadcss";
 import { hideLoader, showLoader } from "./utils/loader.js";
 
 type RouteHandler = () => void | Promise<void>;
