@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema, Model } from "mongoose";
-import { UnitType, type UnitTypeValue } from "./GroceryListItem";
+import { UnitType, type UnitTypeValue } from "./GroceryListItem.js";
 import type { ObjectId } from "../types/mongo";
 
 
