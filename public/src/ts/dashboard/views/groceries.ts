@@ -94,7 +94,7 @@ export async function render(): Promise<void> {
               return;
             }
           } catch (error) {
-            console.error("📷 Barcode scan failed:", error);
+            
             alert("Something went wrong during barcode scan.");
             return;
           }
@@ -114,13 +114,11 @@ export async function render(): Promise<void> {
             expirationModal.closeModal();
             alert("Moved Successfully");
           } catch (error) {
-            console.error("Failed to add item in pantry");
             alert("Could not add item in inventory");
           }
 
         });
         const expirationModal = Modal(expirationForm, "expiration-modal");
-        //document.body.appendChild(expirationModal);
         expirationModal.openModal();
       };
       buttonGroup.appendChild(purchasedBtn);
@@ -131,12 +129,11 @@ export async function render(): Promise<void> {
 
         deleteBtn.onclick = async () => {
           try {
-
             await apiFetch(`/api/grocery/grocery-list/${itemId}`, { method: "DELETE" });
             li.remove();
 
           } catch (error: any) {
-            console.error("Failed to delete item:", error);
+           
             alert("Could not delete item. Try again.");
           }
 
@@ -148,12 +145,6 @@ export async function render(): Promise<void> {
       li.appendChild(buttonGroup);
       list.appendChild(li);
     });
-
-
-
-
-
-
     //Create the modal (initially hidden)
     const form = await GroceryForm(async (item: AddGroceryItem, barcodeMatched) => {
       try {
@@ -165,7 +156,7 @@ export async function render(): Promise<void> {
         groceryModal.closeModal();
         render();
       } catch (error) {
-        console.error("❌ Failed to add item", error);
+      
         alert("Failed to add item. Please try again.");
       }
     });
@@ -179,9 +170,8 @@ export async function render(): Promise<void> {
 
     //assemble Layout
     layout.appendChild(addBtn);
-
     layout.appendChild(list);
-    //layout.appendChild(groceryModal);
+    
 
     view.innerHTML = '';
     if (data.groceries.length === 0) {
@@ -190,7 +180,7 @@ export async function render(): Promise<void> {
     view.appendChild(layout)
 
   } catch (error) {
-    console.error('Failed to load groceries:', error);
+   
     const view = document.getElementById('view');
     if (view) {
       view.innerHTML = `<div class="error">

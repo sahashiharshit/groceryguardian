@@ -1,7 +1,7 @@
 /* Layout */
 body {
   margin: 0;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: "Segoe UI", sans-serif;
   background-color: #f3f4f6;
   color: #333;
 }
@@ -74,21 +74,18 @@ body {
 
 /* Topbar */
 .topbar {
-  /* background-color: white; */
   padding: 1rem;
-  /* border-bottom: 1px solid #e5e7eb; */
-   background-color: rgba(255, 255, 255, 0.7); /* Slightly see-through white */
+  background-color: rgba(255, 255, 255, 0.7); /* Slightly see-through white */
   backdrop-filter: blur(1px); /* Optional: soft blur effect */
 }
 
 /* View container */
 .view-container {
- padding: 2rem 1rem;
+  padding: 2rem 1rem;
   overflow-y: auto;
   flex: 1;
   /* ✅ fix layout conflict */
   display: block;
-  /* background-color: #f3f4f6; */
   background-color: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(1px);
 }

@@ -28,9 +28,9 @@ export async function render(): Promise<void> {
 
   const view = document.getElementById("view");
   if (!view) return;
- 
+
   let user: UserInfo | null = getStoredUser();
-  if (!user || !user.name || !user.email ||!user.household) {
+  if (!user || !user.name || !user.email || !user.household) {
     try {
       const response = await apiFetch<{ user: UserInfo }>(`/api/users/getuser`, { method: "GET" });
       user = response.user;
@@ -57,13 +57,13 @@ export async function render(): Promise<void> {
       </div>
     </div>
   `;
-  let editmodal:ModalInstance;
+  let editmodal: ModalInstance;
 
   document.getElementById("edit-profile-btn")?.addEventListener("click", async () => {
     const modalForm = FormBuilder({
       id: "edit-profile-form",
       submitLabel: "Update",
-      className:"edit-profile-container",
+      className: "edit-profile-container",
       fields: [
         { name: "name", label: "Full Name", required: true, defaultValue: user!.name },
         { name: "mobileNo", label: "Mobile Number", defaultValue: user!.mobileNo || "" },
@@ -72,20 +72,20 @@ export async function render(): Promise<void> {
         const updatedUser = await apiFetch<any>("/api/users/me", { method: "POST", body: data });
         localStorage.setItem("user", JSON.stringify(updatedUser));
         alert("Profile updated!");
-        editmodal.closeModal(); 
+        editmodal.closeModal();
         render();
       },
-      
+
     });
-     editmodal = Modal(modalForm, "custom-modal");
-      editmodal.openModal();
+    editmodal = Modal(modalForm, "custom-modal");
+    editmodal.openModal();
   });
-  let passwordModal:ModalInstance;
+  let passwordModal: ModalInstance;
   document.getElementById("change-password-btn")?.addEventListener("click", async () => {
     const modalForm = FormBuilder({
       id: "change-password-form",
       submitLabel: "Change Password",
-      className:"change-password-container",
+      className: "change-password-container",
       fields: [
         { name: "oldPassword", label: "Old Password", required: true, type: "password" },
         { name: "newPassword", label: "New Password", required: true, type: "password" },
@@ -101,7 +101,7 @@ export async function render(): Promise<void> {
         passwordModal.closeModal();
       },
     });
-     passwordModal = Modal(modalForm, "custom-modal");
+    passwordModal = Modal(modalForm, "custom-modal");
     passwordModal.openModal();
   });
 
@@ -125,5 +125,5 @@ export async function render(): Promise<void> {
       location.reload();
     }
   });
- 
+
 }

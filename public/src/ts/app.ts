@@ -13,8 +13,8 @@ type AuthResponse = {
     name: string;
     email: string;
     household?: string | null;
-    mobileNo?:string | null;
-    createdAt:string;
+    mobileNo?: string | null;
+    createdAt: string;
     // add other fields if needed
   };
 }
@@ -61,7 +61,7 @@ async function renderLanding(): Promise<void> {
   const app = document.getElementById("app");
   if (!app) return;
   document.body.className = "landing";
- await loadCSS("./css/landing.css");
+  await loadCSS("./css/landing.css");
   app.innerHTML = `
     <div class="start-page">
       <div class="overlay">
@@ -102,7 +102,7 @@ export async function renderAuth(runInitAuth = true): Promise<void> {
   const app = document.getElementById("app");
   if (!app) return;
   document.body.className = "auth";
-   await loadCSS("./css/auth.css");
+  await loadCSS("./css/auth.css");
 
   app.innerHTML = `<div class="container">
       <div class="left">
@@ -206,7 +206,7 @@ export function initAuth(onAuthSuccess: () => void): void {
         document.body.className = "";
         onAuthSuccess();
         window.history.replaceState({}, "", window.location.pathname);
-    
+
       } catch (error: any) {
         alert("Login failed. Please try again.");
         console.error(error);

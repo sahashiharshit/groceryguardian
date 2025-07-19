@@ -215,20 +215,20 @@ export const respondToInvitation = async (req: Request, res: Response): Promise<
     res.status(400).json({ error: "Invalid action" });
 };
 
-export const getMyInvitations = async(req:Request,res:Response):Promise<void> =>{
+export const getMyInvitations = async (req: Request, res: Response): Promise<void> => {
 
- const userId = req.user?.id;
+    const userId = req.user?.id;
 
-  if (!userId) {
-     res.status(401).json({ error: "Unauthorized" });
-     return;
-  }
+    if (!userId) {
+        res.status(401).json({ error: "Unauthorized" });
+        return;
+    }
 
-  
+
     const invitations = await Invitation.find({ recipient: userId, status: "pending" })
-      .populate("household", "name")
-      .populate("sender", "name email");
+        .populate("household", "name")
+        .populate("sender", "name email");
 
     res.json(invitations);
- 
+
 };

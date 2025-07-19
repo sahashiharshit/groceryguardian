@@ -2,12 +2,12 @@ import { apiFetch } from "../../services/api";
 import { setPageTitle } from "../app";
 
 setPageTitle("Inventory")
-type PantryItem ={
- _id: string;
+type PantryItem = {
+  _id: string;
   itemName: string;
   quantity: number;
   category?: string;
-  unit?:string;
+  unit?: string;
   addedBy: string;
   purchaseDate?: string;
   expirationDate?: string;
@@ -16,14 +16,14 @@ type PantryItem ={
 
 }
 
-export async function render():Promise<void>{
-    
-   const view =document.getElementById("view");
-   if(!view) return;
-   
-   view.innerHTML=`<h2>Inventory</h2><p>Loading Items...</p>`;
-    
-    try {
+export async function render(): Promise<void> {
+
+  const view = document.getElementById("view");
+  if (!view) return;
+
+  view.innerHTML = `<h2>Inventory</h2><p>Loading Items...</p>`;
+
+  try {
     const items: PantryItem[] = await apiFetch("/api/pantry", { method: "GET" });
 
     if (!Array.isArray(items) || items.length === 0) {
@@ -59,7 +59,7 @@ export async function render():Promise<void>{
 
       list.appendChild(card);
     });
-    view.innerHTML=" ";
+    view.innerHTML = " ";
     view.appendChild(list);
 
   } catch (error: any) {
@@ -69,6 +69,6 @@ export async function render():Promise<void>{
       <p>🚨 Error loading inventory. Try again later.</p>
     `;
   }
-   
-  
+
+
 }

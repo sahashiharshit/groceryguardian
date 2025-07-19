@@ -14,10 +14,10 @@ declare global {
 
 let hasRenderedDashboard = false;
 let cleanupFns: (() => void)[] = [];
-let pageTitle ="Dashboard";
-export function setPageTitle(title:string):void {
-pageTitle = title;
-const pageTitleElement = document.getElementById("pageTitle");
+let pageTitle = "Dashboard";
+export function setPageTitle(title: string): void {
+  pageTitle = title;
+  const pageTitleElement = document.getElementById("pageTitle");
   if (pageTitleElement) {
     pageTitleElement.textContent = title;
   }
@@ -40,24 +40,24 @@ const sidebarHTML = `
 function setupLogoutButton(): void {
   const logoutBtn = document.getElementById('logoutBtn');
   const handler = () => {
-  console.log("👉 Logging out");
-   
+    console.log("👉 Logging out");
+
     localStorage.removeItem('accesstoken');
     localStorage.removeItem('user')
-    
+
     window._routingSetupDone = false;
     hasRenderedDashboard = false;
     window.location.hash = "#";
 
-     console.log("✅ Cleared hash, calling renderAuth");
+    console.log("✅ Cleared hash, calling renderAuth");
     renderAuth(false);
     setTimeout(() => {
-    initAuth(() => {
-      console.log("🔥 Auth success after logout");
-      (window as any).hmrLoad?.("./dashboard/app.js");
-      renderDashboardLayout();
-    });
-  }, 0);
+      initAuth(() => {
+        console.log("🔥 Auth success after logout");
+        (window as any).hmrLoad?.("./dashboard/app.js");
+        renderDashboardLayout();
+      });
+    }, 0);
   }
   logoutBtn?.addEventListener('click', handler);
   cleanupFns.push(() => logoutBtn?.removeEventListener("click", handler));
@@ -65,7 +65,7 @@ function setupLogoutButton(): void {
 
 
 export async function renderDashboardLayout(): Promise<void> {
-const token = localStorage.getItem("accesstoken");
+  const token = localStorage.getItem("accesstoken");
   if (!token) {
     console.warn("⛔ No token, skipping dashboard render");
     return;
@@ -89,9 +89,9 @@ const token = localStorage.getItem("accesstoken");
     </div>`;
 
   setupLogoutButton();
-   await loadCSSAndWait("../css/dashboard.css");
+  await loadCSSAndWait("../css/dashboard.css");
 
-  
+
   if (!window._routingSetupDone) {
     window.addEventListener("hashchange", handleRouting);
     window.addEventListener("DOMContentLoaded", handleRouting);
@@ -102,7 +102,7 @@ const token = localStorage.getItem("accesstoken");
     window._routingSetupDone = true;
   }
 
- setTimeout(() => handleRouting(), 0);
+  setTimeout(() => handleRouting(), 0);
 }
 
 export function init() {
