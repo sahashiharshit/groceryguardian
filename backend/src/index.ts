@@ -31,6 +31,7 @@ async function startServer() {
     await mongoose.connect(mongoURI);
     console.log("Connected to MongoDB");
 
+    app.set('trust proxy',true);
     //Global middlewares
 
     //app.use(helmet());
