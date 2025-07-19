@@ -1,8 +1,8 @@
 import {Router} from 'express';
 
-import * as rawHouseholdController from "../controllers/household.controller";
-import { wrapControllers } from '../utils/wrapControllers';
-import { authenticationMiddleware } from '../middlewares/authentication.middleware';
+import * as rawHouseholdController from "../controllers/household.controller.js";
+import { wrapControllers } from '../utils/wrapControllers.js';
+import { authenticationMiddleware } from '../middlewares/authentication.middleware.js';
 const householdController = wrapControllers(rawHouseholdController);
 const router =Router();
 

@@ -1,10 +1,10 @@
 
 import type { Request, Response } from "express";
-import Household, { ROLES } from "../models/Household";
-import { Schema, Types } from "mongoose";
-import User from "../models/User";
-import Invitation from "../models/Invitation";
-import GroceryListItem from "../models/GroceryListItem";
+import Household, { ROLES } from "../models/Household.js";
+import {Types } from "mongoose";
+import User from "../models/User.js";
+import Invitation from "../models/Invitation.js";
+import GroceryListItem from "../models/GroceryListItem.js";
 
 
 export const createHousehold = async (req: Request, res: Response): Promise<void> => {
