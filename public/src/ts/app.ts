@@ -201,6 +201,7 @@ export function initAuth(onAuthSuccess: () => void): void {
           method: "POST",
           body: { email, password },
         });
+        console.log(data.accessToken)
         localStorage.setItem("accesstoken", data.accessToken);
         localStorage.setItem("user", JSON.stringify(data.user));
         document.body.className = "";
