@@ -1,7 +1,7 @@
 
-import { renderDashboardLayout } from "./dashboard/app";
+import { renderDashboardLayout } from "./dashboard/app.js";
 
-import { apiFetch } from "./services/api";
+import { apiFetch } from "./services/api.js";
 
 
 let cleanupCallbacks: (() => void)[] = [];
