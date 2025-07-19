@@ -201,9 +201,10 @@ export function initAuth(onAuthSuccess: () => void): void {
           method: "POST",
           body: { email, password },
         });
-        console.log(data.accessToken)
+  
         localStorage.setItem("accesstoken", data.accessToken);
         localStorage.setItem("user", JSON.stringify(data.user));
+        console.log(localStorage.getItem("accesstoken"));
         document.body.className = "";
         onAuthSuccess();
         window.history.replaceState({}, "", window.location.pathname);
