@@ -3,7 +3,7 @@ import type { Application } from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
-//import morgan from "morgan";
+import morgan from "morgan";
 //import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
@@ -31,7 +31,7 @@ async function startServer() {
     await mongoose.connect(mongoURI);
     console.log("Connected to MongoDB");
 
-    app.set('trust proxy',true);
+    app.set('trust proxy',1);
     //Global middlewares
 
     //app.use(helmet());
@@ -43,7 +43,7 @@ async function startServer() {
         credentials: true,
       })
     );
-    //app.use(morgan("dev")); // Logging middleware
+    app.use(morgan("dev")); // Logging middleware
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
     app.use(cookieParser());
@@ -78,7 +78,7 @@ process.on('unhandledRejection', (reason, promise) => {
     console.error('Reason:', reason.message);
     console.error(reason.stack);
   } else {
-    // Try to stringify if not an Error
+   
     try {
       console.error('Reason (non-Error):', JSON.stringify(reason, null, 2));
     } catch {
