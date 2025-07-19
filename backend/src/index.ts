@@ -56,11 +56,11 @@ async function startServer() {
     app.use(limiter);
 
     //Api Routes
-    app.use("/auth", authenticationRoutes);
-    app.use("/users", userRoutes);
-    app.use("/households", householdRoutes);
-    app.use("/grocery", groceryroutes);
-    app.use("/pantry", pantryRoutes);
+    app.use("/api/auth", authenticationRoutes);
+    app.use("/api/users", userRoutes);
+    app.use("/api/households", householdRoutes);
+    app.use("/api/grocery", groceryroutes);
+    app.use("/api/pantry", pantryRoutes);
 
     app.use(globalErrorHandler);
 
