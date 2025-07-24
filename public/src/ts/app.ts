@@ -169,7 +169,7 @@ export async function renderAuth(runInitAuth = true): Promise<void> {
 
 export async function init() {
   try {
-      const data = await apiFetch<AuthResponse>("/users/me");
+      const data = await apiFetch<AuthResponse>("/users/getuser");
       localStorage.setItem("user",JSON.stringify(data.user));
    (window as any).hmrLoad?.("./dashboard/app.js");     
   } catch (error) {
