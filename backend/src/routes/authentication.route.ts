@@ -1,3 +1,5 @@
+
+
 import {Router} from 'express';
 import * as rawAuthController from '../controllers/autentication.controller.js';
 import { validateLogin, validateRegister } from '../validators/auth.validator.js';

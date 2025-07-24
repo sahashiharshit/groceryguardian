@@ -7,7 +7,7 @@ export async function getAccessToken(): Promise<string | null> {
    
     const payload = token ? JSON.parse(atob(token.split('.')[1])) : null;
     const isExpired = payload ? Date.now() >= payload.exp * 100 : true;
-
+    console.log(isExpired);
     if (!isExpired) return token;
 
 

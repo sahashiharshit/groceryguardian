@@ -15,7 +15,7 @@ type AuthResponse = {
     household?: string | null;
     mobileNo?: string | null;
     createdAt: string;
-    // add other fields if needed
+    
   };
 }
 
@@ -202,9 +202,9 @@ export function initAuth(onAuthSuccess: () => void): void {
           body: { email, password },
         });
   
-        localStorage.setItem("accesstoken", data.accessToken);
+ 
         localStorage.setItem("user", JSON.stringify(data.user));
-        console.log(localStorage.getItem("accesstoken"));
+      
         document.body.className = "";
         onAuthSuccess();
         window.history.replaceState({}, "", window.location.pathname);
@@ -230,7 +230,7 @@ export function initAuth(onAuthSuccess: () => void): void {
           method: "POST",
           body: { name, email, mobileNo, password },
         });
-        localStorage.setItem("accesstoken", data.accessToken);
+      
         localStorage.setItem("user", JSON.stringify(data.user));
         document.body.className = "";
         onAuthSuccess();

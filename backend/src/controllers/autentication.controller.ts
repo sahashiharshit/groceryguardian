@@ -7,7 +7,7 @@ import { generateAuthToken, generateRefreshToken } from "../services/tokengenera
 
 
 
-type RegisterRequestBody ={
+type RegisterRequestBody = {
   name: string;
   email: string;
   mobileNo: string;
@@ -38,6 +38,12 @@ export const login = async (req: Request<{}, {}, LoginRequestBody>, res: Respons
 
   const accessToken = generateAuthToken(id.toString());
 
+  res.cookie("accesstoken", accessToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'strict',
+    maxAge: 15 * 60 * 1000,
+  });
   const refreshToken = generateRefreshToken(id.toString());
   res.cookie("refreshtoken", refreshToken, {
     httpOnly: true,
@@ -47,14 +53,14 @@ export const login = async (req: Request<{}, {}, LoginRequestBody>, res: Respons
   });
   res.status(200).json({
     message: "Login successful",
-    user:{
-    id:user._id,
-    name:user.name,
-    email:user.email,
-    householdId:user.householdId,
-    mobileNo:user.mobileNo,
-    createdAt:user.createdAt,
-    
+    user: {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      householdId: user.householdId,
+      mobileNo: user.mobileNo,
+      createdAt: user.createdAt,
+
     },
     accessToken
   });
@@ -76,6 +82,12 @@ export const register = async (req: Request<{}, {}, RegisterRequestBody>, res: R
   const id = user.id.toString() as string;
 
   const accessToken = generateAuthToken(id);
+  res.cookie("accesstoken", accessToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'strict',
+    maxAge: 15 * 60 * 1000,
+  });
   const refreshToken = generateRefreshToken(id);
   res.cookie("refreshtoken", refreshToken, {
     httpOnly: true,
@@ -87,12 +99,12 @@ export const register = async (req: Request<{}, {}, RegisterRequestBody>, res: R
     message: "Signup successful",
     user: {
       id: user._id,
-      name:user.name,
-    email:user.email,
-    householdId:user.householdId,
-    mobileNo:user.mobileNo,
-    createdAt:user.createdAt,
-    
+      name: user.name,
+      email: user.email,
+      householdId: user.householdId,
+      mobileNo: user.mobileNo,
+      createdAt: user.createdAt,
+
     },
     accessToken
   });
@@ -103,14 +115,27 @@ export const register = async (req: Request<{}, {}, RegisterRequestBody>, res: R
 export const refreshToken = async (req: Request, res: Response): Promise<void> => {
 
   const refreshToken = req.cookies?.refreshtoken;
-  
+
   if (!refreshToken) {
 
     res.status(401).json({ message: "No refersh token" });
+    return;
   }
 
-  const decoded = jwt.verify(refreshToken, process.env.REFRESH_SECRET_KEY!) as { id: string };
-  const newAccessToken = generateAuthToken(decoded.id);
-  res.json({ accessToken: newAccessToken })
-  return;
-}
+  try {
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_SECRET_KEY!) as { id: string };
+    const newAccessToken = generateAuthToken(decoded.id);
+    res.cookie('accesstoken', newAccessToken, {
+
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      maxAge: 1000 * 60 * 15,
+    });
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Refresh token invalid:", error);
+    res.status(403).json({ message: "Invalid or expired refresh token" });
+  }
+
+};
