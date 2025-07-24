@@ -61,8 +61,7 @@ export const login = async (req: Request<{}, {}, LoginRequestBody>, res: Respons
       mobileNo: user.mobileNo,
       createdAt: user.createdAt,
 
-    },
-    accessToken
+    }
   });
   return;
 

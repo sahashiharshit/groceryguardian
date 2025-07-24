@@ -7,7 +7,7 @@ import { apiFetch } from "./services/api.js";
 let cleanupCallbacks: (() => void)[] = [];
 type AuthResponse = {
 
-  accessToken: string;
+  
   user: {
     _id: string;
     name: string;
@@ -167,9 +167,15 @@ export async function renderAuth(runInitAuth = true): Promise<void> {
   }
 }
 
-export function init() {
-  const token = localStorage.getItem("accesstoken");
-  token ? (window as any).hmrLoad?.("./dashboard/app.js") : renderLanding();
+export async function init() {
+  try {
+      const data = await apiFetch<AuthResponse>("/users/me");
+      localStorage.setItem("user",JSON.stringify(data.user));
+   (window as any).hmrLoad?.("./dashboard/app.js");     
+  } catch (error) {
+     console.log("🔒 Not logged in via cookie, showing landing page.");
+      renderLanding();
+  }
 }
 export function dispose() {
   console.log("♻️ Disposing app before hot reload");
