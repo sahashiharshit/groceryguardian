@@ -20,6 +20,7 @@ export const authenticationMiddleware = async (req: AuthenticatedRequest, res: R
 
 
     const token = req.cookies?.accesstoken || (req.headers['authorization']?.startsWith("Bearer ")?req.headers["authorization"].split(" ")[1]:null);
+    console.log("inside middleware function:",token);
     if (!token) {
         res.status(401).json({ message: "Token missing from authorization header" });
         return;
