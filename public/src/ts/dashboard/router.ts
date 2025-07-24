@@ -48,11 +48,7 @@ export async function importView(viewName: string, cssFiles: string | string[]):
 
 let lastHash = "";
 export function handleRouting(): void {
-    const token = localStorage.getItem("accesstoken");
-    if (!token) {
-        console.warn("🔐 No token, aborting route");
-        return;
-    }
+   
     const hash = window.location.hash.replace('#', '') || 'groceries';
     console.log("Routing to:", hash);
     if (hash === lastHash) return;

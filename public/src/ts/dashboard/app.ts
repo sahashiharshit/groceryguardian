@@ -1,5 +1,6 @@
 
 import { initAuth, renderAuth } from '../app.js';
+import { apiFetch } from '../services/api.js';
 import { handleRouting } from './router.js';
 import { loadCSSAndWait } from './utils/loadcss.js';
 
@@ -65,11 +66,7 @@ function setupLogoutButton(): void {
 
 
 export async function renderDashboardLayout(): Promise<void> {
-  const token = localStorage.getItem("accesstoken");
-  if (!token) {
-    console.warn("⛔ No token, skipping dashboard render");
-    return;
-  }
+  
   if (hasRenderedDashboard) return;
   hasRenderedDashboard = true;
   const app = document.getElementById("app");
@@ -105,9 +102,17 @@ export async function renderDashboardLayout(): Promise<void> {
   setTimeout(() => handleRouting(), 0);
 }
 
-export function init() {
-  const token = localStorage.getItem("accesstoken");
-  token ? renderDashboardLayout() : renderAuth();
+export async function init() {
+ try {
+    const data = await apiFetch("/users/getuser",{
+    method:"GET",
+    });
+    if(!data) throw new Error("Not authenticated");
+    renderDashboardLayout();
+ } catch (error) {
+   console.warn("Not logged in, showing auth screen.");
+    renderAuth();
+ }
 }
 
 export function dispose() {
