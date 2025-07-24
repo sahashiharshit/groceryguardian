@@ -41,14 +41,14 @@ export const login = async (req: Request<{}, {}, LoginRequestBody>, res: Respons
   res.cookie("accesstoken", accessToken, {
     httpOnly: true,
     secure: true,
-    sameSite: 'strict',
+    sameSite: 'none',
     maxAge: 15 * 60 * 1000,
   });
   const refreshToken = generateRefreshToken(id.toString());
   res.cookie("refreshtoken", refreshToken, {
     httpOnly: true,
     secure: true, // Use secure cookies in production
-    sameSite: 'strict', // Prevent CSRF attacks
+    sameSite: 'none', // Prevent CSRF attacks
     maxAge: 7 * 24 * 60 * 60 * 1000 // 7 day 
   });
   res.status(200).json({
@@ -84,14 +84,14 @@ export const register = async (req: Request<{}, {}, RegisterRequestBody>, res: R
   res.cookie("accesstoken", accessToken, {
     httpOnly: true,
     secure: true,
-    sameSite: 'strict',
+    sameSite: 'none',
     maxAge: 15 * 60 * 1000,
   });
   const refreshToken = generateRefreshToken(id);
   res.cookie("refreshtoken", refreshToken, {
     httpOnly: true,
     secure: true, // Use secure cookies in production
-    sameSite: 'strict', // Prevent CSRF attacks
+    sameSite: 'none', // Prevent CSRF attacks
     maxAge: 7 * 24 * 60 * 60 * 1000 // 7 day 
   });
   res.status(200).json({
@@ -128,7 +128,7 @@ export const refreshToken = async (req: Request, res: Response): Promise<void> =
 
       httpOnly: true,
       secure: true,
-      sameSite: 'strict',
+      sameSite: 'none',
       maxAge: 1000 * 60 * 15,
     });
     res.json({ success: true });
