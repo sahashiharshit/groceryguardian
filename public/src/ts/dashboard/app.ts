@@ -41,8 +41,8 @@ const sidebarHTML = `
 function setupLogoutButton(): void {
   const logoutBtn = document.getElementById('logoutBtn');
   const handler = async () => {
-    const res = await apiFetch('/auth/logout',{method:"POST"});
-    
+    const res = await apiFetch('/auth/logout', { method: "POST" });
+
     localStorage.removeItem('user')
 
     window._routingSetupDone = false;
@@ -52,7 +52,7 @@ function setupLogoutButton(): void {
     renderAuth(false);
     setTimeout(() => {
       initAuth(() => {
-        
+
         (window as any).hmrLoad?.("./dashboard/app.js");
         renderDashboardLayout();
       });
@@ -74,6 +74,7 @@ export async function renderDashboardLayout(): Promise<void> {
      ${sidebarHTML}
       <main class="main-content">
         <header class="topbar">
+        <button class="menu-toggle" id="sidebarToggle" aria-label="Toggle Sidebar">&#9776;</button>
           <h1 id="pageTitle">${pageTitle}</h1>
         </header>
 
@@ -82,7 +83,19 @@ export async function renderDashboardLayout(): Promise<void> {
         </section>
       </main>
     </div>`;
+  const sidebar = document.querySelector(".sidebar");
+  const toggleBtn = document.getElementById("sidebarToggle");
 
+  toggleBtn?.addEventListener("click", () => {
+    sidebar?.classList.toggle("open");
+    // Optionally: close on outside click
+    document.addEventListener("click", function closeOutside(e) {
+      if (!sidebar?.contains(e.target as Node) && e.target !== toggleBtn) {
+        sidebar?.classList.remove("open");
+        document.removeEventListener("click", closeOutside);
+      }
+    });
+  });
   setupLogoutButton();
   await loadCSSAndWait("../css/dashboard.css");
 
@@ -98,6 +111,7 @@ export async function renderDashboardLayout(): Promise<void> {
   }
 
   setTimeout(() => handleRouting(), 0);
+
 }
 
 export async function init() {

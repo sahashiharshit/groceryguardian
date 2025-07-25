@@ -270,12 +270,20 @@ export function initAuth(onAuthSuccess: () => void): void {
   });
 
   // Mobile drawer toggle
-  document.querySelector(".mobile-menu-icon span")?.addEventListener("click", () => {
-    document.querySelector(".mobile-drawer")?.classList.toggle("show");
+  const drawer = document.querySelector(".mobile-drawer");
+  const icon = document.querySelector(".mobile-menu-icon span");
+  icon?.addEventListener("click", () => {
+    drawer?.classList.toggle("show");
   });
 
-  document.querySelector(".drawer-login")?.addEventListener("click", () => loginBtn?.click());
-  document.querySelector(".drawer-signup")?.addEventListener("click", () => signupBtn?.click());
+  document.querySelector(".drawer-login")?.addEventListener("click", () => {
+    loginBtn?.click();
+    drawer?.classList.remove("show");
+  });
+  document.querySelector(".drawer-signup")?.addEventListener("click", () => {
+    signupBtn?.click();
+    drawer?.classList.remove("show");
+  });
 
 
 

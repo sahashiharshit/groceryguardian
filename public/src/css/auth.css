@@ -1,5 +1,3 @@
-
-
 .container {
   display: flex;
   width: 100%;
@@ -9,7 +7,6 @@
 
 /* LEFT SIDE */
 .left {
-  
   flex: 1;
   background-color: #458786;
   color: white;
@@ -23,12 +20,10 @@
   min-height: 100vh; /* 👈 ensures it fills the viewport vertically */
   height: 100vh;
   background-image: url("../assets/left-side.png");
-  background-size: cover;        /* 👈 covers the full container */
-  background-position: center;  /* 👈 keeps focus centered */
+  background-size: cover; /* 👈 covers the full container */
+  background-position: center; /* 👈 keeps focus centered */
   background-repeat: no-repeat;
 }
-
-
 
 /* Hamburer icon */
 .mobile-menu-icon {
@@ -57,7 +52,7 @@
   z-index: 998;
 }
 
-.mobile-drawer.open {
+.mobile-drawer.show {
   display: flex;
   left: 0;
 }
@@ -114,13 +109,13 @@
   background: none;
 }
 .forms-wrapper {
- width: 100%;
+  width: 100%;
   max-width: 400px;
   position: relative;
 }
 /* Form styles */
 .form {
- display: flex;
+  display: flex;
   flex-direction: column;
   gap: 1.2rem;
   opacity: 0;
@@ -130,7 +125,6 @@
   position: absolute;
   width: 100%;
 }
-
 
 .form.active {
   opacity: 1;
@@ -229,6 +223,13 @@
 }
 
 @media (max-width: 960px) {
+  .left {
+    background: none;
+    background-color: #458786;
+    min-height: 40vh;
+    justify-content: flex-start;
+    padding-top: 3rem;
+  }
   .mobile-menu-icon {
     display: block;
   }
@@ -291,5 +292,37 @@
   .toggle-buttons {
     right: 60px;
     top: 60px;
+  }
+}
+@media (max-width: 480px) {
+  .form h2 {
+    font-size: 1.5rem;
+  }
+
+  .form input,
+  .form button {
+    font-size: 1rem;
+    padding: 1rem;
+    width: 100%;
+  }
+
+  .link-button {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .logo {
+    max-width: 80px;
+    margin-bottom: 1rem;
+  }
+
+  .forms-wrapper {
+    padding: 0 1rem;
+  }
+
+  .auth-btn {
+    font-size: 1rem;
+    padding: 10px 20px;
   }
 }
