@@ -58,11 +58,16 @@ export async function render(): Promise<void> {
     view.appendChild(renderGroup("⏲️ Items without Expiration", withoutExpiry));
 
   } catch (error: any) {
-    console.error("Error fetching pantry items:", error);
-    view.innerHTML = `
-      <h2>Inventory</h2>
-      <p>🚨 Error loading inventory. Try again later.</p>
-    `;
+   const view = document.getElementById('view');
+    if (view) {
+      view.innerHTML = `<div class="error">
+      <p>Error loading groceries. Please try again later.</p>
+      <button id="retry-load">Retry</button>
+      </div>`;
+      document.getElementById("retry-load")?.addEventListener("click", () => {
+        render();
+      });
+    }
   }
 
 
