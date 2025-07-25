@@ -37,26 +37,42 @@ export async function render(): Promise<void> {
       `;
       return;
     }
-    // 🧠 Group items
-    const withBarcode: PantryItem[] = [];
-    const withExpiry: PantryItem[] = [];
-    const withoutExpiry: PantryItem[] = [];
+   const withBarcode = items.filter((item) => item.barcode);
+    const withExpiry = items.filter((item) => item.expirationDate);
+    const withoutExpiry = items.filter((item) => !item.expirationDate);
 
-    items.forEach(item => {
-      if (item.barcode) {
-        withBarcode.push(item);
-      } else if (item.expirationDate) {
-        withExpiry.push(item);
-      } else {
-        withoutExpiry.push(item);
-      }
+    view.innerHTML = `
+      <h2>Inventory</h2>
+      <div class="tab-bar">
+        <button class="tab-btn active" data-tab="barcode">📦 With Barcode</button>
+        <button class="tab-btn" data-tab="expiry">📅 With Expiry</button>
+        <button class="tab-btn" data-tab="no-expiry">⏲️ Without Expiry</button>
+      </div>
+      <div class="tab-content" id="barcode">${renderCards(withBarcode)}</div>
+      <div class="tab-content hidden" id="expiry">${renderCards(withExpiry)}</div>
+      <div class="tab-content hidden" id="no-expiry">${renderCards(withoutExpiry)}</div>
+    `;
 
+    // Tab click handling
+    const buttons = document.querySelectorAll(".tab-btn");
+    const contents = document.querySelectorAll(".tab-content");
+
+    buttons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const target = btn.getAttribute("data-tab");
+
+        buttons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        contents.forEach(c => {
+          if (c.id === target) {
+            c.classList.remove("hidden");
+          } else {
+            c.classList.add("hidden");
+          }
+        });
+      });
     });
-    view.innerHTML = `<h2>Inventory</h2>`;
-    view.appendChild(renderGroup("📦 Items with Barcode", withBarcode));
-    view.appendChild(renderGroup("📅 Items with Expiration Date", withExpiry));
-    view.appendChild(renderGroup("⏲️ Items without Expiration", withoutExpiry));
-
   } catch (error: any) {
    const view = document.getElementById('view');
     if (view) {
@@ -73,58 +89,32 @@ export async function render(): Promise<void> {
 
 }
 
-function renderGroup(title: string, items: PantryItem[]): HTMLElement {
+function renderCards(items: PantryItem[]): string {
+  if (!items.length) return `<p>No items in this category.</p>`;
 
-  const groupWrapper = document.createElement("div");
-  groupWrapper.className = "inventory-group";
-
-  const heading = document.createElement("h3");
-  heading.textContent = title;
-  groupWrapper.appendChild(heading);
-
-  if (items.length === 0) {
-    const empty = document.createElement("p");
-    empty.textContent = "No items in this category.";
-    groupWrapper.appendChild(empty);
-    return groupWrapper;
-  }
- const cardGrid = document.createElement("div");
-  cardGrid.className = "inventory-list";
-
-  items.forEach((item) => {
-    const card = document.createElement("div");
-    card.className = "inventory-card";
-
-    const status = item.isAvailable === false ? "❌ Unavailable" : "✔️ Available";
-    
-    let expiredTag = "";
-    if (item.expirationDate) {
-      const today = new Date();
-      const expiry = new Date(item.expirationDate);
-      if (expiry < today) {
-        expiredTag = `<p class="expired-tag">⚠️ <strong>Expired on:</strong> ${expiry.toLocaleDateString()}</p>`;
-         card.classList.add("expired");
-      }
-    }
-
-    card.innerHTML = `
-      <div class="card-left">
-        <h3>${item.itemName}</h3>
-        <p><strong>Qty:</strong> ${item.quantity} ${item.unit || ""}</p>
-        ${item.category ? `<p><strong>Category:</strong> ${item.category.name}</p>` : ""}
-        ${item.purchaseDate ? `<p><strong>Purchased:</strong> ${new Date(item.purchaseDate).toLocaleDateString()}</p>` : ""}
-        ${item.expirationDate ? `<p><strong>Expires:</strong> ${new Date(item.expirationDate).toLocaleDateString()}</p>` : ""}
-        ${expiredTag}
-        ${item.barcode ? `<p><strong>Barcode:</strong> ${item.barcode}</p>` : ""}
-        ${item.notes ? `<p><strong>Notes:</strong> ${item.notes}</p>` : ""}
-      </div>
-      <div class="card-right">
-        <p><strong>Status:</strong> ${status}</p>
-      </div>
-    `;
-
-  cardGrid.appendChild(card); 
-  });
-groupWrapper.appendChild(cardGrid);
-  return groupWrapper;
+  return `
+    <div class="inventory-list">
+      ${items.map(item => {
+        const status = item.isAvailable === false ? "❌ Unavailable" : "✔️ Available";
+        const expired = item.expirationDate && new Date(item.expirationDate) < new Date();
+        return `
+          <div class="inventory-card ${expired ? "expired" : ""}">
+            <div class="card-left">
+              <h3>${item.itemName}</h3>
+              <p><strong>Qty:</strong> ${item.quantity} ${item.unit || ""}</p>
+              ${item.category ? `<p><strong>Category:</strong> ${item.category.name}</p>` : ""}
+              ${item.purchaseDate ? `<p><strong>Purchased:</strong> ${new Date(item.purchaseDate).toLocaleDateString("en-GB")}</p>` : ""}
+              ${item.expirationDate ? `<p><strong>Expires:</strong> ${new Date(item.expirationDate).toLocaleDateString("en-GB")}</p>` : ""}
+              ${expired ? `<p class="expired-tag">⚠️ <strong>Expired</strong></p>` : ""}
+              ${item.barcode ? `<p><strong>Barcode:</strong> ${item.barcode}</p>` : ""}
+              ${item.notes ? `<p><strong>Notes:</strong> ${item.notes}</p>` : ""}
+            </div>
+            <div class="card-right">
+              <p><strong>Status:</strong> ${status}</p>
+            </div>
+          </div>
+        `;
+      }).join("")}
+    </div>
+  `;
 }
