@@ -42,7 +42,7 @@ export async function render(): Promise<void> {
     const withoutExpiry = items.filter((item) => !item.expirationDate);
 
     view.innerHTML = `
-      <h2>Inventory</h2>
+     
       <div class="tab-bar">
         <button class="tab-btn active" data-tab="barcode">📦 With Barcode</button>
         <button class="tab-btn" data-tab="expiry">📅 With Expiry</button>
@@ -74,6 +74,10 @@ export async function render(): Promise<void> {
       });
     });
   } catch (error: any) {
+  const res =  await apiFetch('/auth/refresh');
+    if(res){
+    render();
+    }
    const view = document.getElementById('view');
     if (view) {
       view.innerHTML = `<div class="error">

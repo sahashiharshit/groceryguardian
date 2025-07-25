@@ -180,7 +180,10 @@ export async function render(): Promise<void> {
     view.appendChild(layout)
 
   } catch (error) {
-   
+    const res =  await apiFetch('/auth/refresh');
+    if(res){
+    render();
+    }
     const view = document.getElementById('view');
     if (view) {
       view.innerHTML = `<div class="error">
