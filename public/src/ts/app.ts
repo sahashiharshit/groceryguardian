@@ -7,7 +7,7 @@ import { apiFetch } from "./services/api.js";
 let cleanupCallbacks: (() => void)[] = [];
 type AuthResponse = {
 
-  
+
   user: {
     _id: string;
     name: string;
@@ -15,7 +15,7 @@ type AuthResponse = {
     household?: string | null;
     mobileNo?: string | null;
     createdAt: string;
-    
+
   };
 }
 
@@ -23,7 +23,7 @@ const loadedCSS = new Set<string>();
 function loadCSS(href: string): Promise<void> {
   // Avoid reloading already loaded styles
   if (loadedCSS.has(href)) {
-    console.log(`🟢 CSS already loaded: ${href}`);
+
     return Promise.resolve();
   }
 
@@ -32,7 +32,7 @@ function loadCSS(href: string): Promise<void> {
     const linkHref = link.getAttribute("href");
     if (linkHref && !loadedCSS.has(linkHref)) {
       link.remove();
-      console.log(`🧹 Removed previous CSS: ${linkHref}`);
+
     }
   });
 
@@ -43,7 +43,7 @@ function loadCSS(href: string): Promise<void> {
     link.href = href;
     link.dataset.dynamic = "true";
     link.onload = () => {
-      console.log(`✅ Loaded CSS: ${href}`);
+
       loadedCSS.add(href);
       resolve();
     };
@@ -146,7 +146,7 @@ export async function renderAuth(runInitAuth = true): Promise<void> {
 
   if (runInitAuth) {
     initAuth(() => {
-      console.log("🔥 Auth success: loading dashboard");
+
       (window as any).hmrLoad?.("./dashboard/app.js");
       setTimeout(() => {
         const interval = setInterval(async () => {
@@ -169,16 +169,16 @@ export async function renderAuth(runInitAuth = true): Promise<void> {
 
 export async function init() {
   try {
-      const data = await apiFetch<AuthResponse>("/users/getuser");
-      localStorage.setItem("user",JSON.stringify(data.user));
-   (window as any).hmrLoad?.("./dashboard/app.js");     
+    const data = await apiFetch<AuthResponse>("/users/getuser");
+    localStorage.setItem("user", JSON.stringify(data.user));
+    (window as any).hmrLoad?.("./dashboard/app.js");
   } catch (error) {
-     console.log("🔒 Not logged in via cookie, showing landing page.");
-      renderLanding();
+
+    renderLanding();
   }
 }
 export function dispose() {
-  console.log("♻️ Disposing app before hot reload");
+
 
   const app = document.getElementById("app");
   if (app) app.innerHTML = "";
@@ -207,10 +207,10 @@ export function initAuth(onAuthSuccess: () => void): void {
           method: "POST",
           body: { email, password },
         });
-  
- 
+
+
         localStorage.setItem("user", JSON.stringify(data.user));
-      
+
         document.body.className = "";
         onAuthSuccess();
         window.history.replaceState({}, "", window.location.pathname);
@@ -236,7 +236,7 @@ export function initAuth(onAuthSuccess: () => void): void {
           method: "POST",
           body: { name, email, mobileNo, password },
         });
-      
+
         localStorage.setItem("user", JSON.stringify(data.user));
         document.body.className = "";
         onAuthSuccess();
@@ -260,8 +260,6 @@ export function initAuth(onAuthSuccess: () => void): void {
     });
 
   }
-
-
 
   signupBtn.addEventListener("click", () => {
     signupform?.classList.add("active");

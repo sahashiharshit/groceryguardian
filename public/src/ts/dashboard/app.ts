@@ -52,7 +52,7 @@ function setupLogoutButton(): void {
     renderAuth(false);
     setTimeout(() => {
       initAuth(() => {
-        console.log("🔥 Auth success after logout");
+        
         (window as any).hmrLoad?.("./dashboard/app.js");
         renderDashboardLayout();
       });
