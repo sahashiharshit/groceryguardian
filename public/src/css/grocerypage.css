@@ -111,6 +111,11 @@ li:hover {
 .full-width {
   width: 100%;
 }
+
+.expired-tag {
+  color: red;
+  font-weight: bold;
+}
 .error{
  background-color: #ffe4e6; /* soft red-pink background */
   color: #b91c1c; /* deep red text */

@@ -36,13 +36,21 @@ export async function render(): Promise<void> {
 
     const list = document.createElement("div");
     list.className = "inventory-list";
-
+    console.log(items);
     items.forEach((item) => {
       const card = document.createElement("div");
       card.className = "inventory-card";
 
       const status = item.isAvailable === false ? "❌ Unavailable" : "✔️ Available";
-
+      // 🔍 Expiration check
+      let expiredTag = "";
+      if (item.expirationDate) {
+        const today = new Date();
+        const expiry = new Date(item.expirationDate);
+        if (expiry < today) {
+          expiredTag = `<p class="expired-tag">⚠️ <strong>Expired on:</strong> ${expiry.toLocaleDateString()}</p>`;
+        }
+      }
       card.innerHTML = `
       <div class="card-left">
         <h3>${item.itemName}</h3>
@@ -50,6 +58,7 @@ export async function render(): Promise<void> {
         ${item.category ? `<p><strong>Category:</strong> ${item.category}</p>` : ""}
         ${item.purchaseDate ? `<p><strong>Purchased:</strong> ${new Date(item.purchaseDate).toLocaleDateString()}</p>` : ""}
         ${item.expirationDate ? `<p><strong>Expires:</strong> ${new Date(item.expirationDate).toLocaleDateString()}</p>` : ""}
+        ${expiredTag}
         ${item.notes ? `<p><strong>Notes:</strong> ${item.notes}</p>` : ""}
           </div>
           <div class="card-right">
