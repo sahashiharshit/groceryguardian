@@ -16,10 +16,10 @@ export const getPantryList = async (req: Request, res: Response): Promise<void> 
   }
   let pantryItems;
   if (user.householdId) {
-    pantryItems = await PantryItem.find({ householdId: user.householdId }).sort({ createdAt: -1 }).populate("category","name");
+    pantryItems = await PantryItem.find({ householdId: user.householdId }).sort({ createdAt: -1 }).populate("categoryId","name");
   } else {
 
-    pantryItems = await PantryItem.find({ addedBy: user._id, householdId: null }).sort({ createdAt: -1 }).populate("category","name");
+    pantryItems = await PantryItem.find({ addedBy: user._id, householdId: null }).sort({ createdAt: -1 }).populate("categoryId","name");
   }
 
   res.status(200).json(pantryItems);
