@@ -41,16 +41,14 @@ const sidebarHTML = `
 function setupLogoutButton(): void {
   const logoutBtn = document.getElementById('logoutBtn');
   const handler = async () => {
-    console.log("👉 Logging out");
     const res = await apiFetch('/auth/logout',{method:"POST"});
-    console.log(res);
+    
     localStorage.removeItem('user')
 
     window._routingSetupDone = false;
     hasRenderedDashboard = false;
     window.location.hash = "#";
 
-    console.log("✅ Cleared hash, calling renderAuth");
     renderAuth(false);
     setTimeout(() => {
       initAuth(() => {
