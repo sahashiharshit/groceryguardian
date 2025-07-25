@@ -88,6 +88,8 @@ function renderGroup(title: string, items: PantryItem[]): HTMLElement {
     groupWrapper.appendChild(empty);
     return groupWrapper;
   }
+ const cardGrid = document.createElement("div");
+  cardGrid.className = "inventory-list";
 
   items.forEach((item) => {
     const card = document.createElement("div");
@@ -121,8 +123,8 @@ function renderGroup(title: string, items: PantryItem[]): HTMLElement {
       </div>
     `;
 
-    groupWrapper.appendChild(card);
+  cardGrid.appendChild(card); 
   });
-
+groupWrapper.appendChild(cardGrid);
   return groupWrapper;
 }
