@@ -42,7 +42,7 @@ function setupLogoutButton(): void {
   const logoutBtn = document.getElementById('logoutBtn');
   const handler = async () => {
     console.log("👉 Logging out");
-    const res = await apiFetch('/auth/logout');
+    const res = await apiFetch('/auth/logout',{method:"POST"});
     console.log(res);
     localStorage.removeItem('user')
 
