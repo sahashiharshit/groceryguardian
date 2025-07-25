@@ -75,6 +75,7 @@ export async function render(): Promise<void> {
     });
   } catch (error: any) {
   const res =  await apiFetch('/auth/refresh');
+  console.log(res);
     if(res){
     render();
     }
