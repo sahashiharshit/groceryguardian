@@ -138,3 +138,18 @@ export const refreshToken = async (req: Request, res: Response): Promise<void> =
   }
 
 };
+
+export const logout = async (req:Request,res:Response):Promise<void> =>{
+  
+  res.clearCookie('accesstoken',{
+  httpOnly:true,
+  secure:false,
+  sameSite:'lax',
+  });
+  res.clearCookie('refreshtoken',{
+  httpOnly:true,
+  secure:false,
+  sameSite:'lax',
+  });
+  res.status(200).json({ message: 'Logged out successfully.' });
+}

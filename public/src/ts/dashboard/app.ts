@@ -40,10 +40,10 @@ const sidebarHTML = `
 
 function setupLogoutButton(): void {
   const logoutBtn = document.getElementById('logoutBtn');
-  const handler = () => {
+  const handler = async () => {
     console.log("👉 Logging out");
-
-    localStorage.removeItem('accesstoken');
+    const res = await apiFetch('/auth/logout');
+    console.log(res);
     localStorage.removeItem('user')
 
     window._routingSetupDone = false;
@@ -66,7 +66,7 @@ function setupLogoutButton(): void {
 
 
 export async function renderDashboardLayout(): Promise<void> {
-  
+
   if (hasRenderedDashboard) return;
   hasRenderedDashboard = true;
   const app = document.getElementById("app");
@@ -103,16 +103,16 @@ export async function renderDashboardLayout(): Promise<void> {
 }
 
 export async function init() {
- try {
-    const data = await apiFetch("/users/getuser",{
-    method:"GET",
+  try {
+    const data = await apiFetch("/users/getuser", {
+      method: "GET",
     });
-    if(!data) throw new Error("Not authenticated");
+    if (!data) throw new Error("Not authenticated");
     renderDashboardLayout();
- } catch (error) {
-   console.warn("Not logged in, showing auth screen.");
+  } catch (error) {
+    console.warn("Not logged in, showing auth screen.");
     renderAuth();
- }
+  }
 }
 
 export function dispose() {
