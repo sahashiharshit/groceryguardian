@@ -1,5 +1,5 @@
 
-export const API_BASE = "http://localhost:5000/api";
+export const API_BASE = "/api";
 
 type RequestOptions = {
   method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
