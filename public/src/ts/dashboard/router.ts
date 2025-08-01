@@ -6,7 +6,7 @@ type RouteHandler = () => void | Promise<void>;
 
 const routes: Record<string, RouteHandler> = {
 
-    groceries: () => importView('groceries', ['../css/grocerypage.css','../css/form.css','../css/modal.css']),
+    groceries: () => importView('groceries', ['../css/grocerypage.css','../css/modal.css','../css/form.css']),
     inventory: () => importView('inventory', ['../css/inventory.css']),
     settings: () => importView('settings', ['../css/account.css','../css/modal.css','../css/form.css']),
     group: () => importView('group', ["../css/group.css","../css/modal.css"]),
