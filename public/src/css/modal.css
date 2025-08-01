@@ -33,18 +33,20 @@ dialog:not([open]) {
 }
 
 .modal-content {
-  position: relative;
+ position: relative;
   background-color: #fff;
   border-radius: 12px;
   padding: 2rem;
   max-width: 700px;
-  width: 95%;
+  width: 100%;                  /* ✅ Ensures full responsiveness */
   margin: auto;
   z-index: 1001;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   animation: fadeInUp 0.3s ease-out;
   max-height: 90vh;
+  overflow-x: hidden;
   overflow-y: auto;
+  box-sizing: border-box;      
 }
 
 .modal-close {
@@ -68,5 +70,12 @@ dialog:not([open]) {
   to {
     transform: translateY(0px);
     opacity: 1;
+  }
+}
+@media (max-width: 600px) {
+  .modal-content {
+    padding: 1rem;              /* ✅ Less padding for smaller view */
+    width: 100vw;               /* ✅ Forces it to match screen */
+    max-width: 100vw;
   }
 }
