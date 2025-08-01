@@ -1,16 +1,21 @@
 import { BrowserMultiFormatReader } from "@zxing/browser";
 import * as mobilenetModule from '@tensorflow-models/mobilenet';
 import * as tf from '@tensorflow/tfjs';
-import { BarcodeFormat,DecodeHintType } from "@zxing/library";
+import { BarcodeFormat, DecodeHintType } from "@zxing/library";
 
 export async function scanBarcodeAndReturn(): Promise<string | null> {
-if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-  alert("Your browser does not support camera access.");
-  return null;
-}
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert("Your browser does not support camera access.");
+        return null;
+    }
+    // ✅ Close any open grocery modal to prevent it from covering the camera
+    const openDialog = document.querySelector("dialog.grocery-modal");
+    if (openDialog && (openDialog as HTMLDialogElement).open) {
+        (openDialog as HTMLDialogElement).close();
+    }
     const codeReader = new BrowserMultiFormatReader();
-    const formats = [BarcodeFormat.CODE_128,BarcodeFormat.EAN_13,BarcodeFormat.UPC_A];
-    codeReader.hints.set(DecodeHintType.POSSIBLE_FORMATS,formats);
+    const formats = [BarcodeFormat.CODE_128, BarcodeFormat.EAN_13, BarcodeFormat.UPC_A];
+    codeReader.hints.set(DecodeHintType.POSSIBLE_FORMATS, formats);
     const video = document.createElement("video");
     return new Promise(async (resolve) => {
         let controls: any;
@@ -25,6 +30,10 @@ if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
                 const scannedCode = result.getText();
                 controls.stop();
                 modal.remove();
+                const groceryModal = document.querySelector("dialog.grocery-modal") as HTMLDialogElement;
+                if (groceryModal && !groceryModal.open) {
+                    groceryModal.showModal();
+                }
                 resolve(scannedCode);
             }
 

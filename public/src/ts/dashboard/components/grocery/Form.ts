@@ -5,24 +5,22 @@ import { scanBarcodeAndReturn } from "../../utils/scanner-utils.js";
 import { FormBuilder } from "../FormBuilder.js";
 
 export type BarcodeResponse = {
-  id:string;
-  code:string;
+  id: string;
+  code: string;
   itemName: string;
   unit: string;
   quantity: number;
   category: string;
 };
- export type AddGroceryItem = {
-  
-
+export type AddGroceryItem = {
   itemname: string;
   quantity: string;
   unit?: string;
   notes?: string;
-  barcode?:string;
-  category?:string;
-  }
-export async function GroceryForm(onSubmit: (item: AddGroceryItem,barcodeMatched:boolean) => void): Promise<HTMLElement> {
+  barcode?: string;
+  category?: string;
+}
+export async function GroceryForm(onSubmit: (item: AddGroceryItem, barcodeMatched: boolean) => void): Promise<HTMLElement> {
   const wrapper = document.createElement("div");
   wrapper.classList.add("grocery-form-wrapper");
   let barcodeMatched = false;
@@ -89,13 +87,13 @@ export async function GroceryForm(onSubmit: (item: AddGroceryItem,barcodeMatched
             const barcodeInput = form.querySelector<HTMLInputElement>('input[name="barcode"]');
 
             if (barcodeInput) {
-              const handler = async()=>{
-               const code = barcodeInput.value.trim();
+              const handler = async () => {
+                const code = barcodeInput.value.trim();
                 if (!code) return;
                 try {
-                 
+
                   const itemData = await apiFetch<BarcodeResponse>(`/grocery/barcode/${code}`);
-                 
+
                   const nameField = form.querySelector<HTMLInputElement>('input[name="itemname"]');
                   const qtyField = form.querySelector<HTMLInputElement>('input[name="quantity"]');
                   const unitField = form.querySelector<HTMLSelectElement>('select[name="unit"]');
@@ -112,10 +110,10 @@ export async function GroceryForm(onSubmit: (item: AddGroceryItem,barcodeMatched
                 }
               };
               barcodeInput.removeEventListener("change", handler);
-              barcodeInput.addEventListener("change",handler);
-              
+              barcodeInput.addEventListener("change", handler);
+
               barcodeInput.value = scanned;
-              barcodeInput.dispatchEvent(new Event("change",{bubbles:true}));
+              barcodeInput.dispatchEvent(new Event("change", { bubbles: true }));
             }
           }
         },
@@ -128,9 +126,9 @@ export async function GroceryForm(onSubmit: (item: AddGroceryItem,barcodeMatched
     ],
     onSubmit: (data: AddGroceryItem) => {
 
-      onSubmit(data,barcodeMatched);
+      onSubmit(data, barcodeMatched);
       form.reset();
-      barcodeMatched=false;
+      barcodeMatched = false;
     },
   });
 
