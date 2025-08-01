@@ -93,7 +93,6 @@ export async function GroceryForm(onSubmit: (item: AddGroceryItem, barcodeMatche
                 try {
 
                   const itemData = await apiFetch<BarcodeResponse>(`/grocery/barcode/${code}`);
-
                   const nameField = form.querySelector<HTMLInputElement>('input[name="itemname"]');
                   const qtyField = form.querySelector<HTMLInputElement>('input[name="quantity"]');
                   const unitField = form.querySelector<HTMLSelectElement>('select[name="unit"]');

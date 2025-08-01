@@ -136,3 +136,75 @@
 .toggle-password-btn:hover {
   text-decoration: underline;
 }
+@media (max-width: 600px) {
+  .grocery-form-grid {
+    grid-template-columns: 1fr; /* Stack vertically */
+  }
+
+  .full-width {
+    grid-column: span 1; /* Only one column now */
+  }
+
+  .form-extra-button,
+  .form-submit {
+    grid-column: span 1;
+    width: 100%;
+  }
+
+  .form-extra-buttons {
+    flex-direction: column;
+  }
+
+  .form-submit-wrapper {
+    justify-content: center;
+  }
+}
+@media (max-width: 900px) {
+  .grocery-form-grid {
+    grid-template-columns: 1fr; /* Stack in 1 column */
+  }
+
+  .full-width,
+  .form-submit,
+  .form-extra-button {
+    grid-column: span 1;
+    width: 100%;
+  }
+
+  .form-extra-buttons {
+    flex-direction: column;
+  }
+
+  .form-submit-wrapper {
+    justify-content: center;
+  }
+
+  .grocery-form-wrapper {
+    padding: 1.5rem;
+  }
+}
+
+/* Ultra small phones or very narrow devices */
+@media (max-width: 480px) {
+  .grocery-form-wrapper {
+    padding: 1rem;
+    font-size: 0.95rem;
+  }
+
+  .form-field input,
+  .form-field select,
+  .form-field textarea {
+    font-size: 0.95rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .form-submit,
+  .form-extra-button {
+    font-size: 0.95rem;
+    padding: 0.6rem 1rem;
+  }
+
+  .toggle-password-btn {
+    font-size: 0.85rem;
+  }
+}

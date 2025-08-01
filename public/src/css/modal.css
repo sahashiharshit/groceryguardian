@@ -37,8 +37,9 @@ dialog:not([open]) {
   background-color: #fff;
   border-radius: 12px;
   padding: 2rem;
-  max-width: 600px;
-  width: 90%;
+  max-width: 700px;
+  width: 95%;
+  margin: auto;
   z-index: 1001;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   animation: fadeInUp 0.3s ease-out;
