@@ -150,7 +150,7 @@
 /* Tablets and below */
 @media (max-width: 900px) {
   .grocery-form-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
   }
 
   .full-width,
@@ -176,7 +176,7 @@
 /* Mobile phones */
 @media (max-width: 600px) {
   .grocery-form-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr  !important;
   }
 
   .form-extra-button,
@@ -200,7 +200,9 @@
     padding: 1rem;
     font-size: 0.95rem;
   }
-
+.grocery-form-grid {
+    grid-template-columns: 1fr !important;
+  }
   .form-field input,
   .form-field select,
   .form-field textarea {
