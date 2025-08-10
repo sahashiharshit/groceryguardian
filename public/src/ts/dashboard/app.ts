@@ -42,18 +42,14 @@ function setupLogoutButton(): void {
   const logoutBtn = document.getElementById('logoutBtn');
   const handler = async () => {
     const res = await apiFetch('/auth/logout', { method: "POST" });
-
     localStorage.removeItem('user')
-
     window._routingSetupDone = false;
     hasRenderedDashboard = false;
     window.location.hash = "#";
-
     renderAuth(false);
     setTimeout(() => {
       initAuth(() => {
-
-        (window as any).hmrLoad?.("./dashboard/app.js");
+       // (window as any).hmrLoad?.("./dashboard/app.js");
         renderDashboardLayout();
       });
     }, 0);
@@ -88,7 +84,7 @@ export async function renderDashboardLayout(): Promise<void> {
 
   toggleBtn?.addEventListener("click", () => {
     sidebar?.classList.toggle("open");
-    // Optionally: close on outside click
+    
     document.addEventListener("click", function closeOutside(e) {
       if (!sidebar?.contains(e.target as Node) && e.target !== toggleBtn) {
         sidebar?.classList.remove("open");
@@ -99,7 +95,6 @@ export async function renderDashboardLayout(): Promise<void> {
   setupLogoutButton();
   await loadCSSAndWait("../css/dashboard.css");
 
-
   if (!window._routingSetupDone) {
     window.addEventListener("hashchange", handleRouting);
     window.addEventListener("DOMContentLoaded", handleRouting);
@@ -109,7 +104,6 @@ export async function renderDashboardLayout(): Promise<void> {
     });
     window._routingSetupDone = true;
   }
-
   setTimeout(() => handleRouting(), 0);
 
 }

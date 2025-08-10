@@ -38,7 +38,7 @@ dialog:not([open]) {
   border-radius: 12px;
   padding: 2rem;
   max-width: 700px;
-  width: 100%;                  /* ✅ Ensures full responsiveness */
+  width: 100%;                  
   margin: auto;
   z-index: 1001;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
@@ -74,8 +74,8 @@ dialog:not([open]) {
 }
 @media (max-width: 600px) {
   .modal-content {
-    padding: 1rem;              /* ✅ Less padding for smaller view */
-    width: 100vw;               /* ✅ Forces it to match screen */
+    padding: 1rem;              
+    width: 100vw;               
     max-width: 100vw;
   }
 }

@@ -1,13 +1,10 @@
-
 import { renderDashboardLayout } from "./dashboard/app.js";
-
+import { loadCSSAndWait } from "./dashboard/utils/loadcss.js";
 import { apiFetch } from "./services/api.js";
-
+import { showToast } from "./services/toast.js";
 
 let cleanupCallbacks: (() => void)[] = [];
 type AuthResponse = {
-
-
   user: {
     _id: string;
     name: string;
@@ -19,49 +16,12 @@ type AuthResponse = {
   };
 }
 
-const loadedCSS = new Set<string>();
-function loadCSS(href: string): Promise<void> {
-  // Avoid reloading already loaded styles
-  if (loadedCSS.has(href)) {
-
-    return Promise.resolve();
-  }
-
-  // Remove old dynamic styles
-  document.querySelectorAll("link[data-dynamic]").forEach(link => {
-    const linkHref = link.getAttribute("href");
-    if (linkHref && !loadedCSS.has(linkHref)) {
-      link.remove();
-
-    }
-  });
-
-  // Load new CSS
-  return new Promise<void>((resolve, reject) => {
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = href;
-    link.dataset.dynamic = "true";
-    link.onload = () => {
-
-      loadedCSS.add(href);
-      resolve();
-    };
-    link.onerror = () => {
-      console.error(`❌ Failed to load CSS: ${href}`);
-      reject(new Error(`Failed to load CSS: ${href}`));
-    };
-    document.head.appendChild(link);
-  });
-}
-
-
-
 async function renderLanding(): Promise<void> {
   const app = document.getElementById("app");
   if (!app) return;
   document.body.className = "landing";
-  await loadCSS("./css/landing.css");
+
+  await loadCSSAndWait(['./css/landing.css', './css/toast.css'])
   app.innerHTML = `
     <div class="start-page">
       <div class="overlay">
@@ -90,20 +50,16 @@ async function renderLanding(): Promise<void> {
   const getStartedBtn = document.getElementById('getStartedBtn') as HTMLElement;
   if (getStartedBtn) {
     const handler = () => renderAuth();
-
     getStartedBtn.addEventListener('click', handler);
     cleanupCallbacks.push(() => getStartedBtn.removeEventListener("click", handler));
   }
-
-
 }
 
 export async function renderAuth(runInitAuth = true): Promise<void> {
   const app = document.getElementById("app");
   if (!app) return;
-  document.body.className = "auth";
-  await loadCSS("./css/auth.css");
-
+  // document.body.className = "auth";
+  await loadCSSAndWait("./css/auth.css");
   app.innerHTML = `<div class="container">
       <div class="left">
         <div class="mobile-menu-icon">
@@ -118,7 +74,6 @@ export async function renderAuth(runInitAuth = true): Promise<void> {
           <button id="signupBtn" class="auth-btn">Signup</button>
         </div>
       </div>
-
       <div class="right">
         <img src="./assets/logo.png" alt="Logo" class="logo">
         <div class="forms-wrapper">
@@ -131,7 +86,6 @@ export async function renderAuth(runInitAuth = true): Promise<void> {
               <button type="submit">LOGIN</button>
             </div>
           </form>
-
           <form id="signup-form" class="form" method="POST" action="javascript:void(0)">
             <h2>Start managing your grocery!...</h2>
             <input type="text" placeholder="Full Name" id="username" name="username" required>
@@ -146,8 +100,7 @@ export async function renderAuth(runInitAuth = true): Promise<void> {
 
   if (runInitAuth) {
     initAuth(() => {
-
-      (window as any).hmrLoad?.("./dashboard/app.js");
+      //(window as any).hmrLoad?.("./dashboard/app.js");
       setTimeout(() => {
         const interval = setInterval(async () => {
           const app = document.getElementById("app");
@@ -159,7 +112,7 @@ export async function renderAuth(runInitAuth = true): Promise<void> {
               const { handleRouting } = await import("./dashboard/router.js");
               handleRouting();
             }
-            renderDashboardLayout(); // Now everything is ready!
+            renderDashboardLayout();
           }
         }, 50);
       }, 0);
@@ -171,52 +124,39 @@ export async function init() {
   try {
     const data = await apiFetch<AuthResponse>("/users/getuser");
     localStorage.setItem("user", JSON.stringify(data.user));
-    (window as any).hmrLoad?.("./dashboard/app.js");
+    //(window as any).hmrLoad?.("./dashboard/app.js");
   } catch (error) {
-
     renderLanding();
   }
 }
 export function dispose() {
-
-
   const app = document.getElementById("app");
   if (app) app.innerHTML = "";
-
   cleanupCallbacks.forEach(fn => fn());
   cleanupCallbacks = [];
-
   document.querySelectorAll("link[data-dynamic]").forEach(el => el.remove());
 }
 
 export function initAuth(onAuthSuccess: () => void): void {
-
   const loginform = document.getElementById("login-form") as HTMLFormElement | null;
   const signupform = document.getElementById("signup-form") as HTMLFormElement | null;
-
   if (loginform) {
-
     loginform.addEventListener("submit", async (event) => {
       event.preventDefault();
-
       const email = (document.getElementById("loginemail") as HTMLInputElement).value;
       const password = (document.getElementById("loginpassword") as HTMLInputElement).value;
-
       try {
         const data = await apiFetch<AuthResponse>("/auth/login", {
           method: "POST",
           body: { email, password },
         });
-
-
         localStorage.setItem("user", JSON.stringify(data.user));
-
         document.body.className = "";
         onAuthSuccess();
+        showToast('Login successfull', 'success');
         window.history.replaceState({}, "", window.location.pathname);
-
       } catch (error: any) {
-        alert("Login failed. Please try again.");
+        showToast('Something went wrong', 'error')
         console.error(error);
       }
     });
@@ -225,25 +165,24 @@ export function initAuth(onAuthSuccess: () => void): void {
   if (signupform) {
     signupform.addEventListener("submit", async (event) => {
       event.preventDefault();
-
       const name = (document.getElementById("username") as HTMLInputElement).value;
       const email = (document.getElementById("signupemail") as HTMLInputElement).value;
       const mobileNo = (document.getElementById("mobileno") as HTMLInputElement).value;
       const password = (document.getElementById("signuppassword") as HTMLInputElement).value;
-
       try {
         const data = await apiFetch<AuthResponse>("/auth/register", {
           method: "POST",
           body: { name, email, mobileNo, password },
         });
-
         localStorage.setItem("user", JSON.stringify(data.user));
         document.body.className = "";
         onAuthSuccess();
+        showToast('Account created successfully', 'success');
         window.history.replaceState({}, "", window.location.pathname);
       } catch (error: any) {
+        showToast('Something went wrong', 'error')
         console.error("Error:", error);
-        alert("Signup failed. Please try again.");
+
       }
     });
 
