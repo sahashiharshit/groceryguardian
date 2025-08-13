@@ -100,7 +100,7 @@ export async function renderAuth(runInitAuth = true): Promise<void> {
 
   if (runInitAuth) {
     initAuth(() => {
-      //(window as any).hmrLoad?.("./dashboard/app.js");
+    
       setTimeout(() => {
         const interval = setInterval(async () => {
           const app = document.getElementById("app");
@@ -124,7 +124,7 @@ export async function init() {
   try {
     const data = await apiFetch<AuthResponse>("/users/getuser");
     localStorage.setItem("user", JSON.stringify(data.user));
-    //(window as any).hmrLoad?.("./dashboard/app.js");
+    
   } catch (error) {
     renderLanding();
   }

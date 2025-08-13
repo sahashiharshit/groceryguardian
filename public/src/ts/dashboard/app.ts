@@ -4,15 +4,11 @@ import { apiFetch } from '../services/api.js';
 import { handleRouting } from './router.js';
 import { loadCSSAndWait } from './utils/loadcss.js';
 
-
-
 declare global {
   interface Window {
     _routingSetupDone?: boolean;
   }
 }
-
-
 let hasRenderedDashboard = false;
 let cleanupFns: (() => void)[] = [];
 let pageTitle = "Dashboard";
@@ -49,7 +45,6 @@ function setupLogoutButton(): void {
     renderAuth(false);
     setTimeout(() => {
       initAuth(() => {
-       // (window as any).hmrLoad?.("./dashboard/app.js");
         renderDashboardLayout();
       });
     }, 0);
@@ -107,7 +102,6 @@ export async function renderDashboardLayout(): Promise<void> {
   setTimeout(() => handleRouting(), 0);
 
 }
-
 export async function init() {
   try {
     const data = await apiFetch("/users/getuser", {
@@ -120,7 +114,6 @@ export async function init() {
     renderAuth();
   }
 }
-
 export function dispose() {
   const app = document.getElementById("app");
   if (app) app.innerHTML = "";
