@@ -5,7 +5,7 @@
   "main": "app.ts",
   "scripts": {
     "dev": "node esbuild.mjs --watch",
-    "build": "node esbuild.mjs"
+    "build": "node esbuild.mjs --watch"
   },
   "type": "module",
   "author": "harshit sah",
