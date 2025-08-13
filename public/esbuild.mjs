@@ -47,7 +47,7 @@ const entryPoints = [
   ...discoverViewFiles(),
 ];
 // 🌐 Start esbuild context
-const context = await esbuild.context({
+ await esbuild.context({
   entryPoints,
   entryNames: "[dir]/[name]",
   bundle: true,
