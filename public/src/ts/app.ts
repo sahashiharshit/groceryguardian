@@ -227,3 +227,7 @@ export function initAuth(onAuthSuccess: () => void): void {
 
 
 }
+
+document.addEventListener("DOMContentLoaded", async () => {
+  await init();
+});
