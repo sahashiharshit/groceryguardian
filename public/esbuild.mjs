@@ -3,6 +3,7 @@ import * as esbuild from "esbuild";
 import fs from "fs";
 import path from "path";
 
+const isWatch = process.argv.includes("--watch");
 
 
 // 🍱 Copy static assets
@@ -47,13 +48,13 @@ const entryPoints = [
   ...discoverViewFiles(),
 ];
 // 🌐 Start esbuild context
- await esbuild.context({
+const buildOptions = {
   entryPoints,
   entryNames: "[dir]/[name]",
   bundle: true,
   outdir: "dist/js",
   platform: "browser",
-  minify:false,
+  minify: false,
   format: "esm",
   target: "es2022",
   sourcemap: true,
@@ -67,7 +68,18 @@ const entryPoints = [
     "import-meta": true,
     "dynamic-import": true,
   },
-});
+};
 
+if (isWatch) {
+
+  const context = await esbuild.context(buildOptions);
+  await context.watch();
+  console.log("👀 Watching for changes...");
+
+}
+else {
+  await esbuild.build(buildOptions);
+
+}
 copyStaticAssets();
 console.log("✅ Initial build complete");
