@@ -13,7 +13,7 @@ type AuthResponse = {
     mobileNo?: string | null;
     createdAt: string;
 
-  };
+  }
 }
 
 async function renderLanding(): Promise<void> {
@@ -21,7 +21,7 @@ async function renderLanding(): Promise<void> {
   if (!app) return;
   document.body.className = "landing";
 
-  await loadCSSAndWait(['./css/landing.css', './css/toast.css'])
+  await loadCSSAndWait(['./css/landing.css', './css/toast.css']);
   app.innerHTML = `
     <div class="start-page">
       <div class="overlay">
@@ -63,7 +63,7 @@ export async function renderAuth(runInitAuth = true): Promise<void> {
   app.innerHTML = `<div class="container">
       <div class="left">
         <div class="mobile-menu-icon">
-          <span>&#9776</span>
+          <span>&#9776;</span>
         </div>
         <div class="mobile-drawer">
           <button class="auth-btn drawer-login active">Login</button>
@@ -80,7 +80,10 @@ export async function renderAuth(runInitAuth = true): Promise<void> {
           <form id="login-form" class="form active" method="POST" action="javascript:void(0)" >
             <h2>Welcome back again!</h2>
             <input type="email" name="loginemail" id="loginemail" required placeholder="Email">
-            <input type="password" name="loginpassword" id="loginpassword" required placeholder="Password">
+            <div class="password-wrapper">
+              <input type="password" name="loginpassword" id="loginpassword" required placeholder="Password">
+              <button type="button" class="toggle-password" data-target="loginpassword">👁</button>
+            </div>
             <div class="link-button">
               <a href="#">Forgot Password?</a>
               <button type="submit">LOGIN</button>
@@ -90,8 +93,15 @@ export async function renderAuth(runInitAuth = true): Promise<void> {
             <h2>Start managing your grocery!...</h2>
             <input type="text" placeholder="Full Name" id="username" name="username" required>
             <input type="email" placeholder="Email" id="signupemail" name="signupemail" required>
-            <input type="string" placeholder="Your Phone No" id="mobileno" name="mobileno" required>
-            <input type="password" placeholder="Password" id="signuppassword" name="signuppassword" required>
+            <input type="text" placeholder="Your Phone No" id="mobileno" name="mobileno" maxlength="10" required>
+            <div class="password-wrapper">
+              <input type="password" placeholder="Password" id="signuppassword" name="signuppassword" required>
+              <button type="button" class="toggle-password" data-target="signuppassword">👁</button>
+            </div>
+            <div class="password-wrapper">
+              <input type="password" placeholder="Retype Password" id="signupretype" name="signupretype" required>
+              <button type="button" class="toggle-password" data-target="signupretype">👁</button>
+            </div>
             <button type="submit">SIGN UP</button>
           </form>
         </div>
@@ -100,7 +110,7 @@ export async function renderAuth(runInitAuth = true): Promise<void> {
 
   if (runInitAuth) {
     initAuth(() => {
-    
+
       setTimeout(() => {
         const interval = setInterval(async () => {
           const app = document.getElementById("app");
@@ -124,7 +134,6 @@ export async function init() {
   try {
     const data = await apiFetch<AuthResponse>("/users/getuser");
     localStorage.setItem("user", JSON.stringify(data.user));
-    
   } catch (error) {
     renderLanding();
   }
@@ -143,50 +152,89 @@ export function initAuth(onAuthSuccess: () => void): void {
   if (loginform) {
     loginform.addEventListener("submit", async (event) => {
       event.preventDefault();
-      const email = (document.getElementById("loginemail") as HTMLInputElement).value;
-      const password = (document.getElementById("loginpassword") as HTMLInputElement).value;
+      const formData = new FormData(loginform);
+      const body = Object.fromEntries(formData.entries());
       try {
         const data = await apiFetch<AuthResponse>("/auth/login", {
           method: "POST",
-          body: { email, password },
+          body: JSON.stringify(body),
         });
         localStorage.setItem("user", JSON.stringify(data.user));
-        document.body.className = "";
         onAuthSuccess();
         showToast('Login successfull', 'success');
         window.history.replaceState({}, "", window.location.pathname);
       } catch (error: any) {
-        showToast('Something went wrong', 'error')
-        console.error(error);
+        showToast(error.message || 'Login Id or Password is invalid', 'error');
       }
     });
   }
 
   if (signupform) {
+
+    const mobileInput = document.getElementById('mobileno') as HTMLInputElement;
+    if (mobileInput) {
+      mobileInput.addEventListener("keydown", function (event) {
+
+        const allowedKeys = ["Backspace", "Tab", "ArrowLeft", "ArrowRight", "Delete", "Home", "End"];
+        if (allowedKeys.includes(event.key)) {
+          return; // Allow these keys
+        }
+        if (!/^[0-9]$/.test(event.key)) {
+          event.preventDefault(); // Prevent non-digit keys
+        }
+        if (this.value.length >= 10 && !allowedKeys.includes(event.key)) {
+          event.preventDefault();
+        }
+      });
+      mobileInput.addEventListener("input", function () {
+        this.value = this.value.replace(/\D/g, "").slice(0, 10);
+      });
+    }
     signupform.addEventListener("submit", async (event) => {
       event.preventDefault();
-      const name = (document.getElementById("username") as HTMLInputElement).value;
-      const email = (document.getElementById("signupemail") as HTMLInputElement).value;
-      const mobileNo = (document.getElementById("mobileno") as HTMLInputElement).value;
+      const formData = new FormData(signupform);
+      const body = Object.fromEntries(formData.entries());
       const password = (document.getElementById("signuppassword") as HTMLInputElement).value;
+      const passwordRetype = (document.getElementById("signupretype") as HTMLInputElement).value;
+      if(password !== passwordRetype) {
+      
+        showToast('Passwords do not match', 'error');
+        return;
+      }
       try {
         const data = await apiFetch<AuthResponse>("/auth/register", {
           method: "POST",
-          body: { name, email, mobileNo, password },
+          body: JSON.stringify(body),
         });
         localStorage.setItem("user", JSON.stringify(data.user));
-        document.body.className = "";
         onAuthSuccess();
-        showToast('Account created successfully', 'success');
+        showToast(`Welcome, ${data.user.name}!`, "success");
         window.history.replaceState({}, "", window.location.pathname);
       } catch (error: any) {
-        showToast('Something went wrong', 'error')
-        console.error("Error:", error);
+        showToast(error.message || "Signup failed", "error");
+       
 
       }
     });
 
   }
+  // Toggle password visibility
+  document.querySelectorAll<HTMLButtonElement>(".toggle-password").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const targetId = btn.getAttribute("data-target");
+      if (!targetId) return;
+      const input = document.getElementById(targetId) as HTMLInputElement;
+      if (!input) return;
+      if (input.type === "password") {
+        input.type = "text";
+        btn.textContent = "🙈";
+      } else {
+        input.type = "password";
+        btn.textContent = "👁";
+      }
+    });
+  });
+
   const loginBtn = document.getElementById("loginBtn") as HTMLButtonElement;
   const signupBtn = document.getElementById("signupBtn") as HTMLButtonElement;
   if (loginBtn && signupBtn) {
@@ -223,9 +271,6 @@ export function initAuth(onAuthSuccess: () => void): void {
     signupBtn?.click();
     drawer?.classList.remove("show");
   });
-
-
-
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
