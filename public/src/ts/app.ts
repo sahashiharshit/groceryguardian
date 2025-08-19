@@ -157,7 +157,7 @@ export function initAuth(onAuthSuccess: () => void): void {
       try {
         const data = await apiFetch<AuthResponse>("/auth/login", {
           method: "POST",
-          body: body,
+          body,
         });
         localStorage.setItem("user", JSON.stringify(data.user));
         onAuthSuccess();
@@ -204,7 +204,7 @@ export function initAuth(onAuthSuccess: () => void): void {
       try {
         const data = await apiFetch<AuthResponse>("/auth/register", {
           method: "POST",
-          body: body,
+          body,
         });
         localStorage.setItem("user", JSON.stringify(data.user));
         onAuthSuccess();
