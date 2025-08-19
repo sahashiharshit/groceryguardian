@@ -87,6 +87,14 @@ export async function renderDashboardLayout(): Promise<void> {
       }
     });
   });
+  const navLinks = sidebar?.querySelectorAll("nav a");
+  navLinks?.forEach(link=>{
+    link.addEventListener("click",()=>{
+      sidebar?.classList.remove("open");
+
+    });
+
+  });
   setupLogoutButton();
   await loadCSSAndWait("../css/dashboard.css");
 

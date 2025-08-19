@@ -73,23 +73,28 @@ body {
   background-position: center;
   min-height: 100vh;
   max-width: 100%;
-  background-color: rgba(255, 0, 0, 0.1); /* Red tint */
-   position: relative;
+  background-color: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(4px);
+  /* White tint */
+  position: relative;
 }
 
 /* Topbar */
 .topbar {
- padding: 1rem 1rem;
-  background-color: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(1px);
+  padding: 1rem 1rem;
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+
 .topbar h1 {
   margin: 0;
   font-size: 1.5rem;
 }
+
 /* Hamburger menu */
 .menu-toggle {
   display: none;
@@ -98,6 +103,7 @@ body {
   border: none;
   cursor: pointer;
 }
+
 /* View container */
 .view-container {
   padding: 2rem 1rem;
@@ -105,7 +111,10 @@ body {
   flex: 1;
   display: block;
   background-color: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(1px);
+  backdrop-filter: blur(8px);
+  border-radius: 8px;
+  margin: 1rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
 /* Mobile responsive */
@@ -145,5 +154,6 @@ body {
 
   .view-container {
     padding: 1rem;
+    margin: 0.5rem;
   }
 }
