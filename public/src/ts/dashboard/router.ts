@@ -1,3 +1,4 @@
+import { setPageTitle } from "./app";
 import { loadCSSAndWait } from "./utils/loadcss";
 import { hideLoader, showLoader } from "./utils/loader.js";
 
@@ -6,10 +7,10 @@ type RouteHandler = () => void | Promise<void>;
 
 const routes: Record<string, RouteHandler> = {
 
-    groceries: () => importView('groceries', ['../css/grocerypage.css','../css/modal.css','../css/form.css']),
+    groceries: () => importView('groceries', ['../css/grocerypage.css', '../css/modal.css', '../css/form.css']),
     inventory: () => importView('inventory', ['../css/inventory.css']),
-    settings: () => importView('settings', ['../css/account.css','../css/modal.css','../css/form.css']),
-    group: () => importView('group', ["../css/group.css","../css/modal.css"]),
+    settings: () => importView('settings', ['../css/account.css', '../css/modal.css', '../css/form.css']),
+    group: () => importView('group', ["../css/group.css", "../css/modal.css"]),
 
 };
 
@@ -25,21 +26,28 @@ export async function importView(viewName: string, cssFiles: string | string[]):
         return;
     }
     showLoader();
-    //await new Promise((res) => setTimeout(res, 50));
+    view.innerHTML = "";
     try {
 
-
-        const [module] = await Promise.all([import(`./views/${viewName}.ts`), loadCSSAndWait(cssFiles)]);
+        const files = Array.isArray(cssFiles) ? cssFiles : [cssFiles];
+        const [module] = await Promise.all([import(`./views/${viewName}.ts?update=${Date.now()}`), loadCSSAndWait(files)]);
 
         if (typeof module.render === 'function') {
             await module.render();
 
         } else {
-            view.innerHTML = `<h2>Error loading view ${viewName}</h2>`;
+            view.innerHTML = `<h2>Error: ${viewName} has no render() method</h2>`;
         }
     } catch (error) {
         console.error(`Error loading view ${viewName}:`, error);
-        view.innerHTML = `<h2>Error loading view ${viewName}</h2>`;
+        view.innerHTML = `
+      <div class="error">
+        <p>Error loading ${viewName}. Please try again.</p>
+        <button id="retry-${viewName}">Retry</button>
+      </div>`;
+        document.getElementById(`retry-${viewName}`)?.addEventListener("click", () => {
+            routes[viewName]?.();
+        });
     } finally {
         hideLoader();
     }
@@ -48,7 +56,7 @@ export async function importView(viewName: string, cssFiles: string | string[]):
 
 let lastHash = "";
 export function handleRouting(): void {
-   
+
     const hash = window.location.hash.replace('#', '') || 'groceries';
     console.log("Routing to:", hash);
     if (hash === lastHash) return;
@@ -56,11 +64,14 @@ export function handleRouting(): void {
 
     const route = routes[hash];
     if (route) {
+
+        setPageTitle(hash.charAt(0).toUpperCase() + hash.slice(1));
         route();
     } else {
         const view = document.getElementById("view");
         if (view) {
             view.innerHTML = `<h2>Page not found</h2>`;
         }
+        setPageTitle("Not Found");
     }
 }
