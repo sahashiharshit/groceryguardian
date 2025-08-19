@@ -58,7 +58,7 @@ async function renderLanding(): Promise<void> {
 export async function renderAuth(runInitAuth = true): Promise<void> {
   const app = document.getElementById("app");
   if (!app) return;
-  // document.body.className = "auth";
+   document.body.className = "auth";
   await loadCSSAndWait("./css/auth.css");
   app.innerHTML = `<div class="container">
       <div class="left">
@@ -161,6 +161,7 @@ export function initAuth(onAuthSuccess: () => void): void {
         });
         localStorage.setItem("user", JSON.stringify(data.user));
         onAuthSuccess();
+        document.body.className = "dashboard";
         showToast('Welcome Back!', 'success');
         window.history.replaceState({}, "", window.location.pathname);
       } catch (error: any) {
@@ -197,7 +198,7 @@ export function initAuth(onAuthSuccess: () => void): void {
       const mobileNo = (document.getElementById("mobileno") as HTMLInputElement).value;
       const password = (document.getElementById("signuppassword") as HTMLInputElement).value;
       const passwordRetype = (document.getElementById("signupretype") as HTMLInputElement).value;
-      console.log({ username, email, mobileNo, password, passwordRetype });
+      
       if(password !== passwordRetype) {
       
         showToast('Passwords do not match', 'error');
@@ -210,6 +211,7 @@ export function initAuth(onAuthSuccess: () => void): void {
         });
         localStorage.setItem("user", JSON.stringify(data.user));
         onAuthSuccess();
+        document.body.className="dashboard";
         showToast(`Welcome, ${data.user.name}!`, "success");
         window.history.replaceState({}, "", window.location.pathname);
       } catch (error: any) {
