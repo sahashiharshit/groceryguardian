@@ -4,7 +4,9 @@
   padding: 0;
   box-sizing: border-box;
 }
-html,body {
+
+html,
+body {
   width: 100%;
   min-height: 100%;
   font-family: "Inter", "Segoe UI", sans-serif;
@@ -14,7 +16,7 @@ html,body {
 
 #app {
 
-flex: 1;
+  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -22,6 +24,7 @@ flex: 1;
   max-width: 1200px;
   padding: 1rem;
 }
+
 /* Loader Overlay */
 .screen-loader {
   position: fixed;
@@ -52,6 +55,7 @@ flex: 1;
     transform: rotate(360deg);
   }
 }
+
 /* Mobile-friendly font resizing (optional) */
 @media (max-width: 768px) {
   html {

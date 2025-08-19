@@ -161,7 +161,7 @@ export function initAuth(onAuthSuccess: () => void): void {
         });
         localStorage.setItem("user", JSON.stringify(data.user));
         onAuthSuccess();
-        showToast('Login successfull', 'success');
+        showToast('Welcome Back!', 'success');
         window.history.replaceState({}, "", window.location.pathname);
       } catch (error: any) {
         showToast(error.message || 'Login Id or Password is invalid', 'error');

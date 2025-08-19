@@ -4,9 +4,6 @@ import type { Request, Response } from "express";
 import jwt from 'jsonwebtoken';
 import User from "../models/User.js";
 import { generateAuthToken, generateRefreshToken } from "../services/tokengenerator.service.js";
-
-
-
 type RegisterRequestBody = {
   name: string;
   email: string;
@@ -42,7 +39,7 @@ export const login = async (req: Request<{}, {}, LoginRequestBody>, res: Respons
     httpOnly: true,
     secure: false,
     sameSite: 'lax',
-    maxAge: 15 * 60 * 1000,
+    maxAge: 60 * 60 * 1000,
   });
   const refreshToken = generateRefreshToken(id.toString());
   res.cookie("refreshtoken", refreshToken, {
@@ -83,15 +80,17 @@ export const register = async (req: Request<{}, {}, RegisterRequestBody>, res: R
   const accessToken = generateAuthToken(id);
   res.cookie("accesstoken", accessToken, {
     httpOnly: true,
-    secure: false,
+    secure: true,
     sameSite: 'lax',
+    path: '/',
     maxAge: 15 * 60 * 1000,
   });
   const refreshToken = generateRefreshToken(id);
   res.cookie("refreshtoken", refreshToken, {
     httpOnly: true,
-    secure: false,
-    sameSite: 'lax', 
+    secure: true,
+    sameSite: 'lax',
+    path: '/',
     maxAge: 7 * 24 * 60 * 60 * 1000 // 7 day 
   });
   res.status(200).json({
@@ -127,9 +126,10 @@ export const refreshToken = async (req: Request, res: Response): Promise<void> =
     res.cookie('accesstoken', newAccessToken, {
 
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: 'lax',
-      maxAge: 1000 * 60 * 15,
+      path: '/',
+      maxAge: 1000 * 60 * 60,
     });
     res.json({ success: true });
   } catch (error) {
@@ -139,17 +139,17 @@ export const refreshToken = async (req: Request, res: Response): Promise<void> =
 
 };
 
-export const logout = async (req:Request,res:Response):Promise<void> =>{
-  
-  res.clearCookie('accesstoken',{
-  httpOnly:true,
-  secure:false,
-  sameSite:'lax',
+export const logout = async (req: Request, res: Response): Promise<void> => {
+
+  res.clearCookie('accesstoken', {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'lax',
   });
-  res.clearCookie('refreshtoken',{
-  httpOnly:true,
-  secure:false,
-  sameSite:'lax',
+  res.clearCookie('refreshtoken', {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'lax',
   });
   res.status(200).json({ message: 'Logged out successfully.' });
 }
