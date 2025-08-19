@@ -152,12 +152,12 @@ export function initAuth(onAuthSuccess: () => void): void {
   if (loginform) {
     loginform.addEventListener("submit", async (event) => {
       event.preventDefault();
-      const formData = new FormData(loginform);
-      const body = Object.fromEntries(formData.entries());
+      const email = (document.getElementById("loginemail") as HTMLInputElement).value;
+      const password = (document.getElementById("loginpassword") as HTMLInputElement).value;
       try {
         const data = await apiFetch<AuthResponse>("/auth/login", {
           method: "POST",
-          body,
+          body: { email, password },
         });
         localStorage.setItem("user", JSON.stringify(data.user));
         onAuthSuccess();
@@ -192,8 +192,9 @@ export function initAuth(onAuthSuccess: () => void): void {
     }
     signupform.addEventListener("submit", async (event) => {
       event.preventDefault();
-      const formData = new FormData(signupform);
-      const body = Object.fromEntries(formData.entries());
+      const username = (document.getElementById("username") as HTMLInputElement).value;
+      const email = (document.getElementById("signupemail") as HTMLInputElement).value; 
+      const mobileNo = (document.getElementById("mobileno") as HTMLInputElement).value;
       const password = (document.getElementById("signuppassword") as HTMLInputElement).value;
       const passwordRetype = (document.getElementById("signupretype") as HTMLInputElement).value;
       if(password !== passwordRetype) {
@@ -204,7 +205,7 @@ export function initAuth(onAuthSuccess: () => void): void {
       try {
         const data = await apiFetch<AuthResponse>("/auth/register", {
           method: "POST",
-          body,
+          body: { username, email, mobileNo, password },
         });
         localStorage.setItem("user", JSON.stringify(data.user));
         onAuthSuccess();
