@@ -197,6 +197,7 @@ export function initAuth(onAuthSuccess: () => void): void {
       const mobileNo = (document.getElementById("mobileno") as HTMLInputElement).value;
       const password = (document.getElementById("signuppassword") as HTMLInputElement).value;
       const passwordRetype = (document.getElementById("signupretype") as HTMLInputElement).value;
+      console.log({ username, email, mobileNo, password, passwordRetype });
       if(password !== passwordRetype) {
       
         showToast('Passwords do not match', 'error');
