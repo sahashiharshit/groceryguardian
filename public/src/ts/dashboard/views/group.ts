@@ -72,7 +72,7 @@ export async function render(): Promise<void> {
 
     left.appendChild(noGroupMessage);
     left.appendChild(createBtn);
-    left.appendChild(groupModal.modal);
+    // left.appendChild(groupModal.modal);
     layout.appendChild(left);
 
     const right = document.createElement("div");
