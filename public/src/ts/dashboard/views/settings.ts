@@ -1,13 +1,11 @@
 import { apiFetch } from "../../services/api.js";
-import { setPageTitle } from "../app.js";
+import { showToast } from "../../services/toast.js";
+
 import { FormBuilder } from "../components/FormBuilder.js";
 import { Modal, ModalInstance } from "../components/Modal.js";
 
-
-setPageTitle("Account Information");
 interface UserInfo {
   user: any;
-
   id: string;
   name: string;
   email: string;
@@ -36,7 +34,7 @@ export async function render(): Promise<void> {
       user = response.user;
       localStorage.setItem("user", JSON.stringify(user));
     } catch (error) {
-      console.error("Failed to load account settings", error);
+      showToast("Failed to load account settings", "error");
       view.innerHTML = `<p>Unable to load account info. Please try again later.</p>`;
       return;
     }
@@ -71,7 +69,7 @@ export async function render(): Promise<void> {
       onSubmit: async (data) => {
         const updatedUser = await apiFetch<any>("/users/me", { method: "POST", body: data });
         localStorage.setItem("user", JSON.stringify(updatedUser));
-        alert("Profile updated!");
+        showToast("Profile updated!", "success");
         editmodal.closeModal();
         render();
       },
@@ -93,11 +91,11 @@ export async function render(): Promise<void> {
       ],
       onSubmit: async (data) => {
         if (data.newPassword !== data.confirmPassword) {
-          alert("Passwords do not match!");
+          showToast("Passwords do not match!", "error");
           return;
         }
         await apiFetch("/users/change-password", { method: "POST", body: data });
-        alert("Password changed successfully");
+        showToast("Password changed successfully", "success");
         passwordModal.closeModal();
       },
     });
@@ -111,7 +109,7 @@ export async function render(): Promise<void> {
       await apiFetch(`/households/leave`, { method: "DELETE" });
       const updatedUser = { ...user!, household: null };
       localStorage.setItem("user", JSON.stringify(updatedUser));
-      alert("You left the group.");
+      showToast("You left the group.", "success");
       render();
     }
   });
@@ -121,7 +119,7 @@ export async function render(): Promise<void> {
     if (confirmation) {
       await apiFetch(`/users/me`, { method: "DELETE" });
       localStorage.clear();
-      alert("Account deleted.");
+      showToast("Account deleted.", "success" );
       location.reload();
     }
   });

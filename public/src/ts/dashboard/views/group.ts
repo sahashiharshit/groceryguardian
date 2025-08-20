@@ -1,9 +1,8 @@
 import { apiFetch } from "../../services/api.js";
-import { setPageTitle } from "../app.js";
+import { showToast } from "../../services/toast.js";
 import { FormBuilder } from "../components/FormBuilder.js";
 import { Modal } from "../components/Modal.js";
 
-setPageTitle("Group");
 type Household = {
   _id: string;
   name: string;
@@ -21,7 +20,7 @@ export async function render(): Promise<void> {
   const view = document.getElementById("view");
   if (!view) return;
 
-  
+
   const layout = document.createElement("div");
   layout.className = "group-layout";
   const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -62,8 +61,8 @@ export async function render(): Promise<void> {
           (groupModal as any).closeModal();
           render(); // re-render to show group info
         } catch (error) {
-          alert("Could not create group. Try again.");
-          console.error(error);
+          showToast("Could not create group. Try again.", "error");
+
         }
       },
     });
@@ -72,7 +71,7 @@ export async function render(): Promise<void> {
 
     left.appendChild(noGroupMessage);
     left.appendChild(createBtn);
-    left.appendChild(groupModal);
+    left.appendChild(groupModal.modal);
     layout.appendChild(left);
 
     const right = document.createElement("div");
@@ -103,10 +102,10 @@ export async function render(): Promise<void> {
                 method: "POST",
                 body: { action: "accept" },
               });
-              alert("✅ You joined the group!");
+              showToast("✅ You joined the group!", "success");
               render();
             } catch (e) {
-              alert("Failed to accept invite.");
+              showToast("Failed to accept invite.", "error");
             }
           };
 
@@ -119,10 +118,10 @@ export async function render(): Promise<void> {
                 method: "POST",
                 body: { action: "reject" },
               });
-              alert("❌ Invitation rejected.");
+              showToast("❌ Invitation rejected.", "error");
               card.remove();
             } catch (e) {
-              alert("Failed to reject invite.");
+              showToast("Failed to reject invite.", "error");
             }
           };
 
@@ -135,15 +134,15 @@ export async function render(): Promise<void> {
         layout.appendChild(right);
       }
     } catch (err) {
-      console.error("🔴 Failed to fetch invitations", err);
+      showToast("🔴 Failed to fetch invitations", "error");
     }
 
 
 
   } else {
     const household = await apiFetch<Household>(`/households/me`);
-    const currentUserRole = household.members.find((m:any)=>m.userId._id ===user.id)?.role || "member";
-    const isAdmin = currentUserRole ==="owner";
+    const currentUserRole = household.members.find((m: any) => m.userId._id === user.id)?.role || "member";
+    const isAdmin = currentUserRole === "owner";
     //---left section(Group Info panel)
 
     const left = document.createElement("div");
@@ -179,11 +178,11 @@ export async function render(): Promise<void> {
             await apiFetch(`/households/${household._id}/members/${userId}`, {
               method: "DELETE",
             });
-            alert("Member removed successfully.");
+            showToast("Member removed successfully.", "success");
             render(); // Refresh the view
           } catch (err) {
-            alert("Failed to remove member.");
-            console.error("❌ Error removing member:", err);
+            showToast("Failed to remove member.", "error");
+
           }
 
         });
@@ -193,89 +192,87 @@ export async function render(): Promise<void> {
     // ---Right Section (Invite Panel)
     const right = document.createElement("div");
     right.className = "group-right";
-    if(isAdmin){
-    
-    
-    const inviteForm = FormBuilder({
-      id: "invite-user-form",
-      submitLabel: "Search",
-      className: "form-container",
-      fields: [
-        {
-          name: "identifier",
-          label: "Email or Mobile Number",
-          required: true,
-        },
-      ],
-      onSubmit: async ({ identifier }) => {
-        try {
+    if (isAdmin) {
 
-          const foundUser = await apiFetch<SearchedUser>(`/households/search-user?identifier=${encodeURIComponent(identifier)}`);
-          const recipientId = foundUser._id;
-          const existing = document.getElementById("search-result");
-          if (existing) existing.remove();
-          const result = document.createElement("div");
-          result.id = "search-result";
-          result.style.marginTop = "1rem";
-          result.innerHTML = `
+
+      const inviteForm = FormBuilder({
+        id: "invite-user-form",
+        submitLabel: "Search",
+        className: "form-container",
+        fields: [
+          {
+            name: "identifier",
+            label: "Email or Mobile Number",
+            required: true,
+          },
+        ],
+        onSubmit: async ({ identifier }) => {
+          try {
+
+            const foundUser = await apiFetch<SearchedUser>(`/households/search-user?identifier=${encodeURIComponent(identifier)}`);
+            const recipientId = foundUser._id;
+            const existing = document.getElementById("search-result");
+            if (existing) existing.remove();
+            const result = document.createElement("div");
+            result.id = "search-result";
+            result.style.marginTop = "1rem";
+            result.innerHTML = `
       <p><strong>${foundUser?.name}</strong><br>Email: ${foundUser?.email}<br>Mobile: ${foundUser?.mobileNo || "-"}</p>
     `;
-          if (foundUser?.householdId) {
-            result.innerHTML += `<p style="color:red;">User is already part of another group.</p>`;
-          } else {
-            const cancelBtn = document.createElement("button");
-            cancelBtn.textContent = "Cancel";
-            cancelBtn.className = "cancel-button"
-            cancelBtn.onclick = async () => {
+            if (foundUser?.householdId) {
+              result.innerHTML += `<p style="color:red;">User is already part of another group.</p>`;
+            } else {
+              const cancelBtn = document.createElement("button");
+              cancelBtn.textContent = "Cancel";
+              cancelBtn.className = "cancel-button"
+              cancelBtn.onclick = async () => {
 
-              result.remove();
-
-            }
-            const inviteBtn = document.createElement("button");
-            inviteBtn.textContent = "Send Invite";
-            inviteBtn.className = "send-invite";
-            inviteBtn.onclick = async () => {
-              try {
-                await apiFetch(`/households/${household._id}/invite`, {
-                  method: "POST",
-                  body: { recipientId },
-                });
-                
                 result.remove();
-                alert("Invite sent successfully!");
-              } catch (err) {
-                alert("Failed to send invite.");
-                console.error(err);
+
               }
-            };
-            const buttonGroup = document.createElement("div");
-            buttonGroup.id = "search-result-buttons";
-            buttonGroup.appendChild(inviteBtn);
-            buttonGroup.appendChild(cancelBtn);
+              const inviteBtn = document.createElement("button");
+              inviteBtn.textContent = "Send Invite";
+              inviteBtn.className = "send-invite";
+              inviteBtn.onclick = async () => {
+                try {
+                  await apiFetch(`/households/${household._id}/invite`, {
+                    method: "POST",
+                    body: { recipientId },
+                  });
 
+                  result.remove();
+                  showToast("Invite sent successfully!", "success");
+                } catch (err) {
+                  showToast("Failed to send invite.", "error");
 
-            result.appendChild(buttonGroup);
+                }
+              };
+              const buttonGroup = document.createElement("div");
+              buttonGroup.id = "search-result-buttons";
+              buttonGroup.appendChild(inviteBtn);
+              buttonGroup.appendChild(cancelBtn);
+              result.appendChild(buttonGroup);
+            }
+
+            inviteForm.appendChild(result);
+          } catch (error: any) {
+            if (error?.response?.status === 409) {
+              showToast("User is already part of another group.", "error");
+            } else {
+              showToast("Failed to send invite.", "error");
+            }
+            
           }
-
-          inviteForm.appendChild(result);
-        } catch (error: any) {
-          if (error?.response?.status === 409) {
-            alert("User is already part of another group.");
-          } else {
-            alert("Failed to send invite.");
-          }
-          console.error(error);
         }
-      }
-    });
-    const inviteHeader = document.createElement("h3");
-    inviteHeader.textContent = "Invite a Member";
+      });
+      const inviteHeader = document.createElement("h3");
+      inviteHeader.textContent = "Invite a Member";
 
-    right.appendChild(inviteHeader);
-    right.appendChild(inviteForm);
-  }
+      right.appendChild(inviteHeader);
+      right.appendChild(inviteForm);
+    }
     layout.appendChild(left);
-    if(isAdmin)
+    if (isAdmin)
       layout.appendChild(right);
   }
 

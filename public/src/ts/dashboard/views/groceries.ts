@@ -1,12 +1,12 @@
 
 import { apiFetch } from "../../services/api.js";
-import { setPageTitle } from "../app.js";
+import { showToast } from "../../services/toast.js";
 import { FormBuilder } from "../components/FormBuilder.js";
 import { AddGroceryItem, BarcodeResponse, GroceryForm } from "../components/grocery/Form.js";
 import { Modal } from "../components/Modal.js";
 
 import { scanBarcodeAndReturn } from "../utils/scanner-utils.js";
-setPageTitle("Groceries")
+
 type GroceryItem = {
 
   id: string;
@@ -84,18 +84,18 @@ export async function render(): Promise<void> {
           try {
             const scannedCode = await scanBarcodeAndReturn();
             if (!scannedCode) {
-              alert("❌ No barcode detected. Please try again.");
+              showToast("❌ No barcode detected. Please try again.","error");
               return;
             }
             const barcodeDoc = await apiFetch<BarcodeResponse>(`/grocery/barcode/${scannedCode}`);
 
             if (!barcodeDoc || barcodeDoc?.id !== item.barcode) {
-              alert("❌ Scanned barcode does not match this item.");
+              showToast("❌ Scanned barcode does not match this item.", "error");
               return;
             }
           } catch (error) {
-            
-            alert("Something went wrong during barcode scan.");
+
+            showToast("Something went wrong during barcode scan.", "error");
             return;
           }
 
@@ -112,9 +112,9 @@ export async function render(): Promise<void> {
             await apiFetch(`/grocery/movetoinventory/${itemId}`, { method: "POST", body: { expirationDate } });
             li.remove();
             expirationModal.closeModal();
-            alert("Moved Successfully");
+            showToast("Moved Successfully",'success');
           } catch (error) {
-            alert("Could not add item in inventory");
+            showToast("Could not add item in inventory", "error");
           }
 
         });
@@ -129,12 +129,15 @@ export async function render(): Promise<void> {
 
         deleteBtn.onclick = async () => {
           try {
+            const confirmDelete = confirm("Are you sure you want to delete this item?");
+            if (!confirmDelete) return;
+
             await apiFetch(`/grocery/grocery-list/${itemId}`, { method: "DELETE" });
             li.remove();
-
+            showToast("Item deleted successfully.", "success");
           } catch (error: any) {
-           
-            alert("Could not delete item. Try again.");
+
+            showToast("Could not delete item. Try again.", "error");
           }
 
         };
@@ -152,12 +155,11 @@ export async function render(): Promise<void> {
           method: "POST",
           body: { items: [item] },
         });
-        alert("Item added successfully!");
+        showToast("Item added successfully!", "success");
         groceryModal.closeModal();
         render();
       } catch (error) {
-      
-        alert("Failed to add item. Please try again.");
+        showToast("Failed to add item. Please try again.", "error");
       }
     });
 
@@ -195,8 +197,6 @@ export async function render(): Promise<void> {
       });
     }
   }
-
-
 }
 
 

@@ -1,7 +1,5 @@
 import { apiFetch } from "../../services/api";
-import { setPageTitle } from "../app";
-
-setPageTitle("Inventory")
+import { showToast } from "../../services/toast.js";
 type PantryItem = {
   _id: string;
   itemName: string;
@@ -24,9 +22,6 @@ export async function render(): Promise<void> {
 
   const view = document.getElementById("view");
   if (!view) return;
-
-
-
   try {
     const items: PantryItem[] = await apiFetch("/pantry", { method: "GET" });
 
@@ -74,11 +69,6 @@ export async function render(): Promise<void> {
       });
     });
   } catch (error: any) {
-  const res =  await apiFetch('/auth/refresh');
-  console.log(res);
-    if(res){
-    render();
-    }
    const view = document.getElementById('view');
     if (view) {
       view.innerHTML = `<div class="error">
@@ -90,8 +80,6 @@ export async function render(): Promise<void> {
       });
     }
   }
-
-
 }
 
 function renderCards(items: PantryItem[]): string {
