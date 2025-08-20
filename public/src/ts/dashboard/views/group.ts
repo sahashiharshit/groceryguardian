@@ -1,5 +1,6 @@
 import { apiFetch } from "../../services/api.js";
 import { showToast } from "../../services/toast.js";
+import { setPageTitle } from "../app.js";
 import { FormBuilder } from "../components/FormBuilder.js";
 import { Modal } from "../components/Modal.js";
 
@@ -20,7 +21,7 @@ export async function render(): Promise<void> {
   const view = document.getElementById("view");
   if (!view) return;
 
-
+  setPageTitle("Group Management");
   const layout = document.createElement("div");
   layout.className = "group-layout";
   const user = JSON.parse(localStorage.getItem("user") || "{}");

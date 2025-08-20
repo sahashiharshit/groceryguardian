@@ -1,5 +1,5 @@
-import { setPageTitle } from "./app";
-import { loadCSSAndWait } from "./utils/loadcss";
+
+import { loadCSSAndWait } from "./utils/loadcss.js";
 import { hideLoader, showLoader } from "./utils/loader.js";
 
 type RouteHandler = () => void | Promise<void>;
@@ -58,20 +58,16 @@ let lastHash = "";
 export function handleRouting(): void {
 
     const hash = window.location.hash.replace('#', '') || 'groceries';
-    console.log("Routing to:", hash);
     if (hash === lastHash) return;
     lastHash = hash;
 
     const route = routes[hash];
     if (route) {
-
-        setPageTitle(hash.charAt(0).toUpperCase() + hash.slice(1));
         route();
     } else {
         const view = document.getElementById("view");
         if (view) {
             view.innerHTML = `<h2>Page not found</h2>`;
         }
-        setPageTitle("Not Found");
     }
 }

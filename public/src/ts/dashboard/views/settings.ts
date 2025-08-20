@@ -1,5 +1,6 @@
 import { apiFetch } from "../../services/api.js";
 import { showToast } from "../../services/toast.js";
+import { setPageTitle } from "../app.js";
 
 import { FormBuilder } from "../components/FormBuilder.js";
 import { Modal, ModalInstance } from "../components/Modal.js";
@@ -26,7 +27,7 @@ export async function render(): Promise<void> {
 
   const view = document.getElementById("view");
   if (!view) return;
-
+  setPageTitle("Account Information")
   let user: UserInfo | null = getStoredUser();
   if (!user || !user.name || !user.email || !user.household) {
     try {

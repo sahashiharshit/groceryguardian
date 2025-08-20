@@ -18,6 +18,7 @@ export function setPageTitle(title: string): void {
   if (pageTitleElement) {
     pageTitleElement.textContent = title;
   }
+  document.title = `${title} | Grocery Guardian`;
 }
 
 const sidebarHTML = `

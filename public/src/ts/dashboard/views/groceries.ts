@@ -1,6 +1,7 @@
 
 import { apiFetch } from "../../services/api.js";
 import { showToast } from "../../services/toast.js";
+import { setPageTitle } from "../app.js";
 import { FormBuilder } from "../components/FormBuilder.js";
 import { AddGroceryItem, BarcodeResponse, GroceryForm } from "../components/grocery/Form.js";
 import { Modal } from "../components/Modal.js";
@@ -32,13 +33,14 @@ type GroceryApiResponse = {
   groceries: ApiGroceryItem[];
 }
 export async function render(): Promise<void> {
+
   const view = document.getElementById('view');
 
   if (!view) {
     console.warn('View container not found');
     return;
   }
-
+  setPageTitle("Groceries")
 
   try {
     const user = JSON.parse(localStorage.getItem("user") || "{}");

@@ -1,5 +1,6 @@
 import { apiFetch } from "../../services/api";
 import { showToast } from "../../services/toast.js";
+import { setPageTitle } from "../app";
 type PantryItem = {
   _id: string;
   itemName: string;
@@ -22,6 +23,7 @@ export async function render(): Promise<void> {
 
   const view = document.getElementById("view");
   if (!view) return;
+  setPageTitle("Inventory")
   try {
     const items: PantryItem[] = await apiFetch("/pantry", { method: "GET" });
 
