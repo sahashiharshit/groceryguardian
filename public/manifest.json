@@ -1,0 +1,28 @@
+{
+  "name": "Grocery Guardian",
+  "short_name": "Groceries",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4caf50",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/dist/assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/dist/assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+  ,
+  "version": "1.0",
+  "description": "Manifest for Grocery Guardian web application",
+  "scope": "/",
+  "lang": "en-US",
+  "dir": "ltr"
+
+}

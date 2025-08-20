@@ -23,17 +23,18 @@ export function setPageTitle(title: string): void {
 
 const sidebarHTML = `
 <aside class="sidebar">
-    <h2>Grocery Guardian</h2>
+  <div>    
+<h2>Grocery Guardian</h2>
     <nav>
       <a href="#groceries"><i class="fas fa-shopping-basket"></i> Groceries</a>
       <a href="#inventory"><i class="fas fa-boxes-stacked"></i> Inventory</a>
       <a href="#settings"><i class="fas fa-user"></i> Account</a>
       <a href="#group"><i class="fas fa-people-roof"></i> Group</a>
-  
-      
     </nav>
+  </div>
     <button id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
-  </aside>`;
+  
+    </aside>`;
 
 function setupLogoutButton(): void {
   const logoutBtn = document.getElementById('logoutBtn');
