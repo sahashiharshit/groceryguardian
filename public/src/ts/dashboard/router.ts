@@ -30,7 +30,7 @@ export async function importView(viewName: string, cssFiles: string | string[]):
     try {
 
         const files = Array.isArray(cssFiles) ? cssFiles : [cssFiles];
-        const [module] = await Promise.all([import(`./views/${viewName}.ts?update=${Date.now()}`), loadCSSAndWait(files)]);
+        const [module] = await Promise.all([import(`./views/${viewName}.ts#${Date.now()}`), loadCSSAndWait(files)]);
 
         if (typeof module.render === 'function') {
             await module.render();
