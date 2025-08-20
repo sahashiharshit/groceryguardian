@@ -58,7 +58,7 @@ export async function render(): Promise<void> {
 
           user.householdId = household._id;
           localStorage.setItem("user", JSON.stringify(user));
-          alert("Group created successfully!");
+          showToast("Group created successfully!", "success");
           (groupModal as any).closeModal();
           render(); // re-render to show group info
         } catch (error) {
@@ -72,7 +72,7 @@ export async function render(): Promise<void> {
 
     left.appendChild(noGroupMessage);
     left.appendChild(createBtn);
-    // left.appendChild(groupModal.modal);
+    
     layout.appendChild(left);
 
     const right = document.createElement("div");

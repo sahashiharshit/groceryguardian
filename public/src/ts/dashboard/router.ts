@@ -39,7 +39,7 @@ export async function importView(viewName: string, cssFiles: string | string[]):
             view.innerHTML = `<h2>Error: ${viewName} has no render() method</h2>`;
         }
     } catch (error) {
-        console.error(`Error loading view ${viewName}:`, error);
+
         view.innerHTML = `
       <div class="error">
         <p>Error loading ${viewName}. Please try again.</p>
