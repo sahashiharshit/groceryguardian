@@ -1,8 +1,8 @@
 const CACHE_NAME = "grocery-cache-v1";
 const urlsToCache = [
   "/",
-  "/index.html",
-  "/dist/app.js",
+  "/dist/index.html",
+  "/dist/js/app.js",
   "/dist/assets/icons/icon-192.png",
   "/dist/assets/icons/icon-512.png"
 ];
