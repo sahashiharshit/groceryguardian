@@ -18,11 +18,5 @@
       "type": "image/png"
     }
   ]
-  ,
-  "version": "1.0",
-  "description": "Manifest for Grocery Guardian web application",
-  "scope": "/",
-  "lang": "en-US",
-  "dir": "ltr"
 
 }
