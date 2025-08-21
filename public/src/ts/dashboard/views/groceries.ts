@@ -168,7 +168,7 @@ export async function render(): Promise<void> {
     const groceryModal = Modal(form, "grocery-modal");
     //Add Groceries button
     const addBtn = document.createElement("button") as HTMLButtonElement;
-    addBtn.textContent = "Add Groceries";
+    addBtn.textContent = "Add";
     addBtn.className = "add-grocery-btn";
     addBtn.onclick = () => groceryModal.openModal();
 
