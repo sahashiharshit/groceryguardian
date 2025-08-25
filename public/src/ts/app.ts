@@ -248,7 +248,7 @@ function initAuth(): void {
         method: "POST",
         body: { name, email, password },
       });
-      renderVerifyEmailPage(email); 
+      renderVerifyEmailPage(email);
       showToast("We sent an OTP to your email. Please verify.", "success");
     } catch (error: any) {
       showToast(error?.message || "Signup failed", "error");
@@ -256,7 +256,7 @@ function initAuth(): void {
       hideLoader();
     }
   };
- 
+
 
   loginForm.addEventListener("submit", onLoginSubmit);
   signupForm.addEventListener("submit", onSignupSubmit);
@@ -266,9 +266,9 @@ function initAuth(): void {
   });
 
   const forgotLink = loginForm.querySelector("button#forgot-password-link") as HTMLElement | null;
-  if(forgotLink){
+  if (forgotLink) {
 
-    const onForgotPassword = (e:Event) => {
+    const onForgotPassword = (e: Event) => {
       e.preventDefault();
       renderForgotPasswordPage();
     };
@@ -320,7 +320,7 @@ export function dispose() {
 function renderVerifyEmailPage(email: string): void {
   const app = document.getElementById("app");
   if (!app) return;
-  app.innerHTML=`
+  app.innerHTML = `
   <div class="otp-verification">
       <h2>Email Verification</h2>
       <p>We’ve sent an OTP to <b>${email}</b>. Please enter it below.</p>
@@ -339,14 +339,19 @@ function renderVerifyEmailPage(email: string): void {
   let timer: number;
   function startCountdown() {
 
-    resendBtn.disabled=true;
+    resendBtn.disabled = true;
+    countdown = 60;
     resendBtn.textContent = `Resend OTP (${countdown}s)`;
     timer = window.setInterval(() => {
       countdown--;
-      if (countdown <= 0) {
+      if (countdown > 0) {
+
+        resendBtn.textContent = `Resend OTP (${countdown}s)`;
+      } else {
         clearInterval(timer);
         resendBtn.disabled = false;
         resendBtn.textContent = "Resend OTP";
+
       }
     }, 1000);
   }
@@ -361,7 +366,6 @@ function renderVerifyEmailPage(email: string): void {
         body: { email },
       });
       showToast("OTP resent successfully!", "success");
-      countdown = 60;
       startCountdown();
     } catch (error: any) {
       showToast(error?.message || "Failed to resend OTP", "error");
@@ -391,12 +395,13 @@ function renderVerifyEmailPage(email: string): void {
   });
 
 }
-function renderForgotPasswordPage():void{
 
-  const app= document.getElementById('app');
-  if(!app) return;
+function renderForgotPasswordPage(): void {
 
-  app.innerHTML=`
+  const app = document.getElementById('app');
+  if (!app) return;
+
+  app.innerHTML = `
     <div class="forgot-password">
       <h2>Forgot Password?</h2>
       <p>Enter your email and we’ll send you a reset OTP.</p>
@@ -407,10 +412,10 @@ function renderForgotPasswordPage():void{
       <button id="backToLogin">Back to Login</button>
     </div>
   `;
-const forgotForm = document.getElementById("forgotForm") as HTMLFormElement;
-const backToLogin = document.getElementById("backToLogin") as HTMLButtonElement;
+  const forgotForm = document.getElementById("forgotForm") as HTMLFormElement;
+  const backToLogin = document.getElementById("backToLogin") as HTMLButtonElement;
 
-backToLogin.addEventListener("click", () => renderAuth());
+  backToLogin.addEventListener("click", () => renderAuth());
   forgotForm.addEventListener("submit", async (event: SubmitEvent) => {
     event.preventDefault();
     const email = (document.getElementById("forgotEmail") as HTMLInputElement).value;
@@ -432,8 +437,8 @@ backToLogin.addEventListener("click", () => renderAuth());
   });
 }
 
-function renderResetPasswordPage(email:string):void{
-const app = document.getElementById("app");
+function renderResetPasswordPage(email: string): void {
+  const app = document.getElementById("app");
   if (!app) return;
 
   app.innerHTML = `
@@ -473,7 +478,7 @@ const app = document.getElementById("app");
         body: { email, otp, password },
       });
 
-     // localStorage.setItem("user", JSON.stringify(data.user));
+      // localStorage.setItem("user", JSON.stringify(data.user));
       await renderAuth();
       showToast("Password reset successfully! Login with new Password.", "success");
     } catch (error: any) {

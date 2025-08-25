@@ -75,7 +75,7 @@ export const verifySignup = async (req: Request<{}, {}, { email: string; otp: st
   res.json({
     message: "Email verified successfully",
     user: {
-      _id: user._id,
+      id: user._id,
       name: user.name,
       email: user.email,
       emailVerified: user.emailVerified,
@@ -136,7 +136,7 @@ export const register = async (req: Request<{}, {}, RegisterRequestBody>, res: R
     res.status(201).json({
       message: "User created. Verification code sent to email.",
       user: {
-        _id: created._id,
+        id: created._id,
         name: created.name,
         email: created.email,
         emailVerified: created.emailVerified,
@@ -171,7 +171,7 @@ export const login = async (req: Request<{}, {}, LoginRequestBody>, res: Respons
   res.status(200).json({
     message: "Logged in",
     user: {
-      _id: user._id,
+      id: user._id,
       name: user.name,
       email: user.email,
       emailVerified: user.emailVerified,
