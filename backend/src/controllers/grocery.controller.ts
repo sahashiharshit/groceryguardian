@@ -33,12 +33,12 @@ export const addGroceries = async (req: Request<{}, {}, AddGroceryRequestBody>, 
     items.map(async (item) => {
       let barcodeId: string | null = null;
       let categoryId: string | null = null;
-      
-       const category = await Categories.findOne({ name: item.category });
-        categoryId = category?._id?.toString() || null;
+
+      const category = await Categories.findOne({ name: item.category });
+      categoryId = category?._id?.toString() || null;
       if (item.barcode) {
         let barcode = await Barcode.findOne({ code: item.barcode });
-       
+
         if (!barcode) {
 
           const createdBarcode = await Barcode.create({
@@ -48,13 +48,13 @@ export const addGroceries = async (req: Request<{}, {}, AddGroceryRequestBody>, 
             defaultQuantity: Number(item.quantity),
             categoryId: category?._id,
           });
-          
+
           barcode = createdBarcode;
 
 
         }
-          barcodeId = barcode?._id?.toString()??null;
-    
+        barcodeId = barcode?._id?.toString() ?? null;
+
       }
 
       return {
@@ -65,7 +65,7 @@ export const addGroceries = async (req: Request<{}, {}, AddGroceryRequestBody>, 
         barcode: barcodeId || undefined,
         notes: item.notes || undefined,
         householdId: householdId,
-        categoryId: categoryId ||undefined,
+        categoryId: categoryId || undefined,
       };
 
     }));
@@ -89,17 +89,12 @@ export const getGrocerieslist = async (req: Request, res: Response): Promise<voi
   const filter = user.householdId
     ? { householdId: user.householdId } // Group groceries
     : { addedBy: user._id, householdId: null }; // Solo 
-  
+
   const groceries = await GroceryListItem.find(filter).lean();
 
   res.status(200).json({ groceries });
 };
 
-//
-
-export const updateGroceriesList = async (req: Request, res: Response) => {
-
-};
 
 //delete items
 export const deleteGroceryItem = async (req: Request, res: Response): Promise<void> => {
@@ -129,11 +124,11 @@ export const moveToPantry = async (req: Request, res: Response): Promise<void> =
   const groceryItemId = req.params?.itemId;
   const { expirationDate } = req.body;
   const userId = req.user?.id;
-   if (!groceryItemId) {
+  if (!groceryItemId) {
     res.status(400).json({ error: "No grocery item ID provided." });
     return;
   }
-  const groceryItem = await GroceryListItem.findById( groceryItemId );
+  const groceryItem = await GroceryListItem.findById(groceryItemId);
   if (!groceryItem) {
 
     res.status(404).json({ error: "no item found" });
@@ -145,10 +140,10 @@ export const moveToPantry = async (req: Request, res: Response): Promise<void> =
     quantity: groceryItem?.quantity,
     unit: groceryItem?.unit,
     addedBy: groceryItem?.addedBy,
-    purchaseDate:  new Date(),
-    barcode:groceryItem?.barcode,
-    categoryId:groceryItem?.categoryId,
-    purchasedBy:userId,
+    purchaseDate: new Date(),
+    barcode: groceryItem?.barcode,
+    categoryId: groceryItem?.categoryId,
+    purchasedBy: userId,
     expirationDate: expirationDate ? new Date(expirationDate) : undefined
   });
 
@@ -168,15 +163,15 @@ export const getBarcodeInfo = async (req: Request, res: Response): Promise<void>
 
   const { barcode } = req.params;
 
-  const barcodeEntry = await Barcode.findOne({code:barcode}).populate("categoryId", "name");
+  const barcodeEntry = await Barcode.findOne({ code: barcode }).populate("categoryId", "name");
 
   if (!barcodeEntry) {
     res.status(404).json({ message: "Barcode not found" });
     return;
   }
   res.json({
-    id:barcodeEntry._id,
-    code:barcodeEntry.code,
+    id: barcodeEntry._id,
+    code: barcodeEntry.code,
     itemName: barcodeEntry.itemName,
     unit: barcodeEntry.unit,
     quantity: barcodeEntry.defaultQuantity,

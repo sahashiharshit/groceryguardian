@@ -7,6 +7,7 @@ import mongoose from "mongoose";
 import { generateNumericOtp, hashOtp, verifyOtp as verifyOtpUtil } from "../utils/otp.js";
 import VerificationToken from "../models/VerificationToken.js";
 import { sendResetPasswordOtpEmail, sendSignupOtpEmail } from "../services/mailer.service.js";
+import { withTransaction } from "../utils/transactions.js";
 
 
 type RegisterRequestBody = {
@@ -117,8 +118,8 @@ export const register = async (req: Request<{}, {}, RegisterRequestBody>, res: R
     return;
   }
 
-  const session = await mongoose.startSession();
-  await session.withTransaction(async () => {
+  
+  await withTransaction(async (session) => {
     const created = new User({ name, email, password });
     await created.save({ session });
     // generate otp and send email
@@ -144,7 +145,6 @@ export const register = async (req: Request<{}, {}, RegisterRequestBody>, res: R
       },
     });
   });
-  session.endSession();
 };
 
 // Login a user
@@ -244,7 +244,7 @@ export const changePassword = async (req: Request, res: Response): Promise<void>
   return;
 }
 
-
+//Reset Password
 export const resetPassword = async (req: Request, res: Response): Promise<void> => {
   const { email, otp, password } = req.body;
   if (!email || !otp || !password) {
@@ -252,8 +252,8 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
     return;
   }
 
-  const session = await mongoose.startSession();
-  await session.withTransaction(async () => {
+  
+  await withTransaction(async (session) => {
     const user = await User.findOne({ email }).session(session);
     if (!user) {
       res.status(400).json({ message: 'User not found.' });
@@ -279,7 +279,7 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
     await tokenDoc.deleteOne({ session });
     res.status(200).json({ message: 'Password has been reset successfully.' });
   });
-  session.endSession();
+  return;
 };
 
 export const forgotPassword = async (req: Request, res: Response): Promise<void> => {
@@ -289,8 +289,8 @@ export const forgotPassword = async (req: Request, res: Response): Promise<void>
     return;
   }
 
-  const session = await mongoose.startSession();
-  await session.withTransaction(async () => {
+
+  await withTransaction(async (session) => {
     const user = await User.findOne({ email }).session(session);
     if (!user) {
       res.status(404).json({ message: 'User not found.' });
@@ -308,5 +308,5 @@ export const forgotPassword = async (req: Request, res: Response): Promise<void>
     );
     res.status(200).json({ message: 'Password reset Otp sent to your Email.' });
   });
-  session.endSession();
+  return;
 }
