@@ -21,7 +21,7 @@ export interface IUser extends Document {
 const userSchema:Schema<IUser> = new Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    mobileNo: { type: String, unique: true},
+    mobileNo: { type: String},
     password: { type: String, required: true },
     householdId: {
         type: Schema.Types.ObjectId,
@@ -48,7 +48,7 @@ userSchema.methods.comparePassword = async function (candidatePassword:string):P
 };
 userSchema.index(
     { mobileNo: 1 },
-    { unique: true, partialFilterExpression: { mobileNo: { $exists: true, $ne: null } } }
+    { unique: true, partialFilterExpression: { mobileNo: { $exists: true } } }
 );
 const User: Model<IUser> = mongoose.model<IUser>("User", userSchema);
 export default User;
