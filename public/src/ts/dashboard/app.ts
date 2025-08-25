@@ -110,6 +110,7 @@ export async function renderDashboardLayout(): Promise<void> {
       });
       window._routingSetupDone = true;
     }
+    handleRouting();
     hasRenderedDashboard = true;
   } finally {
     hideLoader();

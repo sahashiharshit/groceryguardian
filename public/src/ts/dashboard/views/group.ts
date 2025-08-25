@@ -234,7 +234,7 @@ export async function render(): Promise<void> {
             showToast("Group deleted successfully.", "success");
 
             // Clear household info from user & re-render
-            user.householdId = null;
+            user.household = null;
             localStorage.setItem("user", JSON.stringify(user));
             render();
           } catch (err) {
