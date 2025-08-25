@@ -124,7 +124,7 @@ export async function render(): Promise<void> {
         expirationModal.openModal();
       };
       buttonGroup.appendChild(purchasedBtn);
-      if (item.addedBy === user?._id) {
+      if (item.addedBy === user?.id) {
         const deleteBtn = document.createElement("button");
         deleteBtn.className = "delete-btn";
         deleteBtn.innerHTML = "Delete";

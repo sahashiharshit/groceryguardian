@@ -105,7 +105,7 @@ export async function render(): Promise<void> {
               });
               render();
               showToast("✅ You joined the group!", "success");
-              
+
             } catch (e) {
               showToast("Failed to accept invite.", "error");
             }
@@ -143,7 +143,7 @@ export async function render(): Promise<void> {
 
   } else {
     const household = await apiFetch<Household>(`/households/me`);
-    console.log(household);
+
     const currentUserRole = household.members.find((m: any) => m.userId._id === user.id)?.role || "member";
     const isAdmin = currentUserRole === "owner";
     //---left section(Group Info panel)
@@ -159,9 +159,11 @@ export async function render(): Promise<void> {
         .map((m: any) => {
           const isTargetMember = m.role === "member";
           const isNotSelf = m.userId._id !== user.id;
+         
           return `<li data-user-id ="${m.userId._id}">
         ${m.userId.name} (${m.role})
-        ${isAdmin && isTargetMember && isNotSelf ? `<button class="remove-member-btn" data-id="${m.userId._id}">Remove</button>` : ""}
+        ${isAdmin && isTargetMember && isNotSelf ? `<button class="remove-member-btn" data-id="${m.userId._id}">Remove</button>
+        <button class="make-owner-btn" data-id="${m.userId._id}">Make Owner</button>` : ""}
         </li>`;
         })
         .join("")}
@@ -190,6 +192,28 @@ export async function render(): Promise<void> {
 
         });
 
+      });
+
+      const ownerButtons = left.querySelectorAll(".make-owner-btn");
+      ownerButtons.forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const userId = btn.getAttribute("data-id");
+          if (!userId) return;
+
+          const confirmPromote = confirm("Are you sure you want to make this member an owner?");
+          if (!confirmPromote) return;
+
+          try {
+            await apiFetch(`/households/${household._id}/members/${userId}`, {
+              method: "PUT",
+              body: { role: "owner" },
+            });
+            showToast("Member promoted to owner.", "success");
+            render(); // refresh
+          } catch {
+            showToast("Failed to update member role.", "error");
+          }
+        });
       });
     }, 0);
     // ---Right Section (Invite Panel)
@@ -240,7 +264,7 @@ export async function render(): Promise<void> {
                   });
                   // Assuming a successful invite returns a truthy 'success' property
                   if (res && res.success) {
-                    resultContainer!.innerHTML="";
+                    resultContainer!.innerHTML = "";
                     (document.getElementById("invite-user-form") as HTMLFormElement).reset();
                     showToast("Invite sent successfully!", "success");
                   }
@@ -270,7 +294,7 @@ export async function render(): Promise<void> {
       const inviteHeader = document.createElement("h3");
       inviteHeader.textContent = "Invite a Member";
       const resultContainer = document.createElement("div");
-      resultContainer.id="search-result-container";
+      resultContainer.id = "search-result-container";
       right.appendChild(inviteHeader);
       right.appendChild(inviteForm);
       right.appendChild(resultContainer);
