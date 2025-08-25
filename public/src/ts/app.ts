@@ -325,11 +325,49 @@ function renderVerifyEmailPage(email: string): void {
       <p>We’ve sent an OTP to <b>${email}</b>. Please enter it below.</p>
       <form id="otpForm">
         <input type="text" id="otpInput" placeholder="Enter OTP" required />
-        <button type="submit">Verify</button>npm 
+        <button type="submit">Verify</button> 
       </form>
+       <div class="resend-section">
+        <button id="resendOtpBtn" disabled>Resend OTP (60s)</button>
+      </div>
     </div>
   `;
   const otpForm = document.getElementById("otpForm") as HTMLFormElement;
+  const resendBtn = document.getElementById("resendOtpBtn") as HTMLButtonElement;
+  let countdown = 60;
+  let timer: number;
+  function startCountdown() {
+
+    resendBtn.disabled=true;
+    resendBtn.textContent = `Resend OTP (${countdown}s)`;
+    timer = window.setInterval(() => {
+      countdown--;
+      if (countdown <= 0) {
+        clearInterval(timer);
+        resendBtn.disabled = false;
+        resendBtn.textContent = "Resend OTP";
+      }
+    }, 1000);
+  }
+  startCountdown();
+
+  resendBtn.addEventListener("click", async () => {
+    if (resendBtn.disabled) return;
+    showLoader();
+    try {
+      await apiFetch("/auth/resend-otp", {
+        method: "POST",
+        body: { email },
+      });
+      showToast("OTP resent successfully!", "success");
+      countdown = 60;
+      startCountdown();
+    } catch (error: any) {
+      showToast(error?.message || "Failed to resend OTP", "error");
+    } finally {
+      hideLoader();
+    }
+  });
   otpForm.addEventListener("submit", async (event: SubmitEvent) => {
     event.preventDefault();
     const otp = (document.getElementById("otpInput") as HTMLInputElement).value;

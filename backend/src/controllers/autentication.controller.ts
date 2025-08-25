@@ -85,17 +85,17 @@ export const verifySignup = async (req: Request<{}, {}, { email: string; otp: st
   return;
 };
 
-export const resendSignupOtp = async (req: Request<{}, {}, { userId: string }>, res: Response) => {
-  const { userId } = req.body;
-  const user = await User.findById(userId);
+export const resendSignupOtp = async (req: Request<{}, {}, { email: string }>, res: Response) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
   if (!user) { res.status(404).json({ message: "User not found" }); return; }
   if (user.emailVerified) { res.status(400).json({ message: "User already verified" }); return; }
 
   const otp = generateNumericOtp(6);
   const otphash = await hashOtp(otp);
   const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
-  await VerificationToken.findOneAndUpdate({ userId, type: "signup" },
-    { otp: otphash, type: "signup", userId, expiresAt },
+  await VerificationToken.findOneAndUpdate({ userId: user._id, type: "signup" },
+    { otp: otphash, type: "signup", userId: user._id, expiresAt },
     { upsert: true, new: true, setDefaultsOnInsert: true });
 
   await sendSignupOtpEmail(user.email, user.name, otp);
