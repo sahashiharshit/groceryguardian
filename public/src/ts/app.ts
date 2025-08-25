@@ -222,6 +222,7 @@ function initAuth(): void {
         renderVerifyEmailPage(email);
         return;
       }
+      console.log(error.status, error.code);
       showToast(error?.message || "Login failed", "error");
     } finally {
       hideLoader();
