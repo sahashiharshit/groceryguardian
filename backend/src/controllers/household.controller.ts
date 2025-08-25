@@ -327,3 +327,55 @@ export const leaveHousehold = async (req: Request, res: Response): Promise<void>
     res.status(200).json({ success: true, message: "You have left the household" });
     return;
 };
+
+export const deleteHousehold = async (req: Request, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const userId = req.user?.id;
+
+    if (!id || !Types.ObjectId.isValid(id)) {
+        res.status(400);
+        throw new Error('Invalid Household ID format');
+    }
+
+    const session = await Household.startSession();
+    session.startTransaction();
+
+    const household = await Household.findById(id).session(session);
+    if (!household) {
+        await session.abortTransaction();
+        session.endSession();
+        res.status(404);
+        throw new Error("Household not found");
+    }
+    const member = household.members.find(m => m.userId.toString() === userId);
+    if (!member || member.role !== "owner") {
+        await session.abortTransaction();
+        session.endSession();
+        res.status(403);
+        throw new Error("Only the group owner can delete the household");
+    }
+
+    await User.updateMany(
+        { householdId: household._id },
+        { $set: { householdId: null } },
+        { session }
+    );
+
+    await GroceryListItem.updateMany(
+        { householdId: household._id },
+        { $set: { householdId: null } },
+        { session }
+    );
+
+    await Invitation.deleteMany(
+        { household: household._id },
+        { session }
+    );
+
+    await household.deleteOne({ session });
+
+    await session.commitTransaction();
+    session.endSession();
+    res.status(200).json({ success: true, message: "Household deleted" });
+    return;
+};

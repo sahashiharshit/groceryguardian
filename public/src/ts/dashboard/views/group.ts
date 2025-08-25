@@ -121,7 +121,7 @@ export async function render(): Promise<void> {
                 body: { action: "reject" },
               });
               showToast("❌ Invitation rejected.", "error");
-              inviteBox!.innerHTML='';
+              inviteBox!.innerHTML = '';
             } catch (e) {
               showToast("Failed to reject invite.", "error");
             }
@@ -159,12 +159,14 @@ export async function render(): Promise<void> {
         .map((m: any) => {
           const isTargetMember = m.role === "member";
           const isNotSelf = m.userId._id !== user.id;
-         
+          const isCurrentUserOwner = m.role === "owner" && m.userId._id === user.id;
           return `<li data-user-id ="${m.userId._id}">
         ${m.userId.name} (${m.role})
         ${isAdmin && isTargetMember && isNotSelf ? `<button class="remove-member-btn" data-id="${m.userId._id}">Remove</button>
-        <button class="make-owner-btn" data-id="${m.userId._id}">Make Owner</button>` : `<button class="delete-group-btn" style="display:none;">Delete Group</button>`}
-        </li>`;
+        <button class="make-owner-btn" data-id="${m.userId._id}">Make Owner</button>` :
+              ``}
+          ${isCurrentUserOwner ? `<button class="delete-group-btn" data-id="${household._id}">Delete Group</button>` : ""}
+         </li>`;
         })
         .join("")}
       </ul>
@@ -215,12 +217,36 @@ export async function render(): Promise<void> {
           }
         });
       });
+
+      const deleteButtons = left.querySelectorAll(".delete-group-btn");
+      deleteButtons.forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          const householdId = btn.getAttribute("data-id");
+          if (!householdId) return;
+
+          const confirmDelete = confirm("Are you sure you want to delete this group? This action cannot be undone!");
+          if (!confirmDelete) return;
+
+          try {
+            await apiFetch(`/households/${householdId}`, {
+              method: "DELETE",
+            });
+            showToast("Group deleted successfully.", "success");
+
+            // Clear household info from user & re-render
+            user.householdId = null;
+            localStorage.setItem("user", JSON.stringify(user));
+            render();
+          } catch (err) {
+            showToast("Failed to delete group.", "error");
+          }
+        });
+      });
     }, 0);
     // ---Right Section (Invite Panel)
     const right = document.createElement("div");
     right.className = "group-right";
     if (isAdmin) {
-
 
       const inviteForm = FormBuilder({
         id: "invite-user-form",

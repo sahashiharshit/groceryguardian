@@ -19,4 +19,5 @@ router.post('/:id/invite',authenticationMiddleware,householdController.inviteUse
 router.post('/invitations/:invitationId/respond',authenticationMiddleware,householdController.respondToInvitation);
 router.get('/invitations/me',authenticationMiddleware,householdController.getMyInvitations);
 router.delete('/leave',authenticationMiddleware,householdController.leaveHousehold);
+router.delete('/:id',authenticationMiddleware,householdController.deleteHousehold);
 export default router;
