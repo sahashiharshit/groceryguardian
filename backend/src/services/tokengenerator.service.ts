@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 export const generateAuthToken = (id: string): string => {
 
     const secretKey = process.env.SECRET_KEY;
-    console.log(secretKey);
+    
     if (!secretKey) {
         throw new Error("Secret key is not defined in environment variables.");
     }

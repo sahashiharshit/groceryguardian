@@ -163,7 +163,7 @@ export const login = async (req: Request<{}, {}, LoginRequestBody>, res: Respons
     throw new Error("Invalid password");
   }
   if (!user.emailVerified) {
-    res.status(403).json({code:"EMAIL_NOT_VERIFIED", message:"Email not verified"});
+    res.status(403).json({ code: "EMAIL_NOT_VERIFIED", message: "Email not verified" });
     return;
   }
 
@@ -204,7 +204,7 @@ export const refreshToken = async (req: Request, res: Response): Promise<void> =
     });
     res.json({ success: true });
   } catch (error) {
-    console.error("Refresh token invalid:", error);
+
     res.status(403).json({ message: "Invalid or expired refresh token" });
   }
 

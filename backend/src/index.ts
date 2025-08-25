@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 import morgan from "morgan";
-//import helmet from "helmet";
+import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
 
@@ -34,7 +34,7 @@ async function startServer() {
     app.set('trust proxy',1);
     //Global middlewares
 
-    //app.use(helmet());
+    app.use(helmet());
     app.use(
       cors({
         origin: process.env.CLIENT_URL,

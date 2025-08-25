@@ -48,7 +48,7 @@ export const addGroceries = async (req: Request<{}, {}, AddGroceryRequestBody>, 
             defaultQuantity: Number(item.quantity),
             categoryId: category?._id,
           });
-          console.log(`✅ Barcode ${item.barcode} saved`);
+          
           barcode = createdBarcode;
 
 
