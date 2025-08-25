@@ -21,7 +21,7 @@ export interface IUser extends Document {
 const userSchema:Schema<IUser> = new Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    mobileNo: { type: String, unique: true, sparse: true },
+    mobileNo: { type: String, unique: true},
     password: { type: String, required: true },
     householdId: {
         type: Schema.Types.ObjectId,
@@ -46,5 +46,9 @@ userSchema.pre<IUser>("save", async function () {
 userSchema.methods.comparePassword = async function (candidatePassword:string):Promise<boolean> {
     return await bcrypt.compare(candidatePassword, this.password);
 };
+userSchema.index(
+    { mobileNo: 1 },
+    { unique: true, partialFilterExpression: { mobileNo: { $exists: true, $ne: null } } }
+);
 const User: Model<IUser> = mongoose.model<IUser>("User", userSchema);
 export default User;
