@@ -103,6 +103,9 @@ export async function render(): Promise<void> {
                 method: "POST",
                 body: { action: "accept" },
               });
+              user.household = invitation.household;
+              localStorage.setItem("user", JSON.stringify(user));
+              inviteBox!.innerHTML = '';
               render();
               showToast("✅ You joined the group!", "success");
 
