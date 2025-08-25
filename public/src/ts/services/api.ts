@@ -36,17 +36,22 @@ export async function apiFetch<T = object>(
   }
   if (!response.ok) {
     let errorMessage = `HTTP ${response.status}`;
+    let errorCode: string | undefined;
     try {
       const errorData = await response.json();
       if (typeof errorData === 'object' && errorData !== null) {
         errorMessage = errorData.message || errorData.error || JSON.stringify(errorData);
+        errorCode=errorData.code;
       }
     } catch (error) {
       const errorText = await response.text();
       if (errorText) errorMessage = errorText;
     }
 
-    throw new Error(errorMessage);
+ const err: any = new Error(errorMessage);
+  err.status = response.status;
+  if (errorCode) err.code = errorCode;
+  throw err;
   }
   const contentType = response.headers.get("Content-Type") || "";
   return contentType.includes("application/json") ? response.json() : (response.text() as unknown as T);
