@@ -11,4 +11,5 @@ router.put("/:id", authenticationMiddleware, pantryController.updateItemInPantry
 router.get("/check/expiry", authenticationMiddleware, pantryController.checkForStockExpiry);
 router.get("/check/low-stock", authenticationMiddleware, pantryController.checkForStockQuantity);
 
+
 export default router;
