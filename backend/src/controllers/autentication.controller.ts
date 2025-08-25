@@ -118,37 +118,33 @@ export const register = async (req: Request<{}, {}, RegisterRequestBody>, res: R
   }
 
   const session = await mongoose.startSession();
-  try {
-    await session.withTransaction(async () => {
+  await session.withTransaction(async () => {
+    const created = new User({ name, email, password });
+    await created.save({ session });
+    // generate otp and send email
+    const otp = generateNumericOtp(6);
+    const otphash = await hashOtp(otp);
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
 
-      const user = await User.create([{ name, email, password }], { session });
-      const created = user[0];
-      if (!created) {
-        throw new Error("User creation failed");
-      }
-      const otp = generateNumericOtp(6);
-      const otphash = await hashOtp(otp);
-      const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
-      await VerificationToken.findOneAndUpdate({ userId: created._id, type: "signup" },
-        { otp: otphash, type: "signup", userId: created._id, expiresAt },
-        { upsert: true, new: true, setDefaultsOnInsert: true, session });
+    await VerificationToken.findOneAndUpdate(
+      { userId: created._id, type: "signup" },
+      { otp: otphash, type: "signup", userId: created._id, expiresAt },
+      { upsert: true, new: true, setDefaultsOnInsert: true, session }
+    );
 
-      await sendSignupOtpEmail(created.email, created.name, otp);
-      res.status(201).json({
-        message: "User created. Verification code sent to email.",
-        user: {
-          _id: created._id,
-          name: created.name,
-          email: created.email,
-          emailVerified: created.emailVerified,
-          createdAt: created.createdAt,
-        },
-      });
+    await sendSignupOtpEmail(created.email, created.name, otp);
+    res.status(201).json({
+      message: "User created. Verification code sent to email.",
+      user: {
+        _id: created._id,
+        name: created.name,
+        email: created.email,
+        emailVerified: created.emailVerified,
+        createdAt: created.createdAt,
+      },
     });
-  } finally {
-    session.endSession();
-  }
-
+  });
+  session.endSession();
 };
 
 // Login a user
