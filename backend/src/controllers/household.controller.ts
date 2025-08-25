@@ -124,6 +124,12 @@ export const removeHouseholdMember = async (req: Request, res: Response): Promis
     household.members = household.members.filter((m) => m.userId.toString() !== userId);
 
     await household.save();
+    await User.findByIdAndUpdate(userId, { householdId: null });
+    await GroceryListItem.updateMany(
+        { userId, householdId: household._id },
+        { $set: { householdId: null } }
+    );
+    await Invitation.deleteMany({ recipient: userId, household: household._id });
     res.status(200).json({ message: 'Member removed', household });
     return;
 };

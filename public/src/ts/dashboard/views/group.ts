@@ -56,7 +56,7 @@ export async function render(): Promise<void> {
             body: { name: data.name },
           });
 
-          user.householdId = household._id;
+          user.household = household._id;
           localStorage.setItem("user", JSON.stringify(user));
           showToast("Group created successfully!", "success");
           (groupModal as any).closeModal();
