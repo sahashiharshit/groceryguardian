@@ -163,8 +163,8 @@ export const login = async (req: Request<{}, {}, LoginRequestBody>, res: Respons
     throw new Error("Invalid password");
   }
   if (!user.emailVerified) {
-    res.status(403);
-    throw new Error("Email not verified");
+    res.status(403).json({code:"EMAIL_NOT_VERIFIED", message:"Email not verified"});
+    return;
   }
 
   setAuthCookies(res, (user._id as mongoose.Types.ObjectId).toString());

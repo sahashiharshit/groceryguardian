@@ -217,7 +217,7 @@ function initAuth(): void {
       await goToApp();
       showToast("Welcome Back!", "success");
     } catch (error: any) {
-      if (error?.status === 403 && error?.code === "EMAIL_NOT_VERIFIED" && error?.userId) {
+      if (error?.status === 403 && error?.code === "EMAIL_NOT_VERIFIED") {
         showToast("Please verify your email to login.", "info");
         renderVerifyEmailPage(email);
         return;
