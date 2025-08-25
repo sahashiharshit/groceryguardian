@@ -121,7 +121,7 @@ export async function render(): Promise<void> {
                 body: { action: "reject" },
               });
               showToast("❌ Invitation rejected.", "error");
-              card.remove();
+              inviteBox!.innerHTML='';
             } catch (e) {
               showToast("Failed to reject invite.", "error");
             }
@@ -129,7 +129,7 @@ export async function render(): Promise<void> {
 
           card.appendChild(acceptBtn);
           card.appendChild(rejectBtn);
-          inviteBox.appendChild(card)
+          inviteBox.appendChild(card);
           right.appendChild(inviteBox);
         });
 
@@ -163,7 +163,7 @@ export async function render(): Promise<void> {
           return `<li data-user-id ="${m.userId._id}">
         ${m.userId.name} (${m.role})
         ${isAdmin && isTargetMember && isNotSelf ? `<button class="remove-member-btn" data-id="${m.userId._id}">Remove</button>
-        <button class="make-owner-btn" data-id="${m.userId._id}">Make Owner</button>` : ""}
+        <button class="make-owner-btn" data-id="${m.userId._id}">Make Owner</button>` : `<button class="delete-group-btn" style="display:none;">Delete Group</button>`}
         </li>`;
         })
         .join("")}

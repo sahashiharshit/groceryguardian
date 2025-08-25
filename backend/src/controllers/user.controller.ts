@@ -104,3 +104,46 @@ export const updateUserInfo = async (req: Request, res: Response): Promise<void>
     },
   });
 };
+
+export const deleteUser = async (req: Request, res: Response): Promise<void> => {
+  const userId = req.user?.id;
+
+  if (!userId) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+  const user = await User.findById(userId);
+  if (!user) {
+    res.status(404).json({ error: "User not found" });
+    return;
+  }
+
+  // If user is part of a household, check ownership
+  if (user.householdId) {
+    const household = await Household.findById(user.householdId);
+    if (household) {
+      // Find all owners in the household
+      const owners = household.members.filter(
+        (member) => member.role === "owner"
+      );
+      // Check if user is an owner
+      const isOwner = household.members.some(
+        (member) => member.userId.toString() === userId && member.role === "owner"
+      );
+      // If user is the only owner, prevent deletion
+      if (isOwner && owners.length === 1) {
+        res.status(400).json({ error: "Cannot delete account. You are the only owner of the group." });
+        return;
+      }
+      // Remove user from household members
+      household.members = household.members.filter(
+        (member) => member.userId.toString() !== userId
+      );
+      await household.save();
+    }
+  }
+
+  await User.findByIdAndDelete(userId);
+
+  res.status(200).json({ message: "User account deleted successfully" });
+};

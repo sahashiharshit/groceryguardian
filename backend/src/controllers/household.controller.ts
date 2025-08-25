@@ -305,10 +305,13 @@ export const leaveHousehold = async (req: Request, res: Response): Promise<void>
         throw new Error("You are not a member of this household");
     }
     if (membership.role === "owner") {
+        const ownerCount = household.members.filter((m: any) => m.role === "owner").length;
+        if (ownerCount > 1) {
         await session.abortTransaction();
         session.endSession();
         res.status(403);
-        throw new Error("Group owner cannot leave the household. Please delete the household or transfer ownership first.");
+        throw new Error("You are the last owner. Please delete the household or transfer ownership first.");
+        }
     }
     household.members = household.members.filter((m: any) => m.userId.toString() !== (user._id as ObjectId).toString());
     await household.save({ session });

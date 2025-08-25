@@ -133,7 +133,7 @@ export async function render(): Promise<void> {
   document.getElementById("delete-account-btn")?.addEventListener("click", async () => {
     const confirmation = confirm("Are you sure you want to permanently delete your account?");
     if (confirmation) {
-      await apiFetch(`/users/me`, { method: "DELETE" });
+      await apiFetch(`/users/delete`, { method: "DELETE" });
       localStorage.clear();
       showToast("Account deleted.", "success");
       location.reload();
