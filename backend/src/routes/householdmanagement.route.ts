@@ -18,4 +18,5 @@ router.get('/search-user',authenticationMiddleware,householdController.searchUse
 router.post('/:id/invite',authenticationMiddleware,householdController.inviteUserToHousehold);
 router.post('/invitations/:invitationId/respond',authenticationMiddleware,householdController.respondToInvitation);
 router.get('/invitations/me',authenticationMiddleware,householdController.getMyInvitations);
+router.delete('/leave',authenticationMiddleware,householdController.leaveHousehold);
 export default router;

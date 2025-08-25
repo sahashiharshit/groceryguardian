@@ -56,6 +56,12 @@
   color: #0056b3;
   font-size: 0.95rem;
 }
+.group-left li.current-user{
+background-color: #e0f2fe;
+  color: #0369a1;
+  font-weight: 600;
+
+}
 .remove-member-btn {
   padding: 0.4rem 0.75rem;
   font-size: 0.7rem;

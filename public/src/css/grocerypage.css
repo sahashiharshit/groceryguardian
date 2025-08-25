@@ -61,11 +61,12 @@ li:hover {
 
 .add-grocery-btn {
   position: fixed;
-  top: 0.5rem;
+  bottom: 0.5rem;
   right: 0.5rem;
   background: #28a745;
   color: white;
   padding: 0.75rem 1.25rem;
+  /* pill shape for desktop */
   font-size: 1rem;
   border-radius: 50px;
   border: none;
@@ -94,13 +95,15 @@ li:hover {
 }
 
 .purchase-btn {
-   background-color: #28a745;
+  background-color: #28a745;
   color: white;
 }
+
 .delete-btn {
   background-color: #dc3545;
   color: white;
 }
+
 .expiration-form-grid {
   display: flex;
   flex-direction: column;
@@ -174,6 +177,7 @@ li:hover {
     transform: translateY(0);
   }
 }
+
 /* ✅ RESPONSIVE BREAKPOINTS */
 
 /* Tablets */
@@ -200,7 +204,8 @@ li:hover {
   }
 
   li {
-    flex-direction: column; /* ✅ stack content vertically */
+    flex-direction: column;
+    /* ✅ stack content vertically */
     align-items: flex-start;
     gap: 0.6rem;
   }
@@ -212,14 +217,29 @@ li:hover {
 
   .purchase-btn,
   .delete-btn {
-    width: 100%; /* ✅ full width buttons */
+    width: 100%;
+    /* ✅ full width buttons */
     justify-content: center;
   }
 
   .add-grocery-btn {
-    bottom: 1rem;
-    right: 1rem;
-    padding: 0.6rem 1rem;
-    font-size: 0.9rem;
+    bottom: 2.5rem;
+    /* space from navbar */
+    right: 1.2rem;
+    width: 56px;
+    /* fixed circular size */
+    height: 56px;
+    border-radius: 50%;
+    /* circle */
+    padding: 0;
+    /* reset desktop padding */
+    display: flex;
+    /* center text */
+    justify-content: center;
+    align-items: center;
+    font-size: 1.6rem;
+    /* bigger "+" */
+    line-height: 1;
+    white-space: nowrap;
   }
 }

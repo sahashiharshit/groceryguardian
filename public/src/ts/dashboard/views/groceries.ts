@@ -173,7 +173,7 @@ export async function render(): Promise<void> {
     addBtn.onclick = () => groceryModal.openModal();
 
     //assemble Layout
-    layout.appendChild(addBtn);
+   
     layout.appendChild(list);
     
 
@@ -182,7 +182,7 @@ export async function render(): Promise<void> {
       view.innerHTML = "<h3>No Grocery List created</h3>";
     }
     view.appendChild(layout)
-
+    view.appendChild(addBtn);
   } catch (error) {
     const res =  await apiFetch('/auth/refresh');
     if(res){

@@ -1,9 +1,5 @@
 
 import jwt from 'jsonwebtoken';
-
-
-
-
 export const generateAuthToken = (id: string): string => {
 
     const secretKey = process.env.SECRET_KEY;
@@ -16,7 +12,7 @@ export const generateAuthToken = (id: string): string => {
             id,
         },
         secretKey,
-        { expiresIn: "1h" } // Token expiration time
+        { expiresIn: "15m" } // Token expiration time
     );
     return token;
 }

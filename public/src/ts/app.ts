@@ -1,9 +1,10 @@
 import { renderDashboardLayout } from "./dashboard/app.js";
+import { handleRouting } from "./dashboard/router.js";
 import { loadCSSAndWait } from "./dashboard/utils/loadcss.js";
+import { hideLoader, showLoader } from "./dashboard/utils/loader.js";
 import { apiFetch } from "./services/api.js";
 import { showToast } from "./services/toast.js";
 
-let cleanupCallbacks: (() => void)[] = [];
 type AuthResponse = {
   user: {
     _id: string;
@@ -15,6 +16,8 @@ type AuthResponse = {
 
   }
 }
+
+let cleanupCallbacks: (() => void)[] = [];
 
 async function renderLanding(): Promise<void> {
   const app = document.getElementById("app");
@@ -53,14 +56,19 @@ async function renderLanding(): Promise<void> {
     getStartedBtn.addEventListener('click', handler);
     cleanupCallbacks.push(() => getStartedBtn.removeEventListener("click", handler));
   }
-}
+};
 
-export async function renderAuth(runInitAuth = true): Promise<void> {
+export async function renderAuth(): Promise<void> {
   const app = document.getElementById("app");
   if (!app) return;
-   document.body.className = "auth";
-  await loadCSSAndWait("./css/auth.css");
-  app.innerHTML = `<div class="container">
+  // clean previous listeners (if any)
+  dispose();
+
+  document.body.className = "auth";
+  await loadCSSAndWait(["./css/auth.css", "./css/toast.css"]);
+
+  app.innerHTML = `
+  <div class="container">
       <div class="left">
         <div class="mobile-menu-icon">
           <span>&#9776;</span>
@@ -85,15 +93,14 @@ export async function renderAuth(runInitAuth = true): Promise<void> {
               <button type="button" class="toggle-password" data-target="loginpassword">👁</button>
             </div>
             <div class="link-button">
-              <a href="#">Forgot Password?</a>
-              <button type="submit">LOGIN</button>
+              <button type="button" id="forgot-password-link" class="link-like">Forgot Password?</button>
+              <button type="submit" class="login-btn">LOGIN</button>
             </div>
           </form>
           <form id="signup-form" class="form" method="POST" action="javascript:void(0)">
             <h2>Start managing your grocery!...</h2>
             <input type="text" placeholder="Full Name" id="username" name="username" required>
             <input type="email" placeholder="Email" id="signupemail" name="signupemail" required>
-            <input type="text" placeholder="Your Phone No" id="mobileno" name="mobileno" maxlength="10" required>
             <div class="password-wrapper">
               <input type="password" placeholder="Password" id="signuppassword" name="signuppassword" required>
               <button type="button" class="toggle-password" data-target="signuppassword">👁</button>
@@ -102,181 +109,342 @@ export async function renderAuth(runInitAuth = true): Promise<void> {
               <input type="password" placeholder="Retype Password" id="signupretype" name="signupretype" required>
               <button type="button" class="toggle-password" data-target="signupretype">👁</button>
             </div>
-            <button type="submit">SIGN UP</button>
+            <button type="submit" class="signup-btn">SIGN UP</button>
           </form>
         </div>
       </div>
     </div>`;
+  initAuth();
 
-  if (runInitAuth) {
-    initAuth(() => {
+};
 
-      setTimeout(() => {
-        const interval = setInterval(async () => {
-          const app = document.getElementById("app");
-          if (app) {
-            clearInterval(interval);
-            if (!window.location.hash) {
-              window.location.hash = "#groceries";
-            } else {
-              const { handleRouting } = await import("./dashboard/router.js");
-              handleRouting();
-            }
-            renderDashboardLayout();
-          }
-        }, 50);
-      }, 0);
+function initAuth(): void {
+  //Forms
+  const loginForm = document.getElementById("login-form") as HTMLFormElement | null;
+  const signupForm = document.getElementById("signup-form") as HTMLFormElement | null;
+  //Tab Buttons 
+  const loginBtn = document.getElementById("loginBtn") as HTMLButtonElement | null;
+  const signupBtn = document.getElementById("signupBtn") as HTMLButtonElement | null;
+  // Drawer
+  const drawer = document.querySelector(".mobile-drawer") as HTMLElement | null;
+  const drawerIcon = document.querySelector(".mobile-menu-icon span") as HTMLElement | null;
+  const drawerLogin = document.querySelector(".drawer-login") as HTMLElement | null;
+  const drawerSignup = document.querySelector(".drawer-signup") as HTMLElement | null;
+
+  // Password toggles
+  const toggleButtons = Array.from(document.querySelectorAll<HTMLButtonElement>(".toggle-password"));
+
+  if (!loginForm || !signupForm) {
+    console.warn("Auth forms not found, aborting initAuth.");
+    return;
+  }
+
+  const switchToLogin = () => {
+
+    loginForm.classList.add("active");
+    signupForm.classList.remove("active");
+    loginBtn?.classList.add("active");
+    signupBtn?.classList.remove("active");
+
+  };
+  const switchToSignup = () => {
+    signupForm.classList.add("active");
+    loginForm.classList.remove("active");
+    signupBtn?.classList.add("active");
+    loginBtn?.classList.remove("active");
+  };
+  if (loginBtn && signupBtn) {
+    loginBtn.addEventListener("click", switchToLogin);
+    signupBtn.addEventListener("click", switchToSignup);
+
+    cleanupCallbacks.push(() => {
+      loginBtn.removeEventListener("click", switchToLogin);
+      signupBtn.removeEventListener("click", switchToSignup);
     });
   }
+
+  // Drawer listeners
+  if (drawerIcon && drawer) {
+    const toggleDrawer = () => drawer.classList.toggle("show");
+    drawerIcon.addEventListener("click", toggleDrawer);
+    cleanupCallbacks.push(() => drawerIcon.removeEventListener("click", toggleDrawer));
+  }
+
+  if (drawerLogin) {
+    const onDrawerLogin = () => {
+      switchToLogin();
+      drawer?.classList.remove("show");
+    };
+    drawerLogin.addEventListener("click", onDrawerLogin);
+    cleanupCallbacks.push(() => drawerLogin.removeEventListener("click", onDrawerLogin));
+  }
+  if (drawerSignup) {
+    const onDrawerSignup = () => {
+      switchToSignup();
+      drawer?.classList.remove("show");
+    };
+    drawerSignup.addEventListener("click", onDrawerSignup);
+    cleanupCallbacks.push(() => drawerSignup.removeEventListener("click", onDrawerSignup));
+  }
+
+  // Toggle password visibility
+  toggleButtons.forEach((btn) => {
+    const handler = () => {
+      const targetId = btn.getAttribute("data-target");
+      if (!targetId) return;
+      const input = document.getElementById(targetId) as HTMLInputElement | null;
+      if (!input) return;
+      input.type = input.type === "password" ? "text" : "password";
+      btn.textContent = input.type === "password" ? "👁" : "🙈";
+    };
+    btn.addEventListener("click", handler);
+    cleanupCallbacks.push(() => btn.removeEventListener("click", handler));
+  });
+
+  // Login submit
+  const onLoginSubmit = async (event: SubmitEvent) => {
+    event.preventDefault();
+    const email = (document.getElementById("loginemail") as HTMLInputElement).value;
+    const password = (document.getElementById("loginpassword") as HTMLInputElement).value;
+
+    showLoader();
+    try {
+      const data = await apiFetch<AuthResponse>("/auth/login", {
+        method: "POST",
+        body: { email, password },
+      });
+      localStorage.setItem("user", JSON.stringify(data.user));
+      await goToApp();
+      showToast("Welcome Back!", "success");
+    } catch (error: any) {
+      if (error?.status === 403 && error?.code === "EMAIL_NOT_VERIFIED" && error?.userId) {
+        showToast("Please verify your email to login.", "info");
+        renderVerifyEmailPage(email);
+        return;
+      }
+      showToast(error?.message || "Login failed", "error");
+    } finally {
+      hideLoader();
+    }
+  };
+
+  // Signup submit
+  const onSignupSubmit = async (event: SubmitEvent) => {
+    event.preventDefault();
+    const name = (document.getElementById("username") as HTMLInputElement).value;
+    const email = (document.getElementById("signupemail") as HTMLInputElement).value;
+    const password = (document.getElementById("signuppassword") as HTMLInputElement).value;
+    const passwordRetype = (document.getElementById("signupretype") as HTMLInputElement).value;
+
+    if (password !== passwordRetype) {
+      showToast("Passwords do not match", "error");
+      return;
+    }
+
+    showLoader();
+    try {
+      const data = await apiFetch<AuthResponse>("/auth/register", {
+        method: "POST",
+        body: { name, email, password },
+      });
+      renderVerifyEmailPage(email); 
+      showToast("We sent an OTP to your email. Please verify.", "success");
+    } catch (error: any) {
+      showToast(error?.message || "Signup failed", "error");
+    } finally {
+      hideLoader();
+    }
+  };
+ 
+
+  loginForm.addEventListener("submit", onLoginSubmit);
+  signupForm.addEventListener("submit", onSignupSubmit);
+  cleanupCallbacks.push(() => {
+    loginForm.removeEventListener("submit", onLoginSubmit);
+    signupForm.removeEventListener("submit", onSignupSubmit);
+  });
+
+  const forgotLink = loginForm.querySelector("button#forgot-password-link") as HTMLElement | null;
+  if(forgotLink){
+
+    const onForgotPassword = (e:Event) => {
+      e.preventDefault();
+      renderForgotPasswordPage();
+    };
+    forgotLink.addEventListener("click", onForgotPassword);
+    cleanupCallbacks.push(() => forgotLink.removeEventListener("click", onForgotPassword));
+  }
 }
+/**
+* Shared helper: enter the app (dashboard) and route.
+*/
+async function goToApp(): Promise<void> {
+  document.body.className = "dashboard";
+  if (!window.location.hash) {
+    window.location.hash = "#groceries";
+  }
+  await renderDashboardLayout();
+  handleRouting();
+}
+/* --------------------------
+   App bootstrap
+--------------------------- */
 
 export async function init() {
+  showLoader();
   try {
     const data = await apiFetch<AuthResponse>("/users/getuser");
     localStorage.setItem("user", JSON.stringify(data.user));
+    document.body.className = "dashboard";
+    await goToApp();
   } catch (error) {
-    renderLanding();
+    localStorage.removeItem("user");
+    await renderAuth();
+
+  } finally {
+    hideLoader();
   }
 }
+/* --------------------------
+   Cleanup
+--------------------------- */
 export function dispose() {
   const app = document.getElementById("app");
   if (app) app.innerHTML = "";
   cleanupCallbacks.forEach(fn => fn());
   cleanupCallbacks = [];
-  document.querySelectorAll("link[data-dynamic]").forEach(el => el.remove());
+  document.querySelectorAll('link[data-dynamic="true"]').forEach(el => el.remove());
 }
 
-export function initAuth(onAuthSuccess: () => void): void {
-  const loginform = document.getElementById("login-form") as HTMLFormElement | null;
-  const signupform = document.getElementById("signup-form") as HTMLFormElement | null;
-  if (loginform) {
-    loginform.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      const email = (document.getElementById("loginemail") as HTMLInputElement).value;
-      const password = (document.getElementById("loginpassword") as HTMLInputElement).value;
-      try {
-        const data = await apiFetch<AuthResponse>("/auth/login", {
-          method: "POST",
-          body: { email, password },
-        });
-        localStorage.setItem("user", JSON.stringify(data.user));
-        onAuthSuccess();
-        document.body.className = "dashboard";
-        showToast('Welcome Back!', 'success');
-        window.history.replaceState({}, "", window.location.pathname);
-      } catch (error: any) {
-        showToast(error.message || 'Login Id or Password is invalid', 'error');
-      }
-    });
-  }
+function renderVerifyEmailPage(email: string): void {
+  const app = document.getElementById("app");
+  if (!app) return;
+  app.innerHTML=`
+  <div class="otp-verification">
+      <h2>Email Verification</h2>
+      <p>We’ve sent an OTP to <b>${email}</b>. Please enter it below.</p>
+      <form id="otpForm">
+        <input type="text" id="otpInput" placeholder="Enter OTP" required />
+        <button type="submit">Verify</button>npm 
+      </form>
+    </div>
+  `;
+  const otpForm = document.getElementById("otpForm") as HTMLFormElement;
+  otpForm.addEventListener("submit", async (event: SubmitEvent) => {
+    event.preventDefault();
+    const otp = (document.getElementById("otpInput") as HTMLInputElement).value;
 
-  if (signupform) {
-
-    const mobileInput = document.getElementById('mobileno') as HTMLInputElement;
-    if (mobileInput) {
-      mobileInput.addEventListener("keydown", function (event) {
-
-        const allowedKeys = ["Backspace", "Tab", "ArrowLeft", "ArrowRight", "Delete", "Home", "End"];
-        if (allowedKeys.includes(event.key)) {
-          return; // Allow these keys
-        }
-        if (!/^[0-9]$/.test(event.key)) {
-          event.preventDefault(); // Prevent non-digit keys
-        }
-        if (this.value.length >= 10 && !allowedKeys.includes(event.key)) {
-          event.preventDefault();
-        }
+    showLoader();
+    try {
+      const data = await apiFetch<AuthResponse>("/auth/verify-otp", {
+        method: "POST",
+        body: { email, otp },
       });
-      mobileInput.addEventListener("input", function () {
-        this.value = this.value.replace(/\D/g, "").slice(0, 10);
-      });
+
+      localStorage.setItem("user", JSON.stringify(data.user));
+      await goToApp();
+      showToast("Email verified successfully!", "success");
+    } catch (error: any) {
+      showToast(error?.message || "OTP verification failed", "error");
+    } finally {
+      hideLoader();
     }
-    signupform.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      const username = (document.getElementById("username") as HTMLInputElement).value;
-      const email = (document.getElementById("signupemail") as HTMLInputElement).value; 
-      const mobileNo = (document.getElementById("mobileno") as HTMLInputElement).value;
-      const password = (document.getElementById("signuppassword") as HTMLInputElement).value;
-      const passwordRetype = (document.getElementById("signupretype") as HTMLInputElement).value;
-      
-      if(password !== passwordRetype) {
-      
-        showToast('Passwords do not match', 'error');
-        return;
-      }
-      try {
-        const data = await apiFetch<AuthResponse>("/auth/register", {
-          method: "POST",
-          body: { username, email, mobileNo, password },
-        });
-        localStorage.setItem("user", JSON.stringify(data.user));
-        onAuthSuccess();
-        document.body.className="dashboard";
-        showToast(`Welcome, ${data.user.name}!`, "success");
-        window.history.replaceState({}, "", window.location.pathname);
-      } catch (error: any) {
-        showToast(error.message || "Signup failed", "error");
-       
-
-      }
-    });
-
-  }
-  // Toggle password visibility
-  document.querySelectorAll<HTMLButtonElement>(".toggle-password").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const targetId = btn.getAttribute("data-target");
-      if (!targetId) return;
-      const input = document.getElementById(targetId) as HTMLInputElement;
-      if (!input) return;
-      if (input.type === "password") {
-        input.type = "text";
-        btn.textContent = "🙈";
-      } else {
-        input.type = "password";
-        btn.textContent = "👁";
-      }
-    });
   });
 
-  const loginBtn = document.getElementById("loginBtn") as HTMLButtonElement;
-  const signupBtn = document.getElementById("signupBtn") as HTMLButtonElement;
-  if (loginBtn && signupBtn) {
-    loginBtn.addEventListener("click", () => {
-      loginform?.classList.add("active");
-      signupform?.classList.remove("active");
-      loginBtn.classList.add("active");
-      signupBtn.classList.remove("active");
+}
+function renderForgotPasswordPage():void{
 
-    });
+  const app= document.getElementById('app');
+  if(!app) return;
 
-  }
+  app.innerHTML=`
+    <div class="forgot-password">
+      <h2>Forgot Password?</h2>
+      <p>Enter your email and we’ll send you a reset OTP.</p>
+      <form id="forgotForm">
+        <input type="email" id="forgotEmail" placeholder="Enter your email" required />
+        <button type="submit">Send OTP</button>
+      </form>
+      <button id="backToLogin">Back to Login</button>
+    </div>
+  `;
+const forgotForm = document.getElementById("forgotForm") as HTMLFormElement;
+const backToLogin = document.getElementById("backToLogin") as HTMLButtonElement;
 
-  signupBtn.addEventListener("click", () => {
-    signupform?.classList.add("active");
-    loginform?.classList.remove("active");
-    signupBtn.classList.add("active");
-    loginBtn.classList.remove("active");
+backToLogin.addEventListener("click", () => renderAuth());
+  forgotForm.addEventListener("submit", async (event: SubmitEvent) => {
+    event.preventDefault();
+    const email = (document.getElementById("forgotEmail") as HTMLInputElement).value;
 
-  });
+    showLoader();
+    try {
+      const data = await apiFetch("/auth/forgot-password", {
+        method: "POST",
+        body: { email },
+      });
 
-  // Mobile drawer toggle
-  const drawer = document.querySelector(".mobile-drawer");
-  const icon = document.querySelector(".mobile-menu-icon span");
-  icon?.addEventListener("click", () => {
-    drawer?.classList.toggle("show");
-  });
-
-  document.querySelector(".drawer-login")?.addEventListener("click", () => {
-    loginBtn?.click();
-    drawer?.classList.remove("show");
-  });
-  document.querySelector(".drawer-signup")?.addEventListener("click", () => {
-    signupBtn?.click();
-    drawer?.classList.remove("show");
+      showToast("Reset OTP sent successfully!", "success");
+      renderResetPasswordPage(email);
+    } catch (error: any) {
+      showToast(error?.message || "Failed to send reset OTP", "error");
+    } finally {
+      hideLoader();
+    }
   });
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
-  await init();
+function renderResetPasswordPage(email:string):void{
+const app = document.getElementById("app");
+  if (!app) return;
+
+  app.innerHTML = `
+    <div class="reset-password">
+      <h2>Reset Password</h2>
+      <p>Enter the OTP sent to <b>${email}</b> and your new password.</p>
+      <form id="resetForm">
+        <input type="text" id="resetOtp" placeholder="Enter OTP" required />
+        <input type="password" id="newPassword" placeholder="New Password" required />
+        <input type="password" id="confirmPassword" placeholder="Confirm Password" required />
+        <button type="submit">Reset Password</button>
+      </form>
+      <button id="backToLogin">Back to Login</button>
+    </div>
+  `;
+
+  const resetForm = document.getElementById("resetForm") as HTMLFormElement;
+  const backToLogin = document.getElementById("backToLogin") as HTMLButtonElement;
+
+  backToLogin.addEventListener("click", () => renderAuth());
+
+  resetForm.addEventListener("submit", async (event: SubmitEvent) => {
+    event.preventDefault();
+    const otp = (document.getElementById("resetOtp") as HTMLInputElement).value;
+    const password = (document.getElementById("newPassword") as HTMLInputElement).value;
+    const confirmPassword = (document.getElementById("confirmPassword") as HTMLInputElement).value;
+
+    if (password !== confirmPassword) {
+      showToast("Passwords do not match", "error");
+      return;
+    }
+
+    showLoader();
+    try {
+      const data = await apiFetch("/auth/reset-password", {
+        method: "POST",
+        body: { email, otp, password },
+      });
+
+     // localStorage.setItem("user", JSON.stringify(data.user));
+      await renderAuth();
+      showToast("Password reset successfully! Login with new Password.", "success");
+    } catch (error: any) {
+      showToast(error?.message || "Password reset failed", "error");
+    } finally {
+      hideLoader();
+    }
+  });
+
+}
+document.addEventListener("DOMContentLoaded", () => {
+  init();
 });

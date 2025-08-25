@@ -1,8 +1,9 @@
 
-import { initAuth, renderAuth } from '../app.js';
+import { renderAuth } from '../app.js';
 import { apiFetch } from '../services/api.js';
 import { handleRouting } from './router.js';
 import { loadCSSAndWait } from './utils/loadcss.js';
+import { hideLoader, showLoader } from './utils/loader.js';
 
 declare global {
   interface Window {
@@ -39,17 +40,12 @@ const sidebarHTML = `
 function setupLogoutButton(): void {
   const logoutBtn = document.getElementById('logoutBtn');
   const handler = async () => {
-    const res = await apiFetch('/auth/logout', { method: "POST" });
+    await apiFetch('/auth/logout', { method: "POST" }).catch(() => { });
     localStorage.removeItem('user')
     window._routingSetupDone = false;
     hasRenderedDashboard = false;
-    window.location.hash = "#";
-    renderAuth(false);
-    setTimeout(() => {
-      initAuth(() => {
-        renderDashboardLayout();
-      });
-    }, 0);
+    window.location.hash = "";
+    await renderAuth();
   }
   logoutBtn?.addEventListener('click', handler);
   cleanupFns.push(() => logoutBtn?.removeEventListener("click", handler));
@@ -59,11 +55,13 @@ function setupLogoutButton(): void {
 export async function renderDashboardLayout(): Promise<void> {
 
   if (hasRenderedDashboard) return;
-  hasRenderedDashboard = true;
+
   const app = document.getElementById("app");
   if (!app) return;
-
-  app.innerHTML = `<div class="dashboard">
+  showLoader();
+  try {
+    await loadCSSAndWait(["../css/dashboard.css","../css/toast.css"]);
+    app.innerHTML = `<div class="dashboard">
      ${sidebarHTML}
       <main class="main-content">
         <header class="topbar">
@@ -76,55 +74,50 @@ export async function renderDashboardLayout(): Promise<void> {
         </section>
       </main>
     </div>`;
-  const sidebar = document.querySelector(".sidebar");
-  const toggleBtn = document.getElementById("sidebarToggle");
+    // Sidebar toggle behavior
+    const sidebar = document.querySelector(".sidebar");
+    const toggleBtn = document.getElementById("sidebarToggle");
 
-  toggleBtn?.addEventListener("click", () => {
-    sidebar?.classList.toggle("open");
-    
-    document.addEventListener("click", function closeOutside(e) {
-      if (!sidebar?.contains(e.target as Node) && e.target !== toggleBtn) {
-        sidebar?.classList.remove("open");
-        document.removeEventListener("click", closeOutside);
-      }
+    const onToggle = () => {
+      sidebar?.classList.toggle("open");
+      const closeOutside = (e: MouseEvent) => {
+        if (!sidebar?.contains(e.target as Node) && e.target !== toggleBtn) {
+          sidebar?.classList.remove("open");
+          document.removeEventListener("click", closeOutside);
+        }
+      };
+      document.addEventListener("click", closeOutside);
+      cleanupFns.push(() => document.removeEventListener("click", closeOutside));
+    };
+    toggleBtn?.addEventListener("click", onToggle);
+    cleanupFns.push(() => toggleBtn?.removeEventListener("click", onToggle));
+
+    //Close sidebar when clicking nav links
+    const navLinks = sidebar?.querySelectorAll("nav a") || [];
+    navLinks.forEach((link) => {
+      const handler = () => sidebar?.classList.remove("open");
+      link.addEventListener("click", handler);
+      cleanupFns.push(() => link.removeEventListener("click", handler));
     });
-  });
-  const navLinks = sidebar?.querySelectorAll("nav a");
-  navLinks?.forEach(link=>{
-    link.addEventListener("click",()=>{
-      sidebar?.classList.remove("open");
+    setupLogoutButton();
+    //One-time Routing setup
+    if (!window._routingSetupDone) {
+      window.addEventListener("hashchange", handleRouting);
 
-    });
+      cleanupFns.push(() => {
+        window.removeEventListener("hashchange", handleRouting);
 
-  });
-  setupLogoutButton();
-  await loadCSSAndWait("../css/dashboard.css");
-
-  if (!window._routingSetupDone) {
-    window.addEventListener("hashchange", handleRouting);
-    window.addEventListener("DOMContentLoaded", handleRouting);
-    cleanupFns.push(() => {
-      window.removeEventListener("hashchange", handleRouting);
-      window.removeEventListener("DOMContentLoaded", handleRouting);
-    });
-    window._routingSetupDone = true;
+      });
+      window._routingSetupDone = true;
+    }
+    hasRenderedDashboard = true;
+  } finally {
+    hideLoader();
   }
-  setTimeout(() => handleRouting(), 0);
 
 }
-export async function init() {
-  try {
-    const data = await apiFetch("/users/getuser", {
-      method: "GET",
-    });
-    if (!data) throw new Error("Not authenticated");
-    renderDashboardLayout();
-  } catch (error) {
-    console.warn("Not logged in, showing auth screen.");
-    renderAuth();
-  }
-}
-export function dispose() {
+
+export function dispose(): void {
   const app = document.getElementById("app");
   if (app) app.innerHTML = "";
   cleanupFns.forEach((fn) => fn());
@@ -132,3 +125,4 @@ export function dispose() {
   hasRenderedDashboard = false;
   window._routingSetupDone = false;
 }
+

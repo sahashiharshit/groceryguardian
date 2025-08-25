@@ -17,8 +17,8 @@
   align-items: center;
   overflow: hidden;
   padding: 0;
-  min-height: 100vh; /* 👈 ensures it fills the viewport vertically */
-  height: 100vh;
+  min-height: 90vh; /* 👈 ensures it fills the viewport vertically */
+  height: 90vh;
   background-image: url("../assets/left-side.png");
   background-size: cover; /* 👈 covers the full container */
   background-position: center; /* 👈 keeps focus centered */
@@ -86,6 +86,168 @@
 .auth-btn:not(.active):hover {
   color: #ddddff;
 }
+.link-like {
+  background: none;
+  border: none;
+  color: #007bff;
+  text-decoration: underline;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+}
+/* Shared container style */
+.otp-verification,
+.forgot-password {
+  max-width: 380px;
+  margin: 50px auto;
+  padding: 2rem;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* Headings */
+.otp-verification h2,
+.forgot-password h2 {
+  margin-bottom: 0.8rem;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+/* Paragraph text */
+.otp-verification p,
+.forgot-password p {
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+/* Inputs */
+.otp-verification input,
+.forgot-password input {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1.2rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.otp-verification input:focus,
+.forgot-password input:focus {
+  border-color: #007bff;
+}
+
+/* Primary buttons */
+.otp-verification button[type="submit"],
+.forgot-password button[type="submit"] {
+  width: 100%;
+  padding: 0.8rem;
+  background: #007bff;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.otp-verification button[type="submit"]:hover,
+.forgot-password button[type="submit"]:hover {
+  background: #0056b3;
+}
+
+/* Back to login link-button style */
+#backToLogin {
+  margin-top: 1rem;
+  background: none;
+  border: none;
+  color: #007bff;
+  font-size: 0.95rem;
+  text-decoration: underline;
+  cursor: pointer;
+  display: inline-block;
+}
+
+#backToLogin:hover {
+  color: #0056b3;
+}
+.reset-password {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+.reset-password h2 {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.reset-password p {
+  font-size: 0.95rem;
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+.reset-password form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.reset-password input {
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.reset-password input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
+}
+
+.reset-password button[type="submit"] {
+  background: #007bff;
+  color: #fff;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.reset-password button[type="submit"]:hover {
+  background: #0056b3;
+}
+
+.reset-password #backToLogin {
+  margin-top: 1rem;
+  background: none;
+  border: none;
+  padding: 0;
+  color: #007bff;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.reset-password #backToLogin:hover {
+  color: #0056b3;
+}
 
 /* RIGHT SIDE */
 .right {
@@ -95,7 +257,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 2rem 1rem;
+  padding: 1rem 1rem;
   height: 100%;
   position: relative;
 }
@@ -103,7 +265,7 @@
 /* Logo & App name */
 .logo {
   max-width: 150px;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   opacity: 0;
   animation: fadeIn 1s ease forwards;
   background: none;
@@ -159,7 +321,7 @@
   flex-wrap: wrap;
   gap: 10px;
 }
-.form button {
+ .login-btn,.signup-btn {
   padding: 0.8rem;
   border: none;
   background-color: #6c63ff;
@@ -187,16 +349,21 @@
 .password-wrapper input {
   flex: 1;
   padding-right: 2.5rem; /* space for the button */
+  box-sizing: border-box;
 }
 
 .toggle-password {
-  position: absolute;
-  right: 0.5rem;
+ position: absolute;
+  right: 10px;   /* give it some breathing room */
+  top: 50%;
+  transform: translateY(-50%);
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 1.2rem; /* a bit bigger for touch */
   opacity: 0.7;
+  line-height: 1;
+  padding: 0;  /* prevent it from expanding */
 }
 
 .toggle-password:hover {
@@ -323,7 +490,8 @@
   }
 
   .form input,
-  .form button {
+  .form .login-btn,
+  .form .signup-btn {
     font-size: 1rem;
     padding: 1rem;
     width: 100%;
@@ -347,5 +515,13 @@
   .auth-btn {
     font-size: 1rem;
     padding: 10px 20px;
+  }
+  .toggle-password {
+    font-size: 1rem; /* slightly smaller icon */
+    right: 8px;      /* closer to edge */
+  }
+
+  .password-wrapper input {
+    padding-right: 2rem; /* less padding needed */
   }
 }

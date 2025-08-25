@@ -9,15 +9,11 @@ interface AuthenticatedRequest extends Request {
 }
 
 export const authenticationMiddleware = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
-
-
     const secretKey = process.env.SECRET_KEY;
     if (!secretKey) {
         res.status(500).json({ message: "Server configuration error" });
         return;
     }
-
-
 
     const token = req.cookies?.accesstoken || (req.headers['authorization']?.startsWith("Bearer ")?req.headers["authorization"].split(" ")[1]:null);
    

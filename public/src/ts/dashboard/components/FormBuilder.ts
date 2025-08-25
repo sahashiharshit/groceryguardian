@@ -44,7 +44,7 @@ export function FormBuilder<T = any>({ id = "form", fields = [], submitLabel = "
     const label = document.createElement("label");
     label.htmlFor = field.name;
     label.textContent = field.label;
- 
+
     let input: HTMLElement;
     let inputEl: HTMLInputElement | null = null;
     switch (field.type) {
@@ -85,6 +85,14 @@ export function FormBuilder<T = any>({ id = "form", fields = [], submitLabel = "
         actualInput.type = inputType;
         inputEl = actualInput;
 
+        actualInput.name = field.name;
+        actualInput.id = field.name;
+        if (field.defaultValue) actualInput.value = field.defaultValue;
+        if (field.placeholder) actualInput.placeholder = field.placeholder;
+        if (field.minLength !== undefined) actualInput.minLength = field.minLength;
+        if (field.maxLength !== undefined) actualInput.maxLength = field.maxLength;
+        if (field.required) actualInput.required = true;
+        if (field.className) actualInput.className = field.className;
         if (field.type === "password") {
           const wrapperWithToggle = document.createElement("div");
           wrapperWithToggle.className = "password-wrapper";
@@ -95,14 +103,14 @@ export function FormBuilder<T = any>({ id = "form", fields = [], submitLabel = "
           toggleBtn.className = "toggle-password-btn";
           toggleBtn.onclick = (e) => {
             e.preventDefault();
-            if(!inputEl) return;
-           
-            const isHidden = inputEl.type === "password";
-            inputEl.type = isHidden ? "text" : "password";
+
+
+            const isHidden = actualInput.type === "password";
+            actualInput.type = isHidden ? "text" : "password";
             toggleBtn.textContent = isHidden ? "Hide" : "Show";
           };
 
-          wrapperWithToggle.appendChild(inputEl);
+          wrapperWithToggle.appendChild(actualInput);
           wrapperWithToggle.appendChild(toggleBtn);
 
           input = wrapperWithToggle; // Override input to be the wrapper div

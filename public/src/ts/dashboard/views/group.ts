@@ -72,7 +72,7 @@ export async function render(): Promise<void> {
 
     left.appendChild(noGroupMessage);
     left.appendChild(createBtn);
-    
+
     layout.appendChild(left);
 
     const right = document.createElement("div");
@@ -103,8 +103,9 @@ export async function render(): Promise<void> {
                 method: "POST",
                 body: { action: "accept" },
               });
-              showToast("✅ You joined the group!", "success");
               render();
+              showToast("✅ You joined the group!", "success");
+              
             } catch (e) {
               showToast("Failed to accept invite.", "error");
             }
@@ -142,6 +143,7 @@ export async function render(): Promise<void> {
 
   } else {
     const household = await apiFetch<Household>(`/households/me`);
+    console.log(household);
     const currentUserRole = household.members.find((m: any) => m.userId._id === user.id)?.role || "member";
     const isAdmin = currentUserRole === "owner";
     //---left section(Group Info panel)
@@ -212,8 +214,8 @@ export async function render(): Promise<void> {
 
             const foundUser = await apiFetch<SearchedUser>(`/households/search-user?identifier=${encodeURIComponent(identifier)}`);
             const recipientId = foundUser._id;
-            const existing = document.getElementById("search-result");
-            if (existing) existing.remove();
+            const resultContainer = document.getElementById("search-result-container");
+            resultContainer!.innerHTML = "";
             const result = document.createElement("div");
             result.id = "search-result";
             result.style.marginTop = "1rem";
@@ -226,23 +228,22 @@ export async function render(): Promise<void> {
               const cancelBtn = document.createElement("button");
               cancelBtn.textContent = "Cancel";
               cancelBtn.className = "cancel-button"
-              cancelBtn.onclick = async () => {
-
-                result.remove();
-
-              }
+              cancelBtn.onclick = async () => resultContainer!.innerHTML = "";
               const inviteBtn = document.createElement("button");
               inviteBtn.textContent = "Send Invite";
               inviteBtn.className = "send-invite";
               inviteBtn.onclick = async () => {
                 try {
-                  await apiFetch(`/households/${household._id}/invite`, {
+                  const res = await apiFetch<{ success?: boolean }>(`/households/${household._id}/invite`, {
                     method: "POST",
                     body: { recipientId },
                   });
-
-                  result.remove();
-                  showToast("Invite sent successfully!", "success");
+                  // Assuming a successful invite returns a truthy 'success' property
+                  if (res && res.success) {
+                    resultContainer!.innerHTML="";
+                    (document.getElementById("invite-user-form") as HTMLFormElement).reset();
+                    showToast("Invite sent successfully!", "success");
+                  }
                 } catch (err) {
                   showToast("Failed to send invite.", "error");
 
@@ -255,22 +256,24 @@ export async function render(): Promise<void> {
               result.appendChild(buttonGroup);
             }
 
-            inviteForm.appendChild(result);
+            resultContainer!.appendChild(result);
           } catch (error: any) {
             if (error?.response?.status === 409) {
               showToast("User is already part of another group.", "error");
             } else {
               showToast("Failed to send invite.", "error");
             }
-            
+
           }
         }
       });
       const inviteHeader = document.createElement("h3");
       inviteHeader.textContent = "Invite a Member";
-
+      const resultContainer = document.createElement("div");
+      resultContainer.id="search-result-container";
       right.appendChild(inviteHeader);
       right.appendChild(inviteForm);
+      right.appendChild(resultContainer);
     }
     layout.appendChild(left);
     if (isAdmin)

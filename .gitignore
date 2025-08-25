@@ -9,3 +9,12 @@
 /public/node_modules
 /public/package-lock.json
 /public/dist
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/tests
+/playwright.config.ts

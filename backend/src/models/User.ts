@@ -9,6 +9,8 @@ export interface IUser extends Document {
     mobileNo?: string;
     password: string;
     householdId?: ObjectId | null;
+    emailVerified:boolean;
+    emailVerifiedAt?:Date | null;
     comparePassword(candidatePassword: string): Promise<boolean>;
     createdAt:Date;
     updatedAt:Date;
@@ -26,6 +28,8 @@ const userSchema:Schema<IUser> = new Schema({
         ref: "Household",
         default: null
     },
+    emailVerified: { type: Boolean, default: false },
+    emailVerifiedAt: { type: Date, default: null },
 
 }, { timestamps: true });
 

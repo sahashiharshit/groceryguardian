@@ -30,7 +30,11 @@ export async function importView(viewName: string, cssFiles: string | string[]):
     try {
 
         const files = Array.isArray(cssFiles) ? cssFiles : [cssFiles];
-        const [module] = await Promise.all([import(`./views/${viewName}.ts`), loadCSSAndWait(files)]);
+        // Load CSS + module in parallel
+        const [module] = await Promise.all([
+            import(`./views/${viewName}.ts`),
+            loadCSSAndWait(files),
+        ]);
 
         if (typeof module.render === 'function') {
             await module.render();
@@ -57,6 +61,7 @@ export async function importView(viewName: string, cssFiles: string | string[]):
 let lastHash = "";
 export function handleRouting(): void {
 
+
     const hash = window.location.hash.replace('#', '') || 'groceries';
     if (hash === lastHash) return;
     lastHash = hash;
@@ -71,3 +76,4 @@ export function handleRouting(): void {
         }
     }
 }
+
