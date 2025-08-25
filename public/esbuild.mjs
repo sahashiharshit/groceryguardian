@@ -3,8 +3,6 @@ import * as esbuild from "esbuild";
 import fs from "fs";
 import path from "path";
 
-const isWatch = process.argv.includes("--watch");
-
 
 // 🍱 Copy static assets
 const copyStaticAssets = () => {
@@ -70,16 +68,8 @@ const buildOptions = {
   },
 };
 
-if (isWatch) {
 
-  const context = await esbuild.context(buildOptions);
-  await context.watch();
-  console.log("👀 Watching for changes...");
-
-}
-else {
   await esbuild.build(buildOptions);
 
-}
 copyStaticAssets();
-console.log("✅ Initial build complete");
+console.log("✅ Frontend build complete");
