@@ -6,7 +6,7 @@ const userController  = wrapControllers(rawUserController);
 const router = Router();
 // routes for user management
 router.get('/getuser',authenticationMiddleware,userController.getUser);
-router.post('/household/:id/create',authenticationMiddleware,userController.createGroup);
+
 router.get('/getHouseholdInfo',authenticationMiddleware, userController.getGroupUsersList);
 router.post('/me',authenticationMiddleware,userController.updateUserInfo);
 router.delete('/delete',authenticationMiddleware,userController.deleteUser);

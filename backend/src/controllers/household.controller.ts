@@ -7,6 +7,7 @@ import Invitation from "../models/Invitation.js";
 import GroceryListItem from "../models/GroceryListItem.js";
 import type { ObjectId } from "../types/mongo.js";
 import { withTransaction } from "../utils/transactions.js";
+import PantryItem from "../models/PantryItem.js";
 
 
 export const createHousehold = async (req: Request, res: Response): Promise<void> => {
@@ -36,7 +37,12 @@ export const createHousehold = async (req: Request, res: Response): Promise<void
         await User.findByIdAndUpdate(userId, { householdId: created[0]?._id }, { session });
 
         await GroceryListItem.updateMany(
-            { userId, householdId: null },
+            { addedBy:userId, householdId: null },
+            { $set: { householdId: created[0]?._id } },
+            { session }
+        );
+        await PantryItem.updateMany(
+            { addedBy: userId, householdId: null },
             { $set: { householdId: created[0]?._id } },
             { session }
         );
