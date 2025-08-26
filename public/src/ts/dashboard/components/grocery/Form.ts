@@ -193,7 +193,7 @@ export async function InventoryForm(onSubmit: (item: AddGroceryItem, barcodeMatc
           } catch (error) {
             barcodeMatched = false;
             showToast("Barcode not found, Please input item info manually.");
-            enableFormFields(form, true,true);
+            enableFormFields(form, true,true,true);
           }
         },
       },
@@ -203,7 +203,7 @@ export async function InventoryForm(onSubmit: (item: AddGroceryItem, barcodeMatc
         onClick: (form) => {
           form.reset();
           barcodeMatched = false;
-          enableFormFields(form, false,true);
+          enableFormFields(form, false,true,true);
         },
       },
     ],
@@ -212,10 +212,10 @@ export async function InventoryForm(onSubmit: (item: AddGroceryItem, barcodeMatc
       onSubmit(data, barcodeMatched);
       form.reset();
       barcodeMatched = false;
-      enableFormFields(form, false,true);
+      enableFormFields(form, false,true,true);
     },
   });
-  function enableFormFields(form: HTMLFormElement, enabled: boolean,keepBarcodeLocked=false) {
+  function enableFormFields(form: HTMLFormElement, enabled: boolean,keepBarcodeLocked=true,keepExpirationEnabled=true) {
 
     const allInputs = form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
       "input,select,textarea"
@@ -223,12 +223,14 @@ export async function InventoryForm(onSubmit: (item: AddGroceryItem, barcodeMatc
     allInputs.forEach((el) => {
       if (keepBarcodeLocked && el.name === "barcode") {
         el.disabled = true;
+      }else if (keepExpirationEnabled && el.name === "expirationDate") {
+        el.disabled = false;
       }else{
         el.disabled=!enabled;
       }
     });
   }
-  enableFormFields(form, false,true);
+  enableFormFields(form, false,true,true);
   wrapper.appendChild(form);
 
   return wrapper;
