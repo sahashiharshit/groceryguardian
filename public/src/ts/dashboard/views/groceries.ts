@@ -151,7 +151,7 @@ export async function render(): Promise<void> {
       list.appendChild(li);
     });
     //Create the modal (initially hidden)
-    const form = await GroceryForm(async (item: AddGroceryItem, barcodeMatched) => {
+    const form = await GroceryForm(async (item: AddGroceryItem) => {
       try {
         await apiFetch<ApiGroceryItem>("/grocery/add-grocery", {
           method: "POST",
