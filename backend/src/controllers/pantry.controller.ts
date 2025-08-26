@@ -1,6 +1,8 @@
 import type { Request, Response } from "express"
 import PantryItem from "../models/PantryItem.js"
 import User from "../models/User.js";
+import Categories from "../models/Category.js";
+import Barcode from "../models/Barcode.js";
 
 export const getPantryList = async (req: Request, res: Response): Promise<void> => {
 
@@ -90,40 +92,52 @@ export const checkForStockQuantity = async (req: Request, res: Response): Promis
 
 export const addGroceryToPantry = async (req: Request, res: Response): Promise<void> => {
   const userId = req.user?.id;
-  if (!userId) {
-    res.status(401).json({ message: "Unauthorized" });
-    return;
-  }
+  const {items} =req.body;
+   if (!items || !Array.isArray(items) || items.length === 0) {
+      res.status(400).json({ message: "No items provided" });
+      return;
+    }
+
   const user = await User.findById(userId);
-  if (!user) {
-    res.status(404).json({ message: "User not found" });
-    return;
-  }
-  const items = req.body.items;
-  if (!Array.isArray(items) || items.length === 0) {
-    res.status(400).json({ message: "No items provided." });
-    return;
-  }
-  console.log(items);
-  const itemsToAdd = items.map((item: any) => ({
-    itemName: item.itemname,
-    quantity: item.quantity,
-    unit: item.unit,
-    categoryId: item.category || null,
-    purchaseDate: new Date(),
-    expirationDate: item.expirationDate ? new Date(item.expirationDate) : null,
-    barcode: item.barcode || null,
-    notes: item.notes || "",
-    addedBy: user._id,
-    householdId: user.householdId || null,
-    isAvailable: true,
-  }));
-  console.log(itemsToAdd)
-  try {
-    const createdItems = await PantryItem.create(itemsToAdd);
-    res.status(201).json(createdItems);
-  } catch (error) {
-    res.status(500).json({ message: "Error adding items.", error });
-    console.log(error);
-  }
+  const householdId = user?.householdId || null;
+  const docs = await Promise.all(
+    items.map(async(item)=>{
+        let barcodeId: string | null = null;
+        let categoryId: string | null = null;
+        const category = await Categories.findOne({ name: item.category });
+        categoryId = category?._id?.toString() || null;
+        if (item.barcode) {
+          let barcode = await Barcode.findOne({ code: item.barcode });
+
+          if (!barcode) {
+            barcode = await Barcode.create(
+              [
+                {
+                  code: item.barcode,
+                  itemName: item.itemname,
+                  unit: item.unit,
+                  defaultQuantity: Number(item.quantity),
+                  categoryId: category?._id,
+                },
+              ]
+            ).then((docs) => docs[0] ?? null);
+          }
+          barcodeId = barcode?._id?.toString() ?? null;
+        }
+
+        return {
+          itemName: item.itemname,
+          quantity: Number(item.quantity),
+          unit: item.unit || "",
+          addedBy: userId,
+          barcode: barcodeId || undefined,
+          notes: item.notes || undefined,
+          householdId: householdId,
+          categoryId: categoryId || undefined,
+        };
+    })
+  )
+  
+     await PantryItem.insertMany(docs);
+  res.status(201).json({ message: "Items added to pantry successfully." });
 };

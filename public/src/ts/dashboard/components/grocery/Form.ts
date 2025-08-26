@@ -156,7 +156,9 @@ export async function InventoryForm(onSubmit: (item: AddGroceryItem, barcodeMatc
       {
         name: "barcode",
         label: "Barcode",
-        placeholder: "Scan or enter code",
+        placeholder: "Scaned code will appear here",
+        className: "full-width",
+      
         type: "text"
       },
 
@@ -177,7 +179,7 @@ export async function InventoryForm(onSubmit: (item: AddGroceryItem, barcodeMatc
           console.log("scanned:", scanned);
           const code = scanned.trim();
           barcodeInput.value = code;
-          console.log(barcodeInput);
+          console.log(barcodeInput.value);
           try {
 
             const itemData = await apiFetch<BarcodeResponse>(`/grocery/barcode/${code}`);
@@ -209,7 +211,7 @@ export async function InventoryForm(onSubmit: (item: AddGroceryItem, barcodeMatc
       },
     ],
     onSubmit: (data: AddGroceryItem) => {
-
+      console.log(data);
       onSubmit(data, barcodeMatched);
       form.reset();
       barcodeMatched = false;
