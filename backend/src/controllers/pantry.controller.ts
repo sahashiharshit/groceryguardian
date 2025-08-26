@@ -118,7 +118,7 @@ export const addGroceryToPantry = async (req: Request, res: Response): Promise<v
     householdId: user.householdId || null,
     isAvailable: true,
   }));
-
+  console.log(itemsToAdd)
   try {
     const createdItems = await PantryItem.insertOne(itemsToAdd);
     res.status(201).json(createdItems);
