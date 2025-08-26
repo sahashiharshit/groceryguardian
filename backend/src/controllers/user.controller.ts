@@ -4,6 +4,7 @@ import mongoose, { Types } from "mongoose";
 import User from "../models/User.js";
 import Household from "../models/Household.js";
 import type { Request, Response } from "express";
+import GroceryListItem from "../models/GroceryListItem.js";
 
 export const getUser = async (req: Request, res: Response): Promise<void> => {
   const userId = req.user?.id;
@@ -51,7 +52,10 @@ export const createGroup = async (req: Request, res: Response): Promise<void> =>
   await newGroup.save();
   user.householdId = newGroup._id as Types.ObjectId;
   await user.save();
-
+  await GroceryListItem.updateMany(
+    {userId: userId},
+    { householdId: newGroup._id }
+  ).exec();
   res.status(200).json({ message: "New Group Created", group: newGroup });
   return;
 };

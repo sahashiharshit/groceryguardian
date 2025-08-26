@@ -141,7 +141,6 @@ function renderCards(items: PantryItem[]): HTMLElement {
         ${item.purchaseDate ? `<p><strong>Purchased:</strong> ${new Date(item.purchaseDate).toLocaleDateString("en-GB")}</p>` : ""}
         ${item.expirationDate ? `<p><strong>Expires:</strong> ${new Date(item.expirationDate).toLocaleDateString("en-GB")}</p>` : ""}
         ${expired ? `<p class="expired-tag">⚠️ <strong>Expired</strong></p>` : ""}
-        ${item.barcode ? `<p><strong>Barcode:</strong> ${item.barcode}</p>` : ""}
         ${item.notes ? `<p><strong>Notes:</strong> ${item.notes}</p>` : ""}
       </div>
       <div class="card-right">
