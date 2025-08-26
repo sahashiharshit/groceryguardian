@@ -19,7 +19,7 @@ type GroceryItem = {
   barcode?: string;
   addedBy?: string;
 }
-type ApiGroceryItem = {
+export type ApiGroceryItem = {
   _id: string;
   itemName: string;
   quantity: number;

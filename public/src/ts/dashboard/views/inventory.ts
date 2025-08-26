@@ -2,6 +2,9 @@
 import { apiFetch } from "../../services/api";
 import { showToast } from "../../services/toast.js";
 import { setPageTitle } from "../app";
+import { AddGroceryItem, GroceryForm } from "../components/grocery/Form";
+import { Modal } from "../components/Modal";
+import { ApiGroceryItem } from "./groceries";
 
 type PantryItem = {
   _id: string;
@@ -75,6 +78,28 @@ export async function render(): Promise<void> {
         });
       });
     });
+    const form = await GroceryForm(async(item:AddGroceryItem)=>{
+
+      try {
+        await apiFetch<ApiGroceryItem>("/grocery/add-grocery", {
+          method: "POST",
+          body: { items: [item] },
+        });
+        showToast("Item added successfully!", "success");
+        groceryModal.closeModal();
+        render();
+      } catch (error) {
+        showToast("Failed to add item. Please try again.", "error");
+      }
+    });
+    const groceryModal = Modal(form, "grocery-modal");
+    //Add Groceries button
+    const addBtn = document.createElement("button") as HTMLButtonElement;
+    addBtn.textContent = "Add";
+    addBtn.className = "add-grocery-btn";
+    addBtn.onclick = () => groceryModal.openModal();
+    view.appendChild(addBtn);
+
     addRefreshButton();
     checkLowStock();
   } catch (error: any) {

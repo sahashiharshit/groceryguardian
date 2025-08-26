@@ -109,6 +109,20 @@
   transition: background 0.2s ease;
   width: 100%;
 }
+.reset-btn{
+grid-column: span 2;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  background-color: #356fee;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  width: 100%;
+
+}
 /* Password field wrapper (flex layout) */
 .password-wrapper {
   display: flex;
