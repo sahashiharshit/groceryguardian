@@ -5,6 +5,7 @@ import User from "../models/User.js";
 import Household from "../models/Household.js";
 import type { Request, Response } from "express";
 import GroceryListItem from "../models/GroceryListItem.js";
+import PantryItem from "../models/PantryItem.js";
 
 export const getUser = async (req: Request, res: Response): Promise<void> => {
   const userId = req.user?.id;
@@ -53,7 +54,11 @@ export const createGroup = async (req: Request, res: Response): Promise<void> =>
   user.householdId = newGroup._id as Types.ObjectId;
   await user.save();
   await GroceryListItem.updateMany(
-    {userId: userId},
+    { addedBy: userId },
+    { householdId: newGroup._id }
+  ).exec();
+  await PantryItem.updateMany(
+    { addedBy: userId },
     { householdId: newGroup._id }
   ).exec();
   res.status(200).json({ message: "New Group Created", group: newGroup });
