@@ -1,4 +1,3 @@
-
 .grocery-form-wrapper {
   background-color: #fff;
   border-radius: 12px;
@@ -9,7 +8,8 @@
   font-family: "Segoe UI", sans-serif;
   display: grid;
   gap: 1.5rem;
-  box-sizing: border-box; /* Prevent overflow on padding */
+  box-sizing: border-box;
+  /* Prevent overflow on padding */
   overflow-x: hidden;
 }
 
@@ -68,7 +68,7 @@
 
 /* Submit button */
 .form-submit {
- grid-column: span 2;
+  grid-column: span 2;
   padding: 0.75rem 1.5rem;
   font-size: 1rem;
   background-color: #10b981;
@@ -79,7 +79,8 @@
   cursor: pointer;
   transition: background 0.2s ease;
   width: 100%;
-  box-sizing: border-box;}
+  box-sizing: border-box;
+}
 
 .form-submit:hover {
   background-color: #059669;
@@ -91,13 +92,15 @@
   display: flex;
   justify-content: flex-end;
 }
+
 .form-extra-buttons {
   display: flex;
   gap: 0.5rem;
   margin-top: 1rem;
 }
+
 .form-extra-button {
- grid-column: span 2;
+  grid-column: span 2;
   padding: 0.5rem 1rem;
   font-size: 1rem;
   background-color: #10b981;
@@ -109,11 +112,12 @@
   transition: background 0.2s ease;
   width: 100%;
 }
-.reset-btn{
-grid-column: span 2;
+
+.scan-btn,
+.reset-btn {
+  grid-column: span 2;
   padding: 0.5rem 1rem;
   font-size: 1rem;
-  background-color: #356fee;
   color: white;
   border: none;
   border-radius: 6px;
@@ -123,6 +127,15 @@ grid-column: span 2;
   width: 100%;
 
 }
+
+.reset-btn {
+  background-color: #356fee;
+}
+
+.scan-btn {
+  background-color: #3ee5eb;
+}
+
 /* Password field wrapper (flex layout) */
 .password-wrapper {
   display: flex;
@@ -134,13 +147,14 @@ grid-column: span 2;
 .password-wrapper input[type="password"],
 .password-wrapper input[type="text"] {
   flex: 1;
-  padding-right: 4.5rem; /* space for the toggle button */
+  padding-right: 4.5rem;
+  /* space for the toggle button */
   width: 100%;
 }
 
 /* Show/Hide password toggle button */
 .toggle-password-btn {
- position: absolute;
+  position: absolute;
   right: 0.5rem;
   background: none;
   border: none;
@@ -159,6 +173,7 @@ grid-column: span 2;
 .toggle-password-btn:hover {
   text-decoration: underline;
 }
+
 /* ===================== Responsive ===================== */
 
 /* Tablets and below */
@@ -190,7 +205,7 @@ grid-column: span 2;
 /* Mobile phones */
 @media (max-width: 600px) {
   .grocery-form-grid {
-    grid-template-columns: 1fr  !important;
+    grid-template-columns: 1fr !important;
   }
 
   .form-extra-button,
@@ -214,9 +229,11 @@ grid-column: span 2;
     padding: 1rem;
     font-size: 0.95rem;
   }
-.grocery-form-grid {
+
+  .grocery-form-grid {
     grid-template-columns: 1fr !important;
   }
+
   .form-field input,
   .form-field select,
   .form-field textarea {

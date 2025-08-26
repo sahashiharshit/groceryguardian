@@ -7,7 +7,7 @@ interface FormFieldOption {
 interface FormField {
   name: string;
   label: string;
-  type?: "text" | "textarea" | "select" | "radio" | "checkbox" | "password";
+  type?: "text" | "textarea" | "select" | "radio" | "checkbox" | "password" | "date";
   required?: boolean;
   minLength?: number;
   maxLength?: number;
@@ -15,6 +15,8 @@ interface FormField {
   defaultValue?: string;
   className?: string;
   options?: FormFieldOption[];
+  min?: string;
+  max?: string;
 }
 interface ExtraButton {
   label: string;
@@ -81,16 +83,22 @@ export function FormBuilder<T = any>({ id = "form", fields = [], submitLabel = "
         break;
       default:
         const actualInput = document.createElement("input");
-        const inputType = field.type === "password" ? "password" : field.type || "text";
+        const inputType = field.type === "password" ? "password" : field.type === "date" 
+      ? "date" : field.type || "text";
         actualInput.type = inputType;
         inputEl = actualInput;
 
         actualInput.name = field.name;
         actualInput.id = field.name;
         if (field.defaultValue) actualInput.value = field.defaultValue;
-        if (field.placeholder) actualInput.placeholder = field.placeholder;
+        if (field.placeholder && inputType!=="date") actualInput.placeholder = field.placeholder;
         if (field.minLength !== undefined) actualInput.minLength = field.minLength;
         if (field.maxLength !== undefined) actualInput.maxLength = field.maxLength;
+        if(field.type==="date"){
+          if (field.min) actualInput.min = field.min;
+          if (field.max) actualInput.max = field.max;
+        }
+
         if (field.required) actualInput.required = true;
         if (field.className) actualInput.className = field.className;
         if (field.type === "password") {

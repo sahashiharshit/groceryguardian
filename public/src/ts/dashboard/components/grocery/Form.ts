@@ -1,6 +1,7 @@
 
 
 import { apiFetch } from "../../../services/api.js";
+import { showToast } from "../../../services/toast.js";
 import { scanBarcodeAndReturn } from "../../utils/scanner-utils.js";
 
 import { FormBuilder } from "../FormBuilder.js";
@@ -143,11 +144,22 @@ export async function InventoryForm(onSubmit: (item: AddGroceryItem, barcodeMatc
         className: "full-width"
       },
       {
+        name: "expirationDate",
+        label: "Expiration Date",
+        type: "date",
+        placeholder: "Select expiration date",
+        className: "full-width",
+        required: true,
+        min: new Date().toISOString().split("T")[0], // today
+        max: new Date(new Date().setFullYear(new Date().getFullYear() + 5)).toISOString().split("T")[0] // 5 years from now
+      },
+      {
         name: "barcode",
         label: "Barcode",
         placeholder: "Scan or enter code",
         type: "text"
       },
+
     ],
     buttons: [
       {
@@ -156,45 +168,43 @@ export async function InventoryForm(onSubmit: (item: AddGroceryItem, barcodeMatc
         onClick: async (form) => {
           const scanned = await scanBarcodeAndReturn();
 
-          if (scanned) {
+          if (!scanned) return;
 
-            const barcodeInput = form.querySelector<HTMLInputElement>('input[name="barcode"]');
 
-            if (barcodeInput) {
-              const handler = async () => {
-                const code = barcodeInput.value.trim();
-                if (!code) return;
-                try {
+          const barcodeInput = form.querySelector<HTMLInputElement>('input[name="barcode"]');
+          if (!barcodeInput) return;
 
-                  const itemData = await apiFetch<BarcodeResponse>(`/grocery/barcode/${code}`);
-                  const nameField = form.querySelector<HTMLInputElement>('input[name="itemname"]');
-                  const qtyField = form.querySelector<HTMLInputElement>('input[name="quantity"]');
-                  const unitField = form.querySelector<HTMLSelectElement>('select[name="unit"]');
-                  const categoryField = form.querySelector<HTMLSelectElement>('select[name="category"]');
-                  if (itemData.itemName && nameField) nameField.value = itemData.itemName;
-                  if (itemData.unit && unitField) unitField.value = itemData.unit;
-                  if (itemData.quantity && qtyField) qtyField.value = String(itemData.quantity);
-                  if (itemData.category && categoryField) categoryField.value = itemData.category;
-                  barcodeMatched = true;
-                } catch (error) {
-                  barcodeMatched = false;
-                  console.warn(`Barcode ${code} not found.`);
-                  alert("barcode not found input item info manually.")
-                }
-              };
-              barcodeInput.removeEventListener("change", handler);
-              barcodeInput.addEventListener("change", handler);
 
-              barcodeInput.value = scanned;
-              barcodeInput.dispatchEvent(new Event("change", { bubbles: true }));
-            }
+          const code = scanned.trim();
+          barcodeInput.value = code;
+          try {
+
+            const itemData = await apiFetch<BarcodeResponse>(`/grocery/barcode/${code}`);
+
+            const nameField = form.querySelector<HTMLInputElement>('input[name="itemname"]');
+            const qtyField = form.querySelector<HTMLInputElement>('input[name="quantity"]');
+            const unitField = form.querySelector<HTMLSelectElement>('select[name="unit"]');
+            const categoryField = form.querySelector<HTMLSelectElement>('select[name="category"]');
+            if (itemData.itemName && nameField) nameField.value = itemData.itemName;
+            if (itemData.unit && unitField) unitField.value = itemData.unit;
+            if (itemData.quantity && qtyField) qtyField.value = String(itemData.quantity);
+            if (itemData.category && categoryField) categoryField.value = itemData.category;
+            barcodeMatched = true;
+          } catch (error) {
+            barcodeMatched = false;
+            showToast("Barcode not found, Please input item info manually.");
+            enableFormFields(form, true,true);
           }
         },
       },
       {
         label: "🔄 Reset",
         className: "reset-btn",
-        onClick: (form) => form.reset(),
+        onClick: (form) => {
+          form.reset();
+          barcodeMatched = false;
+          enableFormFields(form, false,true);
+        },
       },
     ],
     onSubmit: (data: AddGroceryItem) => {
@@ -202,9 +212,23 @@ export async function InventoryForm(onSubmit: (item: AddGroceryItem, barcodeMatc
       onSubmit(data, barcodeMatched);
       form.reset();
       barcodeMatched = false;
+      enableFormFields(form, false,true);
     },
   });
+  function enableFormFields(form: HTMLFormElement, enabled: boolean,keepBarcodeLocked=false) {
 
+    const allInputs = form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
+      "input,select,textarea"
+    );
+    allInputs.forEach((el) => {
+      if (keepBarcodeLocked && el.name === "barcode") {
+        el.disabled = true;
+      }else{
+        el.disabled=!enabled;
+      }
+    });
+  }
+  enableFormFields(form, false,true);
   wrapper.appendChild(form);
 
   return wrapper;

@@ -87,3 +87,42 @@ export const checkForStockQuantity = async (req: Request, res: Response): Promis
   res.json(lowStockItems);
 
 };
+
+export const addGroceryToPantry = async (req: Request, res: Response): Promise<void> => {
+  const userId = req.user?.id;
+  if (!userId) {
+    res.status(401).json({ message: "Unauthorized" });
+    return;
+  }
+  const user = await User.findById(userId);
+  if (!user) {
+    res.status(404).json({ message: "User not found" });
+    return;
+  }
+  const items = req.body.items;
+  if (!Array.isArray(items) || items.length === 0) {
+    res.status(400).json({ message: "No items provided." });
+    return;
+  }
+
+  const itemsToAdd = items.map((item: any) => ({
+    itemName: item.itemname,
+    quantity: item.quantity,
+    unit: item.unit,
+    categoryId: item.category || null,
+    purchaseDate: new Date(),
+    expirationDate: item.expirationDate ? new Date(item.expirationDate) : null,
+    barcode: item.barcode || null,
+    notes: item.notes || "",
+    addedBy: user._id,
+    householdId: user.householdId || null,
+    isAvailable: true,
+  }));
+
+  try {
+    const createdItems = await PantryItem.insertMany(itemsToAdd);
+    res.status(201).json(createdItems);
+  } catch (error) {
+    res.status(500).json({ message: "Error adding items.", error });
+  }
+};

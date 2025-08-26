@@ -10,6 +10,6 @@ router.delete("/:id", authenticationMiddleware, pantryController.deleteItemFromP
 router.put("/:id", authenticationMiddleware, pantryController.updateItemInPantry);
 router.get("/check/expiry", authenticationMiddleware, pantryController.checkForStockExpiry);
 router.get("/check/low-stock", authenticationMiddleware, pantryController.checkForStockQuantity);
-
+router.post("/add-grocery", authenticationMiddleware, pantryController.addGroceryToPantry);
 
 export default router;

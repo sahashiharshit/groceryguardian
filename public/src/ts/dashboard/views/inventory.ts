@@ -1,10 +1,10 @@
 
 import { apiFetch } from "../../services/api";
 import { showToast } from "../../services/toast.js";
-import { setPageTitle } from "../app";
-import { AddGroceryItem, GroceryForm, InventoryForm } from "../components/grocery/Form";
-import { Modal } from "../components/Modal";
-import { ApiGroceryItem } from "./groceries";
+import { setPageTitle } from "../app.js";
+import { AddGroceryItem, InventoryForm } from "../components/grocery/Form.js";
+import { Modal } from "../components/Modal.js";
+import { ApiGroceryItem } from "./groceries.js";
 
 type PantryItem = {
   _id: string;
@@ -82,7 +82,7 @@ export async function render(): Promise<void> {
       
 
       try {
-        await apiFetch<ApiGroceryItem>("/grocery/add-grocery", {
+        await apiFetch<ApiGroceryItem>("/pantry/add-grocery", {
           method: "POST",
           body: { items: [item] },
         });
