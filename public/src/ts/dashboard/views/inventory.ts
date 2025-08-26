@@ -32,13 +32,13 @@ export async function render(): Promise<void> {
   try {
     const items: PantryItem[] = await apiFetch("/pantry", { method: "GET" });
 
-    if (!Array.isArray(items) || items.length === 0) {
-      view.innerHTML = `
-        <h2>Inventory</h2>
-        <p>No items in your inventory yet. Start by adding some!</p>
-      `;
-      return;
-    }
+    // if (!Array.isArray(items) || items.length === 0) {
+    //   view.innerHTML = `
+    //     <h2>Inventory</h2>
+    //     <p>No items in your inventory yet. Start by adding some!</p>
+    //   `;
+    //   return;
+    // }
    const withBarcode = items.filter((item) => item.barcode);
     const withExpiry = items.filter((item) => item.expirationDate);
     const withoutExpiry = items.filter((item) => !item.expirationDate);
