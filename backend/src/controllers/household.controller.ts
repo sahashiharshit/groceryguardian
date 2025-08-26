@@ -133,6 +133,11 @@ export const removeHouseholdMember = async (req: Request, res: Response): Promis
             { $set: { householdId: null } },
             { session }
         );
+        await PantryItem.updateMany(
+            { addedBy: userId, householdId: householdDoc._id },
+            { $set: { householdId: null } },
+            { session }
+        );
         await Invitation.deleteMany({ recipient: userId, household: householdDoc._id }).session(session);
 
         return householdDoc;
@@ -318,10 +323,16 @@ export const leaveHousehold = async (req: Request, res: Response): Promise<void>
         user.householdId = null;
         await user.save({ session });
         await GroceryListItem.updateMany(
-            { userId, householdId: household._id },
+            { addedBy: userId, householdId: household._id },
             { $set: { householdId: null } },
             { session }
         );
+        await PantryItem.updateMany(
+            { addedBy: userId, householdId: household._id },
+            { $set: { householdId: null } },
+            { session }
+        );
+        await Invitation.deleteMany({ recipient: userId, household: household._id }).session(session);
     });
         res.status(200).json({ success: true, message: "You have left the household" });
         return;
