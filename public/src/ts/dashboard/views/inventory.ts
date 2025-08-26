@@ -2,7 +2,7 @@
 import { apiFetch } from "../../services/api";
 import { showToast } from "../../services/toast.js";
 import { setPageTitle } from "../app";
-import { AddGroceryItem, GroceryForm } from "../components/grocery/Form";
+import { AddGroceryItem, GroceryForm, InventoryForm } from "../components/grocery/Form";
 import { Modal } from "../components/Modal";
 import { ApiGroceryItem } from "./groceries";
 
@@ -78,7 +78,8 @@ export async function render(): Promise<void> {
         });
       });
     });
-    const form = await GroceryForm(async(item:AddGroceryItem)=>{
+    const form = await InventoryForm(async(item:AddGroceryItem, barcodeMatched) => {
+      
 
       try {
         await apiFetch<ApiGroceryItem>("/grocery/add-grocery", {

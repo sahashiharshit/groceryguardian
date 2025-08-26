@@ -18,3 +18,4 @@ node_modules/
 /playwright/.cache/
 /tests
 /playwright.config.ts
+/.github/workflows/playwright.yml
