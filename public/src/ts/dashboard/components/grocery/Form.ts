@@ -176,10 +176,9 @@ export async function InventoryForm(onSubmit: (item: AddGroceryItem, barcodeMatc
           const barcodeInput = form.querySelector<HTMLInputElement>('input[name="barcode"]');
           if (!barcodeInput) return;
 
-          console.log("scanned:", scanned);
           const code = scanned.trim();
           barcodeInput.value = code;
-          console.log(barcodeInput.value);
+          
           try {
 
             const itemData = await apiFetch<BarcodeResponse>(`/grocery/barcode/${code}`);
@@ -225,7 +224,8 @@ export async function InventoryForm(onSubmit: (item: AddGroceryItem, barcodeMatc
     );
     allInputs.forEach((el) => {
       if (keepBarcodeLocked && el.name === "barcode") {
-        el.disabled = true;
+        (el as HTMLInputElement).readOnly = true;
+        el.disabled=false;
       }else if (keepExpirationEnabled && el.name === "expirationDate") {
         el.disabled = false;
       }else{
