@@ -58,16 +58,12 @@ const pantryItemSchema: Schema<IPantryItem> = new Schema({
   },
   purchaseDate: {
     type: Date,
-
+    default: Date.now
   },
-  purchasedBy: {
-    type: Schema.Types.ObjectId,
-    ref: "User",
-    default: null
-  },
+ 
   expirationDate: {
     type: Date,
-
+    default: Date.now
   },
   isAvailable: {
     type: Boolean,
