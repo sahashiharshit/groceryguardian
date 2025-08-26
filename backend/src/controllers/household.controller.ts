@@ -9,7 +9,7 @@ import type { ObjectId } from "../types/mongo.js";
 import { withTransaction } from "../utils/transactions.js";
 import PantryItem from "../models/PantryItem.js";
 
-
+//Create a new household
 export const createHousehold = async (req: Request, res: Response): Promise<void> => {
 
     const { name } = req.body;
@@ -28,19 +28,20 @@ export const createHousehold = async (req: Request, res: Response): Promise<void
     }
     const household = await withTransaction(async (session) => {
 
-
+        // Create a new household
         const created = await Household.create([{
             name,
             members: [{ userId, role: "owner" }]
         }], { session });
-
+        // Update User to set householdId
         await User.findByIdAndUpdate(userId, { householdId: created[0]?._id }, { session });
-
+        // Update GroceryListItem to set householdId
         await GroceryListItem.updateMany(
             { addedBy:userId, householdId: null },
             { $set: { householdId: created[0]?._id } },
             { session }
         );
+        // Update PantryItem to set householdId
         await PantryItem.updateMany(
             { addedBy: userId, householdId: null },
             { $set: { householdId: created[0]?._id } },
@@ -52,7 +53,7 @@ export const createHousehold = async (req: Request, res: Response): Promise<void
     return;
 };
 
-
+// Get Household info By Id
 export const getHouseholdById = async (req: Request, res: Response): Promise<void> => {
 
     const userId = req.user?.id;
@@ -70,7 +71,8 @@ export const getHouseholdById = async (req: Request, res: Response): Promise<voi
     res.status(200).json(household);
     return;
 };
-
+// Update Household Member
+// This function updates the role of a household member or adds a new member if they are not already part of the household.
 export const updateHouseholdMember = async (req: Request, res: Response): Promise<void> => {
 
     const { id, userId } = req.params;
@@ -105,6 +107,8 @@ export const updateHouseholdMember = async (req: Request, res: Response): Promis
     return;
 };
 
+// Remove Household Member
+// This function removes a member from the household by their userId.
 export const removeHouseholdMember = async (req: Request, res: Response): Promise<void> => {
 
     const { id, userId } = req.params;
@@ -125,7 +129,7 @@ export const removeHouseholdMember = async (req: Request, res: Response): Promis
         await householdDoc.save({ session });
         await User.findByIdAndUpdate(userId, { householdId: null }, { session });
         await GroceryListItem.updateMany(
-            { userId, householdId: householdDoc._id },
+            { addedBy:userId, householdId: householdDoc._id },
             { $set: { householdId: null } },
             { session }
         );
@@ -136,7 +140,7 @@ export const removeHouseholdMember = async (req: Request, res: Response): Promis
     res.status(200).json({ message: 'Member removed successfully', household });
     return;
 };
-
+// Search User to Invite
 export const searchUserToInvite = async (req: Request, res: Response) => {
 
     const { identifier } = req.query;
@@ -163,6 +167,7 @@ export const searchUserToInvite = async (req: Request, res: Response) => {
     return;
 };
 
+// Invite User to Household
 export const inviteUserToHousehold = async (req: Request, res: Response): Promise<void> => {
     const householdId = req.params.id;
     const senderId = req.user?.id;
@@ -197,7 +202,7 @@ export const inviteUserToHousehold = async (req: Request, res: Response): Promis
     res.status(200).json({ success: true, message: "Invitation sent", invite });
     return;
 };
-
+// Response to the invitation
 export const respondToInvitation = async (req: Request, res: Response): Promise<void> => {
     const { invitationId } = req.params;
     const { action } = req.body;
@@ -229,7 +234,16 @@ export const respondToInvitation = async (req: Request, res: Response): Promise<
             await household.save({ session });
 
             await User.findByIdAndUpdate(userId, { householdId: household._id }, { session });
-
+            await GroceryListItem.updateMany(
+                { addedBy: userId },
+                { $set: { householdId: household._id } },
+                { session }
+            );
+            await PantryItem.updateMany(
+                { addedBy: userId },
+                { $set: { householdId: household._id } },
+                { session }
+            );
             invitation.status = "accepted";
             await invitation.save({ session });
 
@@ -247,7 +261,8 @@ export const respondToInvitation = async (req: Request, res: Response): Promise<
     throw new Error("Invalid action");
 
 };
-
+// Get List of my Invitations
+// This function retrieves all pending invitations for the user.
 export const getMyInvitations = async (req: Request, res: Response): Promise<void> => {
 
     const userId = req.user?.id;
@@ -347,11 +362,14 @@ export const leaveHousehold = async (req: Request, res: Response): Promise<void>
             { $set: { householdId: null } },
             { session }
         );
-
-        await Invitation.deleteMany(
-            { household: household._id },
+        await PantryItem.updateMany(
+            { householdId: household._id },
+            { $set: { householdId: null } },
             { session }
         );
+
+        await Invitation.deleteMany({ household: household._id }, { session });
+
 
         await household.deleteOne({ session });
         });
