@@ -174,9 +174,10 @@ export async function InventoryForm(onSubmit: (item: AddGroceryItem, barcodeMatc
           const barcodeInput = form.querySelector<HTMLInputElement>('input[name="barcode"]');
           if (!barcodeInput) return;
 
-
+          console.log("scanned:", scanned);
           const code = scanned.trim();
           barcodeInput.value = code;
+          console.log(barcodeInput);
           try {
 
             const itemData = await apiFetch<BarcodeResponse>(`/grocery/barcode/${code}`);

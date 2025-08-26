@@ -124,5 +124,6 @@ export const addGroceryToPantry = async (req: Request, res: Response): Promise<v
     res.status(201).json(createdItems);
   } catch (error) {
     res.status(500).json({ message: "Error adding items.", error });
+    console.log(error);
   }
 };
