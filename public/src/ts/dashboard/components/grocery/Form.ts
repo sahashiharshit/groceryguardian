@@ -229,7 +229,19 @@ export async function InventoryForm(onSubmit: (item: AddGroceryItem, barcodeMatc
       }else if (keepExpirationEnabled && el.name === "expirationDate") {
         el.disabled = false;
       }else{
-        el.disabled=!enabled;
+        if (enabled) {
+        // Make editable
+        (el as HTMLInputElement |  HTMLTextAreaElement).readOnly = false;
+        el.disabled = false;
+        if (el.tagName === "SELECT") el.classList.remove("locked");
+      } else {
+        // Make read-only but still submit
+        (el as HTMLInputElement | HTMLTextAreaElement).readOnly = true;
+        el.disabled = false;
+        if (el.tagName === "SELECT") {
+          el.classList.add("locked"); // CSS trick to prevent changes
+        }
+      }
       }
     });
   }
