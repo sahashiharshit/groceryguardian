@@ -222,6 +222,27 @@
 .error button:hover {
   background: #c62828;
 }
+.add-to-pantry-btn {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  background: #28a745;
+  color: white;
+  padding: 0.75rem 1.25rem;
+  /* pill shape for desktop */
+  font-size: 1rem;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.add-to-pantry-btn:hover {
+  background-color: #218838;
+  transform: scale(1.05);
+}
 
 /* Responsive */
 @media screen and (max-width: 480px) {

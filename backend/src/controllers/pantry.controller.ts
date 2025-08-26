@@ -120,7 +120,7 @@ export const addGroceryToPantry = async (req: Request, res: Response): Promise<v
   }));
 
   try {
-    const createdItems = await PantryItem.insertMany(itemsToAdd);
+    const createdItems = await PantryItem.insertOne(itemsToAdd);
     res.status(201).json(createdItems);
   } catch (error) {
     res.status(500).json({ message: "Error adding items.", error });

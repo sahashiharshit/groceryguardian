@@ -91,13 +91,14 @@ export async function render(): Promise<void> {
         render();
       } catch (error) {
         showToast("Failed to add item. Please try again.", "error");
+        groceryModal.closeModal();
       }
     });
     const groceryModal = Modal(form, "grocery-modal");
     //Add Groceries button
     const addBtn = document.createElement("button") as HTMLButtonElement;
     addBtn.textContent = "Add";
-    addBtn.className = "add-grocery-btn";
+    addBtn.className = "add-to-pantry-btn";
     addBtn.onclick = () => groceryModal.openModal();
     view.appendChild(addBtn);
 
