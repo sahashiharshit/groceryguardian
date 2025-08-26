@@ -89,9 +89,8 @@ background-color: #e0f2fe;
   margin: 0 auto;
   transition: background-color 0.3s ease;
 }
-.make-owner-btn {
-  background-color: #2563eb; /* blue tone for action */
-  color: #fff;
+.make-owner-btn,
+.delete-group-btn { 
   border: none;
   border-radius: 6px;
   padding: 6px 12px;
@@ -101,6 +100,14 @@ background-color: #e0f2fe;
   transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
+.make-owner-btn {
+  background-color: #3b82f6; /* blue */
+  color: white;
+}
+.delete-group-btn {
+  background-color: #ef4444; /* red */
+  color: white;
+}
 .make-owner-btn:hover {
   background-color: #1e40af; /* darker blue on hover */
 }

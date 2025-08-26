@@ -3,6 +3,7 @@ import { showToast } from "../../services/toast.js";
 import { setPageTitle } from "../app.js";
 import { FormBuilder } from "../components/FormBuilder.js";
 import { Modal } from "../components/Modal.js";
+import { hideLoader, showLoader } from "../utils/loader.js";
 
 type Household = {
   _id: string;
@@ -166,7 +167,7 @@ export async function render(): Promise<void> {
           return `<li data-user-id ="${m.userId._id}">
         ${m.userId.name} (${m.role})
         ${isAdmin && isTargetMember && isNotSelf ? `<button class="remove-member-btn" data-id="${m.userId._id}">Remove</button>
-        <button class="make-owner-btn" data-id="${m.userId._id}">Make Owner</button>` :
+        <button class="make-owner-btn" data-id="${m.userId._id}">Upgrade</button>` :
               ``}
           ${isCurrentUserOwner ? `<button class="delete-group-btn" data-id="${household._id}">Delete Group</button>` : ""}
          </li>`;
@@ -180,11 +181,12 @@ export async function render(): Promise<void> {
         btn.addEventListener("click", async () => {
           const userId = btn.getAttribute("data-id");
           if (!userId) return;
-
+         
           const confirmRemove = confirm("Are you sure you want to remove this member?");
           if (!confirmRemove) return;
 
           try {
+            showLoader();
             await apiFetch(`/households/${household._id}/members/${userId}`, {
               method: "DELETE",
             });
@@ -193,6 +195,8 @@ export async function render(): Promise<void> {
           } catch (err) {
             showToast("Failed to remove member.", "error");
 
+          } finally {
+            hideLoader()
           }
 
         });
@@ -209,6 +213,7 @@ export async function render(): Promise<void> {
           if (!confirmPromote) return;
 
           try {
+            showLoader()
             await apiFetch(`/households/${household._id}/members/${userId}`, {
               method: "PUT",
               body: { role: "owner" },
@@ -217,6 +222,8 @@ export async function render(): Promise<void> {
             render(); // refresh
           } catch {
             showToast("Failed to update member role.", "error");
+          }finally{
+            hideLoader();
           }
         });
       });
@@ -231,17 +238,19 @@ export async function render(): Promise<void> {
           if (!confirmDelete) return;
 
           try {
+            showLoader();
             await apiFetch(`/households/${householdId}`, {
               method: "DELETE",
             });
             showToast("Group deleted successfully.", "success");
-
             // Clear household info from user & re-render
             user.household = null;
             localStorage.setItem("user", JSON.stringify(user));
             render();
           } catch (err) {
             showToast("Failed to delete group.", "error");
+          }finally{
+            hideLoader();
           }
         });
       });
@@ -264,7 +273,7 @@ export async function render(): Promise<void> {
         ],
         onSubmit: async ({ identifier }) => {
           try {
-
+            showLoader();
             const foundUser = await apiFetch<SearchedUser>(`/households/search-user?identifier=${encodeURIComponent(identifier)}`);
             const recipientId = foundUser._id;
             const resultContainer = document.getElementById("search-result-container");
@@ -287,6 +296,7 @@ export async function render(): Promise<void> {
               inviteBtn.className = "send-invite";
               inviteBtn.onclick = async () => {
                 try {
+                  showLoader();
                   const res = await apiFetch<{ success?: boolean }>(`/households/${household._id}/invite`, {
                     method: "POST",
                     body: { recipientId },
@@ -300,6 +310,8 @@ export async function render(): Promise<void> {
                 } catch (err) {
                   showToast("Failed to send invite.", "error");
 
+                }finally{
+                  hideLoader();
                 }
               };
               const buttonGroup = document.createElement("div");
@@ -317,6 +329,8 @@ export async function render(): Promise<void> {
               showToast("Failed to send invite.", "error");
             }
 
+          }finally{
+            hideLoader();
           }
         }
       });
