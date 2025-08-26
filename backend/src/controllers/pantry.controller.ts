@@ -104,7 +104,7 @@ export const addGroceryToPantry = async (req: Request, res: Response): Promise<v
     res.status(400).json({ message: "No items provided." });
     return;
   }
-
+  console.log(items);
   const itemsToAdd = items.map((item: any) => ({
     itemName: item.itemname,
     quantity: item.quantity,
