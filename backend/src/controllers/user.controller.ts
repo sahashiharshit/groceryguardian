@@ -6,6 +6,7 @@ import Household from "../models/Household.js";
 import type { Request, Response } from "express";
 import GroceryListItem from "../models/GroceryListItem.js";
 import PantryItem from "../models/PantryItem.js";
+import { withTransaction } from "../utils/transactions.js";
 
 export const getUser = async (req: Request, res: Response): Promise<void> => {
   const userId = req.user?.id;
@@ -55,6 +56,7 @@ export const getGroupUsersList = async (req: Request, res: Response): Promise<vo
 
 
 export const updateUserInfo = async (req: Request, res: Response): Promise<void> => {
+  await withTransaction(async (session) => {
   const userId = req.user?.id;
   const { name,mobileNo } = req.body;
 
@@ -62,14 +64,14 @@ export const updateUserInfo = async (req: Request, res: Response): Promise<void>
     res.status(401).json({ error: "Unauthorized" });
     return;
   }
-  const user = await User.findById(userId);
+  const user = await User.findById(userId).session(session) ;
   if (!user) {
     res.status(404).json({ error: "User not found" });
     return;
   }
   user.name = name ?? user.name;
   user.mobileNo = mobileNo ?? user.mobileNo;
-  await user.save();
+  await user.save({session});
   
   res.status(200).json({
     message: "User info updated successfully",
@@ -80,6 +82,7 @@ export const updateUserInfo = async (req: Request, res: Response): Promise<void>
       id: user._id,
     },
   });
+  });
 };
 
 export const deleteUser = async (req: Request, res: Response): Promise<void> => {
@@ -89,7 +92,8 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
     res.status(401).json({ error: "Unauthorized" });
     return;
   }
-  const user = await User.findById(userId);
+  await withTransaction(async (session) => {
+  const user = await User.findById(userId).session(session);
   if (!user) {
     res.status(404).json({ error: "User not found" });
     return;
@@ -97,7 +101,7 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
 
   // If user is part of a household, check ownership
   if (user.householdId) {
-    const household = await Household.findById(user.householdId);
+    const household = await Household.findById(user.householdId).session(session);
     if (household) {
       // Find all owners in the household
       const owners = household.members.filter(
@@ -116,11 +120,12 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
       household.members = household.members.filter(
         (member) => member.userId.toString() !== userId
       );
-      await household.save();
+      await household.save({session});
     }
   }
 
-  await User.findByIdAndDelete(userId);
+  await User.findByIdAndDelete(userId).session(session);
 
   res.status(200).json({ message: "User account deleted successfully" });
+});
 };

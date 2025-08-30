@@ -7,11 +7,17 @@ const groceryController = wrapControllers(rawGroceryController);
 const router = Router();
 
 // routes for grocery list management
+// get Grocery list
 router.get('/grocery-list',authenticationMiddleware,groceryController.getGrocerieslist);
-router.post('/add-grocery',authenticationMiddleware,groceryController.addGroceries);
-router.delete('/grocery-list/:itemId',authenticationMiddleware,groceryController.deleteGroceryItem);
-router.post('/movetoinventory/:itemId',authenticationMiddleware,groceryController.moveToPantry);
+// get categories
 router.get('/getcategories',authenticationMiddleware,groceryController.getCategories);
+// get barcode info
 router.get('/barcode/:barcode',authenticationMiddleware,groceryController.getBarcodeInfo);
+// add grocery item
+router.post('/add-grocery',authenticationMiddleware,groceryController.addGroceries);
+// move item to pantry
+router.post('/movetoinventory/:itemId',authenticationMiddleware,groceryController.moveToPantry);
+// delete grocery item
+router.delete('/grocery-list/:itemId',authenticationMiddleware,groceryController.deleteGroceryItem);
 
 export default router;

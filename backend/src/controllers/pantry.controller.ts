@@ -3,9 +3,10 @@ import PantryItem from "../models/PantryItem.js"
 import User from "../models/User.js";
 import Categories from "../models/Category.js";
 import Barcode from "../models/Barcode.js";
+import { withTransaction } from "../utils/transactions.js";
 
 export const getPantryList = async (req: Request, res: Response): Promise<void> => {
-
+  
   const userId = req.user?.id;
   if (!userId) {
     res.status(401).json({ message: "Unauthorized" });
@@ -31,17 +32,17 @@ export const getPantryList = async (req: Request, res: Response): Promise<void> 
 
 export const deleteItemFromPantry = async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
-
-  const item = await PantryItem.findOneAndDelete({ _id: id, addedBy: req.user?.id });
+  await withTransaction(async (session) => {
+  const item = await PantryItem.findOneAndDelete({ _id: id, addedBy: req.user?.id }).session(session);
 
   if (!item) {
     res.status(404).json({ message: "Item not found or not authorized." });
     return;
   }
 
-  res.json({ message: "Item deleted successfully." });
-}; 
-
+  res.status(200).json({ message: "Item deleted successfully." });
+});
+};
 
 export const updateItemInPantry = async (req: Request, res: Response): Promise<void> => {
 
@@ -59,7 +60,7 @@ export const updateItemInPantry = async (req: Request, res: Response): Promise<v
     return;
   }
 
-  res.json(updatedItem);
+  res.status(200).json(updatedItem);
 
 };
 
@@ -73,7 +74,7 @@ export const checkForStockExpiry = async (req: Request, res: Response): Promise<
     isAvailable: true,
   });
 
-  res.json(expiredItems);
+  res.status(200).json(expiredItems);
 
 };
 export const checkForStockQuantity = async (req: Request, res: Response): Promise<void> => {
@@ -86,7 +87,7 @@ export const checkForStockQuantity = async (req: Request, res: Response): Promis
     isAvailable: true,
   });
 
-  res.json(lowStockItems);
+  res.status(200).json(lowStockItems);
 
 };
 
@@ -97,8 +98,8 @@ export const addGroceryToPantry = async (req: Request, res: Response): Promise<v
       res.status(400).json({ message: "No items provided" });
       return;
     }
-
-  const user = await User.findById(userId);
+    await withTransaction(async (session) => {
+  const user = await User.findById(userId).session(session);
   const householdId = user?.householdId || null;
   const docs = await Promise.all(
     items.map(async(item)=>{
@@ -107,7 +108,7 @@ export const addGroceryToPantry = async (req: Request, res: Response): Promise<v
         const category = await Categories.findOne({ name: item.category });
         categoryId = category?._id?.toString() || null;
         if (item.barcode) {
-          let barcode = await Barcode.findOne({ code: item.barcode });
+          let barcode = await Barcode.findOne({ code: item.barcode }).session(session);
 
           if (!barcode) {
             barcode = await Barcode.create(
@@ -138,6 +139,7 @@ export const addGroceryToPantry = async (req: Request, res: Response): Promise<v
     })
   )
   
-     await PantryItem.insertMany(docs);
+     await PantryItem.insertMany(docs, { session });
   res.status(201).json({ message: "Items added to pantry successfully." });
+});
 };
