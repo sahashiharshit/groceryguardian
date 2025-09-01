@@ -79,7 +79,7 @@ export async function render(): Promise<void> {
       buttonGroup.style.gap = "0.5rem";
       const purchasedBtn = document.createElement("button");
       purchasedBtn.className = "purchase-btn"
-      purchasedBtn.innerHTML = "Purchase";
+      purchasedBtn.innerHTML = "Move to Inventory";
       purchasedBtn.onclick = async () => {
 
         if (item.barcode) {
@@ -103,7 +103,7 @@ export async function render(): Promise<void> {
 
         } else {
           const confirmMove = confirm(
-            `⚠️ This item doesn't have a barcode.\nDo you want to move it to pantry anyway?`
+            `Do you want to move it to pantry?`
           );
           if (!confirmMove) return;
 
