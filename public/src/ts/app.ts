@@ -284,8 +284,9 @@ async function goToApp(): Promise<void> {
   if (!window.location.hash) {
     window.location.hash = "#groceries";
   }
-  await renderDashboardLayout();
   handleRouting();
+  await renderDashboardLayout();
+  
 }
 /* --------------------------
    App bootstrap
